@@ -1,0 +1,44 @@
+{
+    "name": "common-lisp",
+    "displayName": "Common Lisp",
+    "description": "Common Lisp language support for VS Code",
+    "author": {
+        "name": "Qingpeng Li",
+        "email": "qingpeng9802@gmail.com"
+    },
+    "version": "0.0.2",
+    "publisher": "Qingpeng Li",
+    "engines": {
+        "vscode": "^1.46.0"
+    },
+    "license": "MIT",
+    "categories": [
+        "Programming Languages",
+        "Snippets"
+    ],
+    "keywords": [
+        "Common Lisp",
+        "common lisp",
+        "commonlisp",
+        "lisp",
+        "snippet"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "commonlisp",
+            "aliases": ["Common Lisp", "commonlisp"],
+            "extensions": [".lisp",".lsp",".l",".cl"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "commonlisp",
+            "scopeName": "source.commonlisp",
+            "path": "./syntaxes/commonlisp.tmLanguage"
+        }],
+        "snippets": [{
+			"language": "commonlisp",
+            "path": "./snippets/commonlisp.json"
+        }]
+    },
+    "icon": "images/icon.png"
+}

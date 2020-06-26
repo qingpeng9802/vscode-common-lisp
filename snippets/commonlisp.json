@@ -1,0 +1,38 @@
+{
+	"defun": {
+		"scope": "commonlisp",
+		"prefix": "defun ",
+		"body": "defun ${1:function-name} (${2:lambda-list})\n\t${3:form}",
+		"description": "Defines a new function in the global environment."
+	},
+	"if": {
+		"scope": "commonlisp",
+		"prefix": "if ",
+		"body": "if ${1:test-form} ${2:then-form} ${3:else-form}",
+		"description": "Allows the execution of a form to be dependent on a single test-form."
+	},
+	"cond": {
+		"scope": "commonlisp",
+		"prefix": "cond ",
+		"body": "cond (${1:test-form-1} ${2:form1})\n      (${3:test-form-2} ${4:form2})",
+		"description": "Allows the execution of forms to be dependent on test-form."
+	},
+	"let": {
+		"scope": "commonlisp",
+		"prefix": "let ",
+		"body": "let ((${1:var1} ${2:init-form-1})\n      (${3:var2} ${4:init-form-2})",
+		"description": "Creates new variable bindings and performs the bindings in parallel."
+	},
+	"let*": {
+		"scope": "commonlisp",
+		"prefix": "let* ",
+		"body": "let* ((${1:var1} ${2:init-form-1})\n       (${3:var2} ${4:init-form-2})",
+		"description": "Creates new variable bindings and performs the bindings sequentially."
+	},
+	"lambda": {
+		"scope": "commonlisp",
+		"prefix": "lambda ",
+		"body": "lambda (${1:lambda-list}) ${2:form}",
+		"description": "Provides a shorthand notation for a function special form involving a lambda expression."
+	}
+}
