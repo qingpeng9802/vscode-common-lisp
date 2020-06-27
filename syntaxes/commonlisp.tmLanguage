@@ -57,6 +57,14 @@
         </dict>
         <dict>
             <key>include</key>
+            <string>#escape</string>
+        </dict>
+        <dict>
+            <key>include</key>
+            <string>#punctuation</string>
+        </dict>
+        <dict>
+            <key>include</key>
             <string>#list</string>
         </dict>
         <dict>
@@ -154,11 +162,11 @@
             <array>
                 <dict>
                 <!-- CL-ANSI 2.1.4.6 Single Escape Character -->
-					<key>match</key>
-					<string>\\.</string>
-					<key>name</key>
-					<string>constant.character.escape.scheme</string>
-				</dict>
+                    <key>match</key>
+                    <string>\\.</string>
+                    <key>name</key>
+                    <string>constant.character.escape.scheme</string>
+                </dict>
             </array>
         </dict>
 
@@ -166,9 +174,9 @@
         <dict>
         <!-- CL-ANSI 22.1.3.2 Printing Characters -->
             <key>match</key>
-            <string>(?x)
-                (?&lt;=(\s|\()) # preceded by space or (
-                (?i:\#\\\S+)
+            <string>(?xi)
+                (?&lt;=^|\s|\() # preceded by space or (
+                (?:\#\\\S+)
                 (?=(\s|\(|\)))  # followed by space, ( or )
             </string>
             <key>name</key>
@@ -182,9 +190,9 @@
                 <dict>
                 <!-- CL-ANSI Constant Variable -->
                     <key>match</key>
-                    <string>(?x)
-                        (?&lt;=(\s|\()) # preceded by space or (
-                        (?i:array-dimension-limit|array-row-major-index|arrayp|boole-1|boole-2|boole-andc1|
+                    <string>(?xi)
+                        (?&lt;=^|\s|\() # preceded by space or (
+                        (?:array-dimension-limit|array-row-major-index|arrayp|boole-1|boole-2|boole-andc1|
                         boole-andc2|boole-c1|boole-c2|boole-clr|boole-eqv|boole-ior|boole-nand|boole-nor|boole-orc1|
                         boole-orc2|boole-set|boole-xor|boolean|call-arguments-limit|char-not-greaterp|double-float-epsilon|
                         double-float-negative-epsilon|internal-time-units-per-second|lambda-list-keywords|
@@ -208,7 +216,7 @@
                 <!-- CL-ANSI 2.3.2 Constructing Numbers from Tokens -->
                     <key>match</key>
                     <string>(?x)
-                        (?&lt;=(\s|\())                           # preceded by space or (
+                        (?&lt;=^|\s|\()                           # preceded by space or (
                         ([+-]?[0-9]+(?:\/[0-9]+)*|                # ratio
                         [-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?|   # integer, float
                         (\#b|\#B)[01\/+-]+|(\#o|\#O)[0-7\/+-]+|(\#x|\#X)[0-9a-fA-F\/+-]+|(\#[0-9]+[rR]?)[0-9a-zA-Z\/+-]+)
@@ -224,9 +232,9 @@
         <dict>
         <!-- CL-ANSI macro lambda list, ordinary lambda list -->
             <key>match</key>
-            <string>(?x)
-                (?&lt;=(\s|\()) # preceded by space or (
-                (?i:&amp;body|&amp;environment|&amp;whole|&amp;allow-other-keys|&amp;aux|&amp;key|&amp;optional|&amp;rest)
+            <string>(?xi)
+                (?&lt;=^|\s|\() # preceded by space or (
+                (?:&amp;body|&amp;environment|&amp;whole|&amp;allow-other-keys|&amp;aux|&amp;key|&amp;optional|&amp;rest)
                 (?=(\s|\(|\))) # followed by space, ( or )
                 </string>
             <key>name</key>
@@ -240,9 +248,9 @@
                 <dict>
                 <!-- CL-ANSI Accessor -->
                     <key>match</key>
-                    <string>(?x)
-                        (?&lt;=(\s|\()) # preceded by space or (
-                        (?i:aref|caaaar|caaadr|caaar|caadar|caaddr|caadr|caar|cadaar|cadadr|cadar|
+                    <string>(?xi)
+                        (?&lt;=^|\s|\() # preceded by space or (
+                        (?:aref|caaaar|caaadr|caaar|caadar|caaddr|caadr|caar|cadaar|cadadr|cadar|
                         caddar|cadddr|caddr|cadr|car|cdaaar|cdaadr|cdaar|cdadar|cdaddr|cdadr|
                         cdar|cddaar|cddadr|cddar|cdddar|cddddr|cdddr|cddr|cdr|char|compiler-macro-function|
                         eighth|elt|fdefinition|fifth|fill-pointer|find-class|first|fourth|get|
@@ -259,9 +267,9 @@
                 <dict>
                 <!-- CL-ANSI Function No Side Effects -->
                     <key>match</key>
-                    <string>(?x)
-                        (?&lt;=(\s|\()) # preceded by space or (
-                        (?i:\/=|&lt;=|=|&gt;|&gt;=|abs|acons|acos|acosh|adjoin|adjust-array|adjustable-array-p|
+                    <string>(?xi)
+                        (?&lt;=^|\s|\() # preceded by space or (
+                        (?:\/=|&lt;=|=|&gt;|&gt;=|abs|acons|acos|acosh|adjoin|adjust-array|adjustable-array-p|
                         alpha-char-p|alphanumericp|append|apply|apropos|apropos-list|arithmetic-error-operands|
                         arithmetic-error-operation|array-dimension|array-dimensions|array-displacement|
                         array-element-type|array-has-fill-pointer-p|array-in-bounds-p|array-rank|
@@ -338,9 +346,9 @@
                 <dict>
                 <!-- CL-ANSI Standard Generic Function NO Side Effects -->
                     <key>match</key>
-                    <string>(?x)
-                        (?&lt;=(\s|\()) # preceded by space or (
-                        (?i:add-method|allocate-instance|change-class|class-name|compiler-macro|
+                    <string>(?xi)
+                        (?&lt;=^|\s|\() # preceded by space or (
+                        (?:add-method|allocate-instance|change-class|class-name|compiler-macro|
                         compute-applicable-methods|describe-object|do-external-symbols|find-method|
                         function-keywords|make-instance|make-instances-obsolete|make-load-form|
                         method-qualifiers|no-applicable-method|no-next-method|print-object|remove-method|
@@ -355,9 +363,9 @@
                 <dict>
                 <!-- CL-ANSI Function, Standard Generic Function WITH Side Effects -->
                     <key>match</key>
-                    <string>(?x)
-                        (?&lt;=(\s|\()) # preceded by space or (
-                        (?i:abort|break|clear-input|close|clrhash|delete|delete-duplicates|delete-if|delete-if-not|
+                    <string>(?xi)
+                        (?&lt;=^|\s|\() # preceded by space or (
+                        (?:abort|break|clear-input|close|clrhash|delete|delete-duplicates|delete-if|delete-if-not|
                         describe|export|file-position|fill|fresh-line|gensym|gentemp|get-dispatch-macro-character|
                         get-macro-character|get-output-stream-string|import|inspect|intersection|invalid-method-error|
                         invoke-debugger|invoke-restart|invoke-restart-interactively|ldiff|maphash|
@@ -386,9 +394,9 @@
                 <dict>
                 <!-- CL-ANSI Macro, Symbol NO Side Effects -->
                     <key>match</key>
-                    <string>(?x)
-                        (?&lt;=(\s|\()) # preceded by space or (
-                        (?i:declare|
+                    <string>(?xi)
+                        (?&lt;=^|\s|\() # preceded by space or (
+                        (?:declare|
                         call-method|make-method|pprint-exit-if-list-exhausted|assert|cond|ctypecase|declaim|defclass|defconstant|
                         defgeneric|define-compiler-macro|define-condition|define-setf-expander|define-symbol-macro|defmacro|
                         defmethod|defpackage|defsetf|defstruct|deftype|defun|destructuring-bind|do|do\*|do-all-symbols|do-symbols|
@@ -407,9 +415,9 @@
                 <dict>
                 <!-- CL-ANSI Macro, Symbol WITH Side Effects -->
                     <key>match</key>
-                    <string>(?x)
-                        (?&lt;=(\s|\()) # preceded by space or (
-                        (?i:loop-finish|pprint-pop|case|ccase|check-type|decf|define-method-combination|define-modify-macro|
+                    <string>(?xi)
+                        (?&lt;=^|\s|\() # preceded by space or (
+                        (?:loop-finish|pprint-pop|case|ccase|check-type|decf|define-method-combination|define-modify-macro|
                         defparameter|defvar|ecase|in-package|pop|psetq|push|pushnew|remf|trace|untrace|with-input-from-string|
                         with-open-file|with-open-stream|with-output-to-string|set-macro-character)
                         (?=(\s|\(|\))) # followed by space, ( or )
@@ -424,9 +432,9 @@
         <dict>
         <!-- CL-ANSI Special Operator -->
             <key>match</key>
-            <string>(?x)
-                (?&lt;=(\s|\()) # preceded by space or (
-                (?i:block|catch|eval-when|flet|go|if|labels|let|let\*|load-time-value|locally|macrolet|
+            <string>(?xi)
+                (?&lt;=^|\s|\() # preceded by space or (
+                (?:block|catch|eval-when|flet|go|if|labels|let|let\*|load-time-value|locally|macrolet|
                 multiple-value-call|multiple-value-prog1|progn|progv|quote|return-from|symbol-macrolet|
                 tagbody|the|throw|unwind-protect|function)
                 (?=(\s|\(|\))) # followed by space, ( or )
@@ -439,9 +447,9 @@
         <dict>
         <!-- CL-ANSI Declaration -->
             <key>match</key>
-            <string>(?x)
-                (?&lt;=(\s|\()) # preceded by space or (
-                (?i:compilation-speed|debug|declaration|dynamic-extent|ftype|ignorable|ignore|
+            <string>(?xi)
+                (?&lt;=^|\s|\() # preceded by space or (
+                (?:compilation-speed|debug|declaration|dynamic-extent|ftype|ignorable|ignore|
                 initialize-instance|notinline|optimize|safety|space|special|speed|type)
                 (?=(\s|\(|\))) # followed by space, ( or )
                 </string>
@@ -453,9 +461,9 @@
         <dict>
         <!-- CL-ANSI Type, Type Specifier -->
             <key>match</key>
-            <string>(?x)
-                (?&lt;=(\s|\()) # preceded by space or (
-                (?i:base-char|base-string|bignum|boole-and|compile-file|double-float|extended-char|
+            <string>(?xi)
+                (?&lt;=^|\s|\() # preceded by space or (
+                (?:base-char|base-string|bignum|boole-and|compile-file|double-float|extended-char|
                 fixnum|keyword|long-float|short-float|signed-byte|simple-array|simple-base-string|simple-bit-vector|simple-string|simple-vector|single-float|standard-char|unsigned-byte|satisfies)
                 (?=(\s|\(|\))) # followed by space, ( or )
                 </string>
@@ -467,9 +475,9 @@
         <dict>
         <!-- CL-ANSI class, System Class -->
             <key>match</key>
-            <string>(?x)
-                (?&lt;=(\s|\()) # preceded by space or (
-                (?i:standard|standard-object|structure-object|array|bit-vector|broadcast-stream|
+            <string>(?xi)
+                (?&lt;=^|\s|\() # preceded by space or (
+                (?:standard|standard-object|structure-object|array|bit-vector|broadcast-stream|
                 built-in-class|class|concatenated-stream|echo-stream|file-stream|generic-function|
                 hash-table|integer|method|method-combination|number|package|random-state|ratio|readtable|real|restart|
                 sequence|standard-class|standard-generic-function|standard-method|stream|string&gt;|
@@ -484,9 +492,9 @@
         <dict>
         <!-- CL-ANSI Condition Type -->
             <key>match</key>
-            <string>(?x)
-                (?&lt;=(\s|\()) # preceded by space or (
-                (?i:arithmetic-error|cell-error|condition|control-error|division-by-zero|end-of-file|
+            <string>(?xi)
+                (?&lt;=^|\s|\() # preceded by space or (
+                (?:arithmetic-error|cell-error|condition|control-error|division-by-zero|end-of-file|
                 file-error|float-precision|float-radix|float-sign|floating-point-inexact|package-error|
                 parse-error|print-not-readable|program-error|read-from-string|serious-condition|simple-condition|
                 simple-error|simple-type-error|simple-warning|storage-condition|stream-error|style-warning|
@@ -501,9 +509,9 @@
         <dict>
         <!-- CL-ANSI Variable -->
             <key>match</key>
-            <string>(?x)
-                (?&lt;=(\s|\()) # preceded by space or (
-                (?i:\*\*|\*\*\*|\*break-on-signals\*|\*compile-file-pathname\*|\*compile-file-truename\*|\*compile-print\*|
+            <string>(?xi)
+                (?&lt;=^|\s|\() # preceded by space or (
+                (?:\*\*|\*\*\*|\*break-on-signals\*|\*compile-file-pathname\*|\*compile-file-truename\*|\*compile-print\*|
                 \*compile-verbose\*|\*debug-io\*|\*debugger-hook\*|\*default-pathname-defaults\*|\*error-output\*|
                 \*features\*|\*gensym-counter\*|\*load-pathname\*|\*load-print\*|\*load-truename\*|\*load-verbose\*|
                 \*macroexpand-hook\*|\*modules\*|\*package\*|\*print-array\*|\*print-base\*|\*print-case\*|\*print-circle\*|
@@ -524,9 +532,9 @@
                 <dict>
                 <!-- CL-ANSI 22.1.3.3.1 Package Prefixes for Symbols -->
                     <key>match</key>
-                    <string>(?x)
-                        (?&lt;=(\s|\()) # preceded by space or (
-                        (?i::[a-zA-Z0-9-_]+)
+                    <string>(?xi)
+                        (?&lt;=^|\s|\() # preceded by space or (
+                        (?::\S+)
                         (?=(\s|\(|\)))  # followed by space, ( or )
                     </string>
                     <key>name</key>
@@ -536,45 +544,9 @@
                 <dict>
                 <!-- CL-ANSI 2.4.6 Backquote -->
                     <key>match</key>
-                    <string>(?x)
-                        (?&lt;=(\s|\()) # preceded by space or (
-                        (?i)((‘|’|`)(\#|,(@|\.)?)?)
-                        (?=\S+)
-                    </string>
-                    <key>name</key>
-                    <string>variable.other.constant.commonlisp</string>
-                </dict>
-
-                <dict>
-                <!-- CL-ANSI 2.4.8 Sharpsign -->
-                    <key>match</key>
-                    <string>(?x)
-                        (?&lt;=(\s|\()) # preceded by space or (
-                        (?i)(\#('|’|:|,|\*|\.|c|s|p)*)(?=([0-9]|\()?)
-                        (?=\S+)
-                    </string>
-                    <key>name</key>
-                    <string>variable.other.constant.commonlisp</string>
-                </dict>
-
-                <dict>
-                <!-- CL-ANSI 2.4.8.12 Sharpsign A -->
-                    <key>match</key>
-                    <string>(?x)
-                        (?&lt;=(\s|\()) # preceded by space or (
-                        (?i)(\#[0-9]+a)
-                        (?=\s+|\()
-                    </string>
-                    <key>name</key>
-                    <string>variable.other.constant.commonlisp</string>
-                </dict>
-
-                <dict>
-                <!-- CL-ANSI 2.4.8.15 Sharpsign Equal-Sign -->
-                    <key>match</key>
-                    <string>(?x)
-                        (?&lt;=(\s|\()) # preceded by space or (
-                        (?i)(\#[0-9]+=)
+                    <string>(?xi)
+                        (?&lt;=^|\s|\() # preceded by space or (
+                        ((‘|’|`)(\#|,(@|\.)?)?)
                         (?=\S+)
                     </string>
                     <key>name</key>
@@ -584,10 +556,34 @@
                 <dict>
                 <!-- CL-ANSI 2.4.8.16 Sharpsign Sharpsign -->
                     <key>match</key>
-                    <string>(?x)
-                        (?&lt;=(\s|\()) # preceded by space or (
-                        (?i)(\#([0-9]+\#))
+                    <string>(?xi)
+                        (?&lt;=^|\s|\() # preceded by space or (
+                        (\#([0-9]+\#))
                         (?=\s+)
+                    </string>
+                    <key>name</key>
+                    <string>variable.other.constant.commonlisp</string>
+                </dict>
+
+                <dict>
+                <!-- CL-ANSI 2.4.8.12 Sharpsign A -->
+                    <key>match</key>
+                    <string>(?xi)
+                        (?&lt;=^|\s|\() # preceded by space or (
+                        (\#[0-9]+a)
+                        (?=\s+|\()
+                    </string>
+                    <key>name</key>
+                    <string>variable.other.constant.commonlisp</string>
+                </dict>
+
+                <dict>
+                <!-- CL-ANSI 2.4.8.15 Sharpsign Equal-Sign -->
+                    <key>match</key>
+                    <string>(?xi)
+                        (?&lt;=^|\s|\() # preceded by space or (
+                        (\#[0-9]+=)
+                        (?=\S+)
                     </string>
                     <key>name</key>
                     <string>variable.other.constant.commonlisp</string>
@@ -596,10 +592,22 @@
                 <dict>
                 <!-- CL-ANSI 2.4.8.17|18 Sharpsign Plus|Minus -->
                     <key>match</key>
-                    <string>(?x)
-                        (?&lt;=(\s|\()) # preceded by space or (
-                        (?i)(\#(\+|-))
+                    <string>(?xi)
+                        (?&lt;=^|\s|\() # preceded by space or (
+                        (\#(\+|-))
                         (?=.+)
+                    </string>
+                    <key>name</key>
+                    <string>variable.other.constant.commonlisp</string>
+                </dict>
+
+                <dict>
+                <!-- CL-ANSI 2.4.8 Sharpsign -->
+                    <key>match</key>
+                    <string>(?xi)
+                        (?&lt;=^|\s|\() # preceded by space or (
+                        (\#('|’|:|,|\*|\.|c|s|p)*)(?=([0-9]|\()?)
+                        (?=\S+)
                     </string>
                     <key>name</key>
                     <string>variable.other.constant.commonlisp</string>
@@ -608,9 +616,9 @@
                 <dict>
                 <!-- CL-ANSI 2.4.3 Single-Quote -->
                     <key>match</key>
-                    <string>(?x)
-                        (?&lt;=(\s|\()) # preceded by space or (
-                        (?i:'|’|,@|,|:)
+                    <string>(?xi)
+                        (?&lt;=^|\s|\() # preceded by space or (
+                        (?:'|’|,@|,|:)
                         (?=\S+)
                     </string>
                     <key>name</key>
@@ -620,7 +628,7 @@
                 <dict>
                 <!-- CL-ANSI Dot -->
                     <key>match</key>
-                    <string>(?x)
+                    <string>(?xi)
                         (?&lt;=\s) # preceded by space or (
                         (\.)
                         (?=\s+)
@@ -640,20 +648,20 @@
                 <dict>
                 <!-- keyword name (params) -->
                     <key>match</key>
-                    <string>(?x)
-                        (?&lt;=(\s|\())  # preceded by (
-                        (?i)(define-compiler-macro|defmacro|defun|define-modify-macro|defgeneric)\s+ # keywords
-                        (\S+)\s+         # name
-                        (?=\()          
+                    <string>(?xi)
+                        (?&lt;=^|\s|\()
+                        (define-compiler-macro|defmacro|defun|define-modify-macro|defgeneric)\s+ # keywords
+                        (\S+)         # name
+                        (?=\s+|\()
                     </string>
                     <key>captures</key>
                     <dict>
-                        <key>2</key>
+                        <key>1</key>
                         <dict>
                             <key>name</key>
                             <string>storage.type.function.commonlisp</string>
                         </dict>
-                        <key>3</key>
+                        <key>2</key>
                         <dict>
                             <key>name</key>
                             <string>entity.name.function.commonlisp</string>
@@ -664,20 +672,20 @@
                 <dict>
                 <!-- keyword name (params) -->
                     <key>match</key>
-                    <string>(?x)
-                        (?&lt;=(\s|\())  # preceded by (
-                        (?i)(deftype|defclass|define-condition)\s+ # keywords
-                        (\S+)\s+         # name
-                        (?=\()          
+                    <string>(?xi)
+                        (?&lt;=^|\s|\()
+                        (deftype|defclass|define-condition)\s+ # keywords
+                        (\S+)                                  # name
+                        (?=\s+|\()
                     </string>
                     <key>captures</key>
                     <dict>
-                        <key>2</key>
+                        <key>1</key>
                         <dict>
                             <key>name</key>
                             <string>storage.type.function.commonlisp</string>
                         </dict>
-                        <key>3</key>
+                        <key>2</key>
                         <dict>
                             <key>name</key>
                             <string>entity.name.type.commonlisp</string>
@@ -688,20 +696,20 @@
                 <dict>
                 <!-- keyword name -->
                     <key>match</key>
-                    <string>(?x)
-                        (?&lt;=(\s|\())      # preceded by (
-                        (?i)(defconstant)\s+ # keywords
+                    <string>(?xi)
+                        (?&lt;=^|\s|\()
+                        (defconstant)\s+     # keywords
                         (\S+)                # name
                         (?=\s+)
                     </string>
                     <key>captures</key>
                     <dict>
-                        <key>2</key>
+                        <key>1</key>
                         <dict>
                             <key>name</key>
                             <string>storage.type.function.commonlisp</string>
                         </dict>
-                        <key>3</key>
+                        <key>2</key>
                         <dict>
                             <key>name</key>
                             <string>variable.other.constant.commonlisp</string>
@@ -712,20 +720,20 @@
                 <dict>
                 <!-- keyword name -->
                     <key>match</key>
-                    <string>(?x)
-                        (?&lt;=(\s|\())              # preceded by (
-                        (?i)(defvar|defparameter)\s+ # keywords
+                    <string>(?xi)
+                        (?&lt;=^|\s|\()
+                        (defvar|defparameter)\s+ # keywords
                         (\S+)                        # name
                         (?=\s+)
                     </string>
                     <key>captures</key>
                     <dict>
-                        <key>2</key>
+                        <key>1</key>
                         <dict>
                             <key>name</key>
                             <string>storage.type.function.commonlisp</string>
                         </dict>
-                        <key>3</key>
+                        <key>2</key>
                         <dict>
                             <key>name</key>
                             <string>entity.name.variable.commonlisp</string>
@@ -736,20 +744,20 @@
                 <dict>
                 <!-- keyword name -->
                     <key>match</key>
-                    <string>(?x)
-                        (?&lt;=(\s|\())                           # preceded by (
-                        (?i)(defmethod|define-symbol-macro)\s+    # keywords
+                    <string>(?xi)
+                        (?&lt;=^|\s|\()                           # preceded by (
+                        (defmethod|define-symbol-macro)\s+    # keywords
                         (\S+)                                     # name
                         (?=\s+)
                     </string>
                     <key>captures</key>
                     <dict>
-                        <key>2</key>
+                        <key>1</key>
                         <dict>
                             <key>name</key>
                             <string>storage.type.function.commonlisp</string>
                         </dict>
-                        <key>3</key>
+                        <key>2</key>
                         <dict>
                             <key>name</key>
                             <string>entity.name.function.commonlisp</string>
@@ -760,20 +768,20 @@
                 <dict>
                 <!-- keyword name -->
                     <key>match</key>
-                    <string>(?x)
-                        (?&lt;=(\s|\())         # preceded by (
-                        (?i)(defpackage)\s+     # keywords
+                    <string>(?xi)
+                        (?&lt;=^|\s|\()
+                        (defpackage)\s+     # keywords
                         (\S+)                   # name
                         (?=\s+)
                     </string>
                     <key>captures</key>
                     <dict>
-                        <key>2</key>
+                        <key>1</key>
                         <dict>
                             <key>name</key>
                             <string>storage.type.function.commonlisp</string>
                         </dict>
-                        <key>3</key>
+                        <key>2</key>
                         <dict>
                             <key>name</key>
                             <string>entity.name.type.commonlisp</string>
@@ -784,20 +792,20 @@
                 <dict>
                 <!-- keyword ((name (params) -->
                     <key>match</key>
-                    <string>(?x)
-                        (?&lt;=(\s|\())                         # preceded by (
-                        (?i)(flet|labels|macrolet)\s+\(\s*\(\s* # keywords
-                        (\S+)\s+                                # name
-                        (?=\()          
+                    <string>(?xi)
+                        (?&lt;=^|\s|\()
+                        (flet|labels|macrolet)\s+\(\s*\(\s* # keywords
+                        (\S+)                               # name
+                        (?=\s+|\()
                     </string>
                     <key>captures</key>
                     <dict>
-                        <key>2</key>
+                        <key>1</key>
                         <dict>
                             <key>name</key>
                             <string>keyword.control.commonlisp</string>
                         </dict>
-                        <key>3</key>
+                        <key>2</key>
                         <dict>
                             <key>name</key>
                             <string>entity.name.function.commonlisp</string>
@@ -808,20 +816,20 @@
                 <dict>
                 <!-- keyword name (params)? -->
                     <key>match</key>
-                    <string>(?x)
-                        (?&lt;=(\s|\())  # preceded by (
-                        (?i)(define-method-combination)\s+ # keywords
+                    <string>(?xi)
+                        (?&lt;=^|\s|\()
+                        (define-method-combination)\s+ # keywords
                         (\S+)            # name
-                        (?=\s)      
+                        (?=\s)
                     </string>
                     <key>captures</key>
                     <dict>
-                        <key>2</key>
+                        <key>1</key>
                         <dict>
                             <key>name</key>
                             <string>entity.name.function.commonlisp</string>
                         </dict>
-                        <key>3</key>
+                        <key>2</key>
                         <dict>
                             <key>name</key>
                             <string>entity.name.function.commonlisp</string>
@@ -832,21 +840,21 @@
                 <dict>
                 <!-- keyword (? name -->
                     <key>match</key>
-                    <string>(?x)
-                        (?<=(\s|\())       # preceded by (
-                        (?i)(defstruct)\s+ # keywords
-                        (\(?)          
+                    <string>(?xi)
+                        (?&lt;=^|\s|\()
+                        (defstruct)\s+     # keywords
+                        (\(?)
                         (\S*)              # name
                         (?=\s*)
                     </string>
                     <key>captures</key>
                     <dict>
-                        <key>2</key>
+                        <key>1</key>
                         <dict>
                             <key>name</key>
                             <string>storage.type.function.commonlisp</string>
                         </dict>
-                        <key>4</key>
+                        <key>3</key>
                         <dict>
                             <key>name</key>
                             <string>entity.name.type.commonlisp</string>

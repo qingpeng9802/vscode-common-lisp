@@ -1,65 +1,46 @@
-# common-lisp README
-
-This is the README for your extension "common-lisp". After writing up a brief description, we recommend including the following sections.
+# Common Lisp language support for VS Code
+This VS code extension supports syntax highlighting and snippets for Common Lisp.  
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+### Syntax Highlighting
+<img src="./images/syntax.png">
 
-For example if there is an image subfolder under your extension project workspace:
+### Snippets
+<img src="./images/snippets.gif">
 
-\!\[feature X\]\(images/feature-x.png\)
+## Usage and Recommendation
+Beginner's Guide: https://code.visualstudio.com/docs/languages/overview  
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+Quick Guide:  
 
-## Requirements
+The language identifier(id) is `commonlisp`  
+File Types: `lisp`, `lsp`, `l`, `cl`, and you can add more by yourself: https://code.visualstudio.com/docs/languages/overview#_adding-a-file-extension-to-a-language
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+|Kind of Symbol|Color|
+|-|-|
+|Macro, Declaration                                        | Blue
+|Special Operator                                          | Purple
+|Constant Variable                                         | light Blue
+|Accessor, Functions, Standard Generic Function            | Yellow
+|Class, Condition Type, System Class, Type, Type Specifier | Green
 
-## Extension Settings
+Snippets support: `defun`, `if`, `cond`, `let`, `let*`, `lambda`
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+The demos above are using Bracket Pair Colorizer 2. Use this extension with [Bracket Pair Colorizer 2](https://marketplace.visualstudio.com/items?itemName=CoenraadS.bracket-pair-colorizer-2) to get colorizing matching brackets.
 
-For example:
+## Design
+Because of the funtional features of Common Lisp, we use the intuition of Common Lisp to design syntax highlighting instead of the intuition of non-functional language to design syntax highlighting. That is, we strictly follow the CL-ANSI 1.4.4.14 to classify the 978 external symbols in COMMON-LISP package. 
 
-This extension contributes the following settings:
+We processed [Common Lisp HyperSpec](http://www.lispworks.com/documentation/HyperSpec/Front/) to get the kind of each symbol. The result is in `./assets/COMMON-LISP-symbols.csv`, and please feel free to reuse the result :)  
 
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
+We assign different colors to different kind of symbols, the assignment rule can be found in the start comment of `./syntaxes/commonlisp.tmLanguage`. This file includes comments (related info in `CL-ANSI`) for all rules. 
 
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
------------------------------------------------------------------------------------------------------------
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+## Acknowledgement
+draft proposed American National Standard for Information Systems—Programming Language—Common Lisp X3J13/94-101R [(CL-ANSI)](https://franz.com/support/documentation/cl-ansi-standard-draft-w-sidebar.pdf)  
+[Common Lisp HyperSpec](http://www.lispworks.com/documentation/HyperSpec/Front/)  
+[vscode-scheme](https://github.com/sjhuangx/vscode-scheme)  
+https://github.com/egrachev/sublime-scheme/blob/master/Scheme.tmLanguage   
+https://github.com/bradrobertson/sublime-packages/blob/master/Lisp/Lisp.tmLanguage  
+The `icon.png` is from [Common-Lisp.net](https://common-lisp.net/) and resized, and is used under [Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/)  
+The code segment in `Syntax Highlighting` is from [SBCL Repository](https://github.com/sbcl/sbcl)  

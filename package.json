@@ -40,5 +40,13 @@
             "path": "./snippets/commonlisp.json"
         }]
     },
-    "icon": "images/icon.png"
+    "icon": "images/icon.png",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/qingpeng9802/vscode-common-lisp.git"
+    },
+    "bugs": {
+        "url": "https://github.com/qingpeng9802/vscode-common-lisp/issues"
+    },
+    "homepage": "https://github.com/qingpeng9802/vscode-common-lisp/blob/master/README.md"
 }

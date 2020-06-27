@@ -1,9 +1,6 @@
 # Change Log
 
-All notable changes to the "common-lisp" extension will be documented in this file.
-
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
-
-## [Unreleased]
-
-- Initial release
+## [0.0.2] - 2020-6-26
+### Added
+- `commonlisp.tmLanguage` file syntax highlighting
+- `commonlisp.json` file for snippets
