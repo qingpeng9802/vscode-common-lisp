@@ -3,11 +3,11 @@ This VS code extension supports syntax highlighting and snippets for Common Lisp
 
 ## Features
 
-### Syntax Highlighting
-<img src="./images/syntax.png">
+### Syntax Highlighting  
+![Syntax Highlighting](./images/syntax.png)
 
 ### Snippets
-<img src="./images/snippets.gif">
+![Snippets](./images/snippets.gif)
 
 ## Usage and Recommendation
 Beginner's Guide: https://code.visualstudio.com/docs/languages/overview  
