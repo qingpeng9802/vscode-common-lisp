@@ -507,22 +507,27 @@
 
         <key>variable</key>
         <dict>
-        <!-- CL-ANSI Variable -->
-            <key>match</key>
-            <string>(?xi)
-                (?&lt;=^|\s|\() # preceded by space or (
-                (?:\*\*|\*\*\*|\*break-on-signals\*|\*compile-file-pathname\*|\*compile-file-truename\*|\*compile-print\*|
-                \*compile-verbose\*|\*debug-io\*|\*debugger-hook\*|\*default-pathname-defaults\*|\*error-output\*|
-                \*features\*|\*gensym-counter\*|\*load-pathname\*|\*load-print\*|\*load-truename\*|\*load-verbose\*|
-                \*macroexpand-hook\*|\*modules\*|\*package\*|\*print-array\*|\*print-base\*|\*print-case\*|\*print-circle\*|
-                \*print-escape\*|\*print-gensym\*|\*print-length\*|\*print-level\*|\*print-lines\*|\*print-miser-width\*|
-                \*print-pprint-dispatch\*|\*print-pretty\*|\*print-radix\*|\*print-readably\*|\*print-right-margin\*|\*query-io\*|
-                \*random-state\*|\*read-base\*|\*read-default-float-format\*|\*read-eval\*|\*read-suppress\*|\*readtable\*|
-                \*standard-input\*|\*standard-output\*|\*terminal-io\*|\*trace-output\*|\+\+|\+\+\+|\/\/|\/\/\/|1-|&lt;)
-                (?=(\s|\(|\))) # followed by space, ( or )
-                </string>
-            <key>name</key>
-            <string>variable.other.commonlisp</string>
+            <key>patterns</key>
+            <array>
+                <dict>
+                <!-- CL-ANSI Variable -->
+                    <key>match</key>
+                    <string>(?xi)
+                        (?&lt;=^|\s|\() # preceded by space or (
+                        (?:\*\*|\*\*\*|\*break-on-signals\*|\*compile-file-pathname\*|\*compile-file-truename\*|\*compile-print\*|
+                        \*compile-verbose\*|\*debug-io\*|\*debugger-hook\*|\*default-pathname-defaults\*|\*error-output\*|
+                        \*features\*|\*gensym-counter\*|\*load-pathname\*|\*load-print\*|\*load-truename\*|\*load-verbose\*|
+                        \*macroexpand-hook\*|\*modules\*|\*package\*|\*print-array\*|\*print-base\*|\*print-case\*|\*print-circle\*|
+                        \*print-escape\*|\*print-gensym\*|\*print-length\*|\*print-level\*|\*print-lines\*|\*print-miser-width\*|
+                        \*print-pprint-dispatch\*|\*print-pretty\*|\*print-radix\*|\*print-readably\*|\*print-right-margin\*|\*query-io\*|
+                        \*random-state\*|\*read-base\*|\*read-default-float-format\*|\*read-eval\*|\*read-suppress\*|\*readtable\*|
+                        \*standard-input\*|\*standard-output\*|\*terminal-io\*|\*trace-output\*|\+\+|\+\+\+|\/\/|\/\/\/|1-|&lt;)
+                        (?=(\s|\(|\))) # followed by space, ( or )
+                        </string>
+                    <key>name</key>
+                    <string>variable.other.commonlisp</string>
+                </dict>
+            </array>
         </dict>
 
         <key>punctuation</key>
@@ -723,7 +728,6 @@
                     <string>(?xi)
                         (?&lt;=^|\s|\()
                         (defvar|defparameter)\s+ # keywords
-                        (\S+)                        # name
                         (?=\s+)
                     </string>
                     <key>captures</key>
@@ -732,11 +736,6 @@
                         <dict>
                             <key>name</key>
                             <string>storage.type.function.commonlisp</string>
-                        </dict>
-                        <key>2</key>
-                        <dict>
-                            <key>name</key>
-                            <string>entity.name.variable.commonlisp</string>
                         </dict>
                     </dict>
                 </dict>
@@ -864,6 +863,37 @@
             </array>
         </dict>
 
+        <key>style-guide</key>
+        <dict>
+            <key>patterns</key>
+            <array>
+               <dict>
+                <!-- Style Guide: Constants -->
+                    <key>match</key>
+                    <string>(?xi)
+                        (?&lt;=^|\s|\() # preceded by space or (
+                        (?:\+\S+\+)
+                        (?=(\s|\(|\))) # followed by space, ( or )
+                    </string>
+                    <key>name</key>
+                    <string>variable.other.constant.commonlisp</string>
+                </dict>
+
+                <dict>
+                <!-- Style Guide: Special variables -->
+                    <key>match</key>
+                    <string>(?xi)
+                        (?&lt;=^|\s|\() # preceded by space or (
+                        (?:\*\S+\*)
+                        (?=(\s|\(|\))) # followed by space, ( or )
+                    </string>
+                    <key>name</key>
+                    <string>variable.other.commonlisp</string>
+                </dict>
+            </array>
+        </dict>
+
+        
         <key>list</key>
         <dict>
             <key>begin</key>
@@ -919,6 +949,10 @@
                 <dict>
                     <key>include</key>
                     <string>#function</string>
+                </dict>
+                <dict>
+                    <key>include</key>
+                    <string>#style-guide</string>
                 </dict>
                 <dict>
                     <key>include</key>
