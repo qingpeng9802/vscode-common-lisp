@@ -61,16 +61,56 @@
         </dict>
         <dict>
             <key>include</key>
+            <string>#constant</string>
+        </dict>
+        <dict>
+            <key>include</key>
+            <string>#lambda-list</string>
+        </dict>
+        <dict>
+            <key>include</key>
+            <string>#function</string>
+        </dict>
+        <dict>
+            <key>include</key>
+            <string>#style-guide</string>
+        </dict>
+        <dict>
+            <key>include</key>
+            <string>#def-name</string>
+        </dict>
+        <dict>
+            <key>include</key>
+            <string>#macro</string>
+        </dict>
+        <dict>
+            <key>include</key>
+            <string>#special-operator</string>
+        </dict>
+        <dict>
+            <key>include</key>
+            <string>#declaration</string>
+        </dict>
+        <dict>
+            <key>include</key>
+            <string>#type</string>
+        </dict>
+        <dict>
+            <key>include</key>
+            <string>#class</string>
+        </dict>
+            <dict>
+            <key>include</key>
+            <string>#condition-type</string>
+        </dict>
+        <dict>
+            <key>include</key>
+            <string>#variable</string>
+        </dict>
+        <dict>
+            <key>include</key>
             <string>#punctuation</string>
         </dict>
-        <dict>
-            <key>include</key>
-            <string>#list</string>
-        </dict>
-        <dict>
-            <key>include</key>
-            <string>#illegal</string>
-            </dict>
     </array>
 
     <key>repository</key>
@@ -539,7 +579,7 @@
                     <key>match</key>
                     <string>(?xi)
                         (?&lt;=^|\s|\() # preceded by space or (
-                        (?::[^\s\)]+)
+                        (?::\S+?)
                         (?=(\s|\(|\)))  # followed by space, ( or )
                     </string>
                     <key>name</key>
@@ -891,123 +931,6 @@
                     <string>variable.other.commonlisp</string>
                 </dict>
             </array>
-        </dict>
-
-        
-        <key>list</key>
-        <dict>
-            <key>begin</key>
-            <!-- CL-ANSI 2.4.1 Left-Parenthesis -->
-            <string>(\()</string>
-            <key>beginCaptures</key>
-            <dict>
-                <key>1</key>
-                <dict>
-                    <key>name</key>
-                    <string>punctuation.section.group.begin.commonlisp</string>
-                </dict>
-            </dict>
-            <key>end</key>
-            <string>(\))(\n)?</string>
-            <key>endCaptures</key>
-            <dict>
-                <key>1</key>
-                <dict>
-                    <key>name</key>
-                    <string>punctuation.section.group.end.commonlisp</string>
-                </dict>
-            </dict>
-            <key>name</key>
-            <string>meta.group.commonlisp</string>
-
-            <key>patterns</key>
-            <array>
-                <dict>
-                    <key>include</key>
-                    <string>#comment</string>
-                </dict>
-                <dict>
-                    <key>include</key>
-                    <string>#block-comment</string>
-                </dict>
-                <dict>
-                    <key>include</key>
-                    <string>#string</string>
-                </dict>
-                <dict>
-                    <key>include</key>
-                    <string>#escape</string>
-                </dict>
-                <dict>
-                    <key>include</key>
-                    <string>#constant</string>
-                </dict>
-                <dict>
-                    <key>include</key>
-                    <string>#lambda-list</string>
-                </dict>
-                <dict>
-                    <key>include</key>
-                    <string>#function</string>
-                </dict>
-                <dict>
-                    <key>include</key>
-                    <string>#style-guide</string>
-                </dict>
-                <dict>
-                    <key>include</key>
-                    <string>#def-name</string>
-                </dict>
-                <dict>
-                    <key>include</key>
-                    <string>#macro</string>
-                </dict>
-                <dict>
-                    <key>include</key>
-                    <string>#special-operator</string>
-                </dict>
-                <dict>
-                    <key>include</key>
-                    <string>#declaration</string>
-                </dict>
-                <dict>
-                    <key>include</key>
-                    <string>#type</string>
-                </dict>
-                <dict>
-                    <key>include</key>
-                    <string>#class</string>
-                </dict>
-                 <dict>
-                    <key>include</key>
-                    <string>#condition-type</string>
-                </dict>
-                <dict>
-                    <key>include</key>
-                    <string>#variable</string>
-                </dict>
-                <dict>
-                    <key>include</key>
-                    <string>#punctuation</string>
-                </dict>
-                <dict>
-                    <key>include</key>
-                    <string>#list</string>
-                </dict>
-                <dict>
-                    <key>include</key>
-                    <string>#illegal</string>
-                </dict>
-            </array>
-        </dict>
-
-        <key>illegal</key>
-        <dict>
-        <!-- unmatched parenthesis -->
-            <key>match</key>
-            <string>[()]</string>
-            <key>name</key>
-            <string>invalid.illegal.commonlisp</string>
         </dict>
 
     </dict>
