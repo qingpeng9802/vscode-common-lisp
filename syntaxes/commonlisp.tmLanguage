@@ -340,7 +340,7 @@
                         (?=(\s|\(|\))) # followed by space, ( or )
                     </string>
                     <key>name</key>
-                    <string>support.function.commonlisp</string>
+                    <string>support.function.sideeffects.commonlisp</string>
                 </dict>
 
                 <dict>
@@ -357,7 +357,7 @@
                         (?=(\s|\(|\))) # followed by space, ( or )
                     </string>
                     <key>name</key>
-                    <string>support.function.commonlisp</string>
+                    <string>support.function.nosideeffects.commonlisp</string>
                 </dict>
 
                 <dict>
@@ -382,7 +382,7 @@
                         (?=(\s|\(|\))) # followed by space, ( or )
                     </string>
                     <key>name</key>
-                    <string>support.function.side-effects.commonlisp</string>
+                    <string>support.function.sideeffects.commonlisp</string>
                 </dict>
             </array>
         </dict>
@@ -409,7 +409,7 @@
                         (?=(\s|\(|\))) # followed by space, ( or )
                     </string>
                     <key>name</key>
-                    <string>storage.type.function.commonlisp</string>
+                    <string>storage.type.function.nosideeffects.commonlisp</string>
                 </dict>
 
                 <dict>
@@ -423,7 +423,7 @@
                         (?=(\s|\(|\))) # followed by space, ( or )
                     </string>
                     <key>name</key>
-                    <string>storage.type.function.side-effects.commonlisp</string>
+                    <string>storage.type.function.sideeffects.commonlisp</string>
                 </dict>
             </array>
         </dict>
