@@ -5,7 +5,7 @@
     <key>comment</key>
     <string>This tmLanguage file is for Common Lisp.
 
-            Map Rule (Common Lisp Type -> tmLanguage) {
+            Map Rule (Common Lisp Token Type -> tmLanguage) {
                 Accessor: support.function
                 class: support.class
                 Condition Type: support.type.exception
@@ -534,11 +534,11 @@
                     <key>match</key>
                     <string>(?xi)
                         (?&lt;=^|\s|\() # preceded by space or (
-                        (?::\S+)
+                        (?::[^\s\)]+)
                         (?=(\s|\(|\)))  # followed by space, ( or )
                     </string>
                     <key>name</key>
-                    <string>keyword.constant.commonlisp</string>
+                    <string>entity.name.variable.commonlisp</string>
                 </dict>
 
                 <dict>
