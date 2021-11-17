@@ -554,7 +554,7 @@
                     <key>match</key>
                     <string>(?xi)
                         (?&lt;=^|\s|\() # preceded by space or (
-                        (?:\*\*|\*\*\*|\*break-on-signals\*|\*compile-file-pathname\*|\*compile-file-truename\*|\*compile-print\*|
+                        (?:\*break-on-signals\*|\*compile-file-pathname\*|\*compile-file-truename\*|\*compile-print\*|
                         \*compile-verbose\*|\*debug-io\*|\*debugger-hook\*|\*default-pathname-defaults\*|\*error-output\*|
                         \*features\*|\*gensym-counter\*|\*load-pathname\*|\*load-print\*|\*load-truename\*|\*load-verbose\*|
                         \*macroexpand-hook\*|\*modules\*|\*package\*|\*print-array\*|\*print-base\*|\*print-case\*|\*print-circle\*|
@@ -928,7 +928,7 @@
                         (?=(\s|\(|\))) # followed by space, ( or )
                     </string>
                     <key>name</key>
-                    <string>variable.other.commonlisp</string>
+                    <string>constant.other.character-class.regexp.commonlisp</string>
                 </dict>
             </array>
         </dict>
