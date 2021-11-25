@@ -257,6 +257,7 @@
                     <key>name</key>
                     <string>constant.language.commonlisp</string>
                 </dict>
+
                 <dict>
                 <!-- CL-ANSI 2.3.2 Constructing Numbers from Tokens -->
                 <!-- CL-ANSI 2.4.8.7 Sharpsign B -->
@@ -274,6 +275,19 @@
                     <key>name</key>
                     <string>constant.numeric.commonlisp</string>
                 </dict>
+
+                <dict>
+                <!-- CL-ANSI Dot -->
+                    <key>match</key>
+                    <string>(?xi)
+                        (?&lt;=\s) # preceded by space or (
+                        (\.)
+                        (?=\s)
+                    </string>
+                    <key>name</key>
+                    <string>variable.other.constant.commonlisp</string>
+                </dict>
+
                 <dict>
                 <!-- CL-ANSI 2.1.3. Floating-Point Numbers -->
                 <!-- Common Lisp the Language, 2nd Edition: https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node19.html#SECTION00613000000000000000 -->
@@ -585,7 +599,7 @@
                         \*print-escape\*|\*print-gensym\*|\*print-length\*|\*print-level\*|\*print-lines\*|\*print-miser-width\*|
                         \*print-pprint-dispatch\*|\*print-pretty\*|\*print-radix\*|\*print-readably\*|\*print-right-margin\*|\*query-io\*|
                         \*random-state\*|\*read-base\*|\*read-default-float-format\*|\*read-eval\*|\*read-suppress\*|\*readtable\*|
-                        \*standard-input\*|\*standard-output\*|\*terminal-io\*|\*trace-output\*|\+\+|\+\+\+|\/\/|\/\/\/|1-|&lt;)
+                        \*standard-input\*|\*standard-output\*|\*terminal-io\*|\*trace-output\*|\/\/|\/\/\/|1-|&lt;)
                         (?=(\s|\(|\))) # followed by space, ( or )
                         </string>
                     <key>name</key>
@@ -597,37 +611,25 @@
         <key>punctuation</key>
         <dict>
             <key>patterns</key>
+            <!-- CL-ANSI 2.4 Standard Macro Characters -->
             <array>
                 <dict>
                 <!-- CL-ANSI 22.1.3.3.1 Package Prefixes for Symbols -->
                     <key>match</key>
                     <string>(?xi)
-                        (?&lt;=^|\s|\() # preceded by space or (
+                        (?&lt;=^|\s|\(|,|,@) # preceded by space , ( or `,`|`,@`
                         (?::\S+?)
                         (?=(\s|\(|\)))  # followed by space, ( or )
                     </string>
                     <key>name</key>
                     <string>entity.name.variable.commonlisp</string>
                 </dict>
-
-                <dict>
-                <!-- CL-ANSI 2.4.6 Backquote -->
-                    <key>match</key>
-                    <string>(?xi)
-                        (?&lt;=^|\s|\() # preceded by space or (
-                        ((‘|’|`)(\#|,(@|\.)?)?)
-                        (?=\S+)
-                    </string>
-                    <key>name</key>
-                    <string>variable.other.constant.commonlisp</string>
-                </dict>
-
                
                 <dict>
                 <!-- CL-ANSI 2.4.8.3 Sharpsign Left-Parenthesis -->
                     <key>match</key>
                     <string>(?xi)
-                        (?&lt;=^|\s|\() # preceded by space or (
+                        (?&lt;=^|\s|\(|,|,@) # preceded by space , ( or `,`|`,@`
                         (\#)([0-9]*)
                         (?=\()
                     </string>
@@ -650,7 +652,7 @@
                 <!-- CL-ANSI 2.4.8.4 Sharpsign Asterisk -->
                     <key>match</key>
                     <string>(?xi)
-                        (?&lt;=^|\s|\() # preceded by space or (
+                        (?&lt;=^|\s|\(|,|,@) # preceded by space , ( or `,`|`,@`
                         (\#)
                         ([0-9]*)
                         (\*)
@@ -679,7 +681,7 @@
                 <!-- CL-ANSI 2.4.8.4 Sharpsign Asterisk empty bit vector-->
                     <key>match</key>
                     <string>(?xi)
-                        (?&lt;=^|\s|\() # preceded by space or (
+                        (?&lt;=^|\s|\(|,|,@) # preceded by space , ( or `,`|`,@`
                         (\#\*|\#0\*)
                         (?=(\s|\(|\)))  # followed by space, ( or )
                     </string>
@@ -691,7 +693,7 @@
                 <!-- CL-ANSI 2.4.8.12 Sharpsign A -->
                     <key>match</key>
                     <string>(?xi)
-                        (?&lt;=^|\s|\() # preceded by space or (
+                        (?&lt;=^|\s|\(|,|,@) # preceded by space , ( or `,`|`,@`
                         (\#)
                         ([0-9]+)
                         (a|A)
@@ -721,7 +723,7 @@
                 <!-- CL-ANSI 2.4.8.15 Sharpsign Equal-Sign -->
                     <key>match</key>
                     <string>(?xi)
-                        (?&lt;=^|\s|\() # preceded by space or (
+                        (?&lt;=^|\s|\(|,|,@) # preceded by space , ( or `,`|`,@`
                         (\#)
                         ([0-9]+)
                         (=)
@@ -751,7 +753,7 @@
                 <!-- CL-ANSI 2.4.8.16 Sharpsign Sharpsign -->
                     <key>match</key>
                     <string>(?xi)
-                        (?&lt;=^|\s|\() # preceded by space or (
+                        (?&lt;=^|\s|\(|,|,@) # preceded by space , ( or `,`|`,@`
                         (\#)
                         ([0-9]+)
                         (\#)
@@ -782,9 +784,9 @@
                 <!-- CL-ANSI 2.4.8.18 Sharpsign Minus -->
                     <key>match</key>
                     <string>(?xi)
-                        (?&lt;=^|\s|\() # preceded by space or (
+                        (?&lt;=^|\s|\(|,|,@) # preceded by space , ( or `,`|`,@`
                         (\#(\+|-))
-                        (?=.+)
+                        (?=\S)
                     </string>
                     <key>name</key>
                     <string>variable.other.constant.commonlisp</string>
@@ -799,9 +801,9 @@
                 <!-- CL-ANSI 2.4.8.14 Sharpsign P -->
                     <key>match</key>
                     <string>(?xi)
-                        (?&lt;=^|\s|\() # preceded by space or (
-                        (\#('|’|:|,|\.|c|C|s|S|p|P)*)
-                        (?=\S+)
+                        (?&lt;=^|\s|\(|,|,@) # preceded by space , ( or `,`|`,@`
+                        (\#('|’|:|,|\.|c|C|s|S|p|P))
+                        (?=\S)
                     </string>
                     <key>name</key>
                     <string>variable.other.constant.commonlisp</string>
@@ -813,20 +815,8 @@
                     <key>match</key>
                     <string>(?xi)
                         (?&lt;=^|\s|\() # preceded by space or (
-                        (?:'|’|,@|,)
-                        (?=\S+)
-                    </string>
-                    <key>name</key>
-                    <string>variable.other.constant.commonlisp</string>
-                </dict>
-
-                <dict>
-                <!-- CL-ANSI Dot -->
-                    <key>match</key>
-                    <string>(?xi)
-                        (?&lt;=\s) # preceded by space or (
-                        (\.)
-                        (?=\s+)
+                        (?:(',@|’,@|',|’,|,@|,|'|’))
+                        (?=\S)
                     </string>
                     <key>name</key>
                     <string>variable.other.constant.commonlisp</string>
@@ -847,7 +837,7 @@
                         (?&lt;=^|\s|\()
                         (define-compiler-macro|defmacro|defun|define-modify-macro|defgeneric)\s+ # keywords
                         (\S+)         # name
-                        (?=\s+|\()
+                        (?=\s|\()
                     </string>
                     <key>captures</key>
                     <dict>
@@ -871,7 +861,7 @@
                         (?&lt;=^|\s|\()
                         (deftype|defclass|define-condition)\s+ # keywords
                         (\S+)                                  # name
-                        (?=\s+|\()
+                        (?=\s|\()
                     </string>
                     <key>captures</key>
                     <dict>
@@ -895,7 +885,7 @@
                         (?&lt;=^|\s|\()
                         (defconstant)\s+     # keywords
                         (\S+)                # name
-                        (?=\s+)
+                        (?=\s)
                     </string>
                     <key>captures</key>
                     <dict>
@@ -918,7 +908,7 @@
                     <string>(?xi)
                         (?&lt;=^|\s|\()
                         (defvar|defparameter)\s+ # keywords
-                        (?=\s+)
+                        (?=\s)
                     </string>
                     <key>captures</key>
                     <dict>
@@ -937,7 +927,7 @@
                         (?&lt;=^|\s|\()                           # preceded by (
                         (defmethod|define-symbol-macro)\s+    # keywords
                         (\S+)                                     # name
-                        (?=\s+)
+                        (?=\s)
                     </string>
                     <key>captures</key>
                     <dict>
@@ -961,7 +951,7 @@
                         (?&lt;=^|\s|\()
                         (defpackage)\s+     # keywords
                         (\S+)                   # name
-                        (?=\s+)
+                        (?=\s)
                     </string>
                     <key>captures</key>
                     <dict>
@@ -985,7 +975,7 @@
                         (?&lt;=^|\s|\()
                         (flet|labels|macrolet)\s+\(\s*\(\s* # keywords
                         (\S+)                               # name
-                        (?=\s+|\()
+                        (?=\s|\()
                     </string>
                     <key>captures</key>
                     <dict>
@@ -1034,7 +1024,7 @@
                         (defstruct)\s+     # keywords
                         (\(?)
                         (\S*)              # name
-                        (?=\s*)
+                        (?=\s?)
                     </string>
                     <key>captures</key>
                     <dict>
@@ -1093,8 +1083,8 @@
                <dict>
                     <key>match</key>
                     <string>(?xi)
-                        (?&lt;=^|\s|\() # preceded by space or (
-                        (?:[^\s\#\(]+?)   # TIP: [^xxx] is forward greedy
+                        (?&lt;=^|\s|\(|,|,@) # preceded by space , ( or `,`|`,@`
+                        (?:[a-zA-Z-]+?)
                         (?=:\S+?|::\S+?) # followed by space, ( or )
                     </string>
                     <key>name</key>
