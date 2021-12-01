@@ -31,6 +31,8 @@
         <string>lsp</string>
         <string>l</string>
         <string>cl</string>
+        <string>asd</string>
+        <string>asdf</string>
     </array>
     <key>foldingStartMarker</key>
     <string>\(</string>
@@ -270,7 +272,7 @@
                         ([+-]?[0-9]+(?:\/[0-9]+)*|                # ratio
                         [-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?|   # integer, float
                         (\#b|\#B)[01\/+-]+|(\#o|\#O)[0-7\/+-]+|(\#x|\#X)[0-9a-fA-F\/+-]+|(\#[0-9]+[rR]?)[0-9a-zA-Z\/+-]+)
-                        (?=(\s|\)))                            # followed by space, )
+                        (?=(\s|\)))                               # followed by space, )
                     </string>
                     <key>name</key>
                     <string>constant.numeric.commonlisp</string>
@@ -296,7 +298,7 @@
                         (?&lt;=^|\s|\()                           # preceded by space or (
                         ([+-]?[0-9]*\.[0-9]*((e|s|f|d|l|E|S|F|D|L)[+-]?[0-9]+)?|
                         [+-]?[0-9]+(\.[0-9]*)?(e|s|f|d|l|E|S|F|D|L)[+-]?[0-9]+)
-                        (?=(\s|\)))                            # followed by space, )
+                        (?=(\s|\)))                               # followed by space, )
                     </string>
                     <key>name</key>
                     <string>constant.numeric.commonlisp</string>
@@ -336,7 +338,7 @@
                         macroexpand-1|mask-field|ninth|nth|readtable-case|rest|row-major-aref|sbit|
                         schar|second|seventh|sixth|subseq|svref|symbol-function|symbol-value|symbolp|
                         tenth|third|values|bit)
-                        (?=(\s|\(|\))) # followed by space, ( or )
+                        (?=(\s|\(|\)))  # followed by space, ( or )
                     </string>
                     <key>name</key>
                     <string>support.function.commonlisp</string>
@@ -432,7 +434,7 @@
                         method-qualifiers|no-applicable-method|no-next-method|print-object|remove-method|
                         shared-initialize|slot-missing|slot-unbound|structure|update-instance-for-different-class|
                         update-instance-for-redefined-class|variable)
-                        (?=(\s|\(|\))) # followed by space, ( or )
+                        (?=(\s|\(|\)))  # followed by space, ( or )
                     </string>
                     <key>name</key>
                     <string>support.function.nosideeffects.commonlisp</string>
@@ -457,7 +459,7 @@
                         subst-if|subst-if-not|substitute|substitute-if|substitute-if-not|tailp|terpri|unexport|unintern|
                         union|unuse-package|use-package|use-value|vector-pop|warn|write-byte|write-char|write-sequence|
                         y-or-n-p|yes-or-no-p|continue|muffle-warning|store-value|incf|reinitialize-instance)
-                        (?=(\s|\(|\))) # followed by space, ( or )
+                        (?=(\s|\(|\)))  # followed by space, ( or )
                     </string>
                     <key>name</key>
                     <string>support.function.sideeffects.commonlisp</string>
@@ -484,7 +486,7 @@
                         time|type-error|unless|when|with-accessors|with-compilation-unit|with-condition-restarts|
                         with-hash-table-iterator|with-package-iterator|with-simple-restart|with-slots|with-standard-io-syntax|lambda|
                         setf|and|or)
-                        (?=(\s|\(|\))) # followed by space, ( or )
+                        (?=(\s|\(|\)))  # followed by space, ( or )
                     </string>
                     <key>name</key>
                     <string>storage.type.function.nosideeffects.commonlisp</string>
@@ -498,7 +500,7 @@
                         (?:loop-finish|pprint-pop|case|ccase|check-type|decf|define-method-combination|define-modify-macro|
                         defparameter|defvar|ecase|in-package|pop|psetq|push|pushnew|remf|trace|untrace|with-input-from-string|
                         with-open-file|with-open-stream|with-output-to-string|set-macro-character)
-                        (?=(\s|\(|\))) # followed by space, ( or )
+                        (?=(\s|\(|\)))  # followed by space, ( or )
                     </string>
                     <key>name</key>
                     <string>storage.type.function.sideeffects.commonlisp</string>
@@ -515,7 +517,7 @@
                 (?:block|catch|eval-when|flet|go|if|labels|let|let\*|load-time-value|locally|macrolet|
                 multiple-value-call|multiple-value-prog1|progn|progv|quote|return-from|symbol-macrolet|
                 tagbody|the|throw|unwind-protect|function)
-                (?=(\s|\(|\))) # followed by space, ( or )
+                (?=(\s|\(|\)))  # followed by space, ( or )
                 </string>
             <key>name</key>
             <string>keyword.control.commonlisp</string>
@@ -529,7 +531,7 @@
                 (?&lt;=^|\s|\() # preceded by space or (
                 (?:compilation-speed|debug|declaration|dynamic-extent|ftype|ignorable|ignore|
                 initialize-instance|notinline|optimize|safety|space|special|speed|type)
-                (?=(\s|\(|\))) # followed by space, ( or )
+                (?=(\s|\(|\)))  # followed by space, ( or )
                 </string>
             <key>name</key>
             <string>storage.type.function.commonlisp</string>
@@ -542,8 +544,9 @@
             <string>(?xi)
                 (?&lt;=^|\s|\() # preceded by space or (
                 (?:base-char|base-string|bignum|boole-and|compile-file|double-float|extended-char|
-                fixnum|keyword|long-float|short-float|signed-byte|simple-array|simple-base-string|simple-bit-vector|simple-string|simple-vector|single-float|standard-char|unsigned-byte|satisfies)
-                (?=(\s|\(|\))) # followed by space, ( or )
+                fixnum|keyword|long-float|short-float|signed-byte|simple-array|simple-base-string|simple-bit-vector|simple-string|simple-vector|
+                single-float|standard-char|unsigned-byte|satisfies)
+                (?=(\s|\(|\)))  # followed by space, ( or )
                 </string>
             <key>name</key>
             <string>support.type.commonlisp</string>
@@ -560,7 +563,7 @@
                 hash-table|integer|method|method-combination|number|package|random-state|ratio|readtable|real|restart|
                 sequence|standard-class|standard-generic-function|standard-method|stream|string&gt;|
                 structure-class|symbol|synonym-stream|two-way-stream)
-                (?=(\s|\(|\))) # followed by space, ( or )
+                (?=(\s|\(|\)))  # followed by space, ( or )
                 </string>
             <key>name</key>
             <string>support.class.commonlisp</string>
@@ -577,7 +580,7 @@
                 parse-error|print-not-readable|program-error|read-from-string|serious-condition|simple-condition|
                 simple-error|simple-type-error|simple-warning|storage-condition|stream-error|style-warning|
                 type-error-datum|unbound-slot|unbound-variable|undefined-function|warning|error)
-                (?=(\s|\(|\))) # followed by space, ( or )
+                (?=(\s|\(|\)))  # followed by space, ( or )
                 </string>
             <key>name</key>
             <string>support.type.exception.commonlisp</string>
@@ -600,7 +603,7 @@
                         \*print-pprint-dispatch\*|\*print-pretty\*|\*print-radix\*|\*print-readably\*|\*print-right-margin\*|\*query-io\*|
                         \*random-state\*|\*read-base\*|\*read-default-float-format\*|\*read-eval\*|\*read-suppress\*|\*readtable\*|
                         \*standard-input\*|\*standard-output\*|\*terminal-io\*|\*trace-output\*|\/\/|\/\/\/|1-|&lt;)
-                        (?=(\s|\(|\))) # followed by space, ( or )
+                        (?=(\s|\(|\)))  # followed by space, ( or )
                         </string>
                     <key>name</key>
                     <string>variable.other.commonlisp</string>
@@ -619,7 +622,7 @@
                     <string>(?xi)
                         (?&lt;=^|\s|\(|,|,@) # preceded by space , ( or `,`|`,@`
                         (?::\S+?)
-                        (?=(\s|\(|\)))  # followed by space, ( or )
+                        (?=(\s|\(|\)))       # followed by space, ( or )
                     </string>
                     <key>name</key>
                     <string>entity.name.variable.commonlisp</string>
@@ -683,7 +686,7 @@
                     <string>(?xi)
                         (?&lt;=^|\s|\(|,|,@) # preceded by space , ( or `,`|`,@`
                         (\#\*|\#0\*)
-                        (?=(\s|\(|\)))  # followed by space, ( or )
+                        (?=(\s|\(|\)))       # followed by space, ( or )
                     </string>
                     <key>name</key>
                     <string>variable.other.constant.commonlisp</string>
@@ -794,7 +797,6 @@
 
                 <dict>
                 <!-- CL-ANSI 2.4.8.2 Sharpsign -->
-                <!-- CL-ANSI 2.4.8.5 Sharpsign Colon -->
                 <!-- CL-ANSI 2.4.8.6 Sharpsign Dot -->
                 <!-- CL-ANSI 2.4.8.11 Sharpsign C -->
                 <!-- CL-ANSI 2.4.8.13 Sharpsign S -->
@@ -802,11 +804,30 @@
                     <key>match</key>
                     <string>(?xi)
                         (?&lt;=^|\s|\(|,|,@) # preceded by space , ( or `,`|`,@`
-                        (\#('|’|:|,|\.|c|C|s|S|p|P))
+                        (\#('|’|,|\.|c|C|s|S|p|P))
                         (?=\S)
                     </string>
                     <key>name</key>
                     <string>variable.other.constant.commonlisp</string>
+                </dict>
+
+                <dict>
+                <!-- CL-ANSI 2.4.8.5 Sharpsign Colon -->
+                    <key>match</key>
+                    <string>(?xi)
+                        (?&lt;=^|\s|\(|,|,@) # preceded by space , ( or `,`|`,@`
+                        (\#)
+                        :
+                        (?=\S)
+                    </string>
+                    <key>captures</key>
+                    <dict>
+                        <key>1</key>
+                        <dict>
+                            <key>name</key>
+                            <string>variable.other.constant.commonlisp</string>
+                        </dict>
+                    </dict>
                 </dict>
 
                 <dict>
@@ -815,7 +836,7 @@
                     <key>match</key>
                     <string>(?xi)
                         (?&lt;=^|\s|\() # preceded by space or (
-                        (?:(',@|’,@|',|’,|,@|,|'|’))
+                        (?:(',@|’,@|`,@|',|’,|`,|,@|,|'|’|`))
                         (?=\S)
                     </string>
                     <key>name</key>
@@ -827,17 +848,32 @@
 
         <key>def-name</key>
         <!-- the keywords are not matched in other parts, only matched here -->
+        <!-- defclass|defconstant|defgeneric|define-compiler-macro|define-condition|
+        define-method-combination|define-modify-macro|define-setf-expander|define-symbol-macro|
+        defmacro|defmethod|defpackage|defparameter|defsetf|defstruct|deftype|defun|defvar
+        -->
         <dict>
             <key>patterns</key>
             <array>
                 <dict>
-                <!-- keyword name (params) -->
+                <!-- keyword name | keyword (setf name) | keyword name (params)? -->
                     <key>match</key>
                     <string>(?xi)
-                        (?&lt;=^|\s|\()
-                        (define-compiler-macro|defmacro|defun|define-modify-macro|defgeneric)\s+ # keywords
-                        (\S+)         # name
-                        (?=\s|\()
+                        (?&lt;=^|\s|\()                     # preceded by (
+                        (define-compiler-macro|defmacro|defun|define-setf-expander|
+                        defmethod|define-symbol-macro|define-modify-macro|defgeneric|
+                        define-method-combination|defsetf)  # keywords
+                        \s+
+                        (   \(\s*
+                                (\S+)
+                            \s* 
+                                ((,@|,)?)
+                                (\S+?)      # (something+ name)
+                            |
+                                ((,@|,)?)
+                                (\S+?)      # name
+                        )
+                        (?=(\s|\(|\)))
                     </string>
                     <key>captures</key>
                     <dict>
@@ -846,7 +882,27 @@
                             <key>name</key>
                             <string>storage.type.function.commonlisp</string>
                         </dict>
-                        <key>2</key>
+                        <key>3</key>
+                        <dict>
+                            <key>name</key>
+                            <string>storage.type.function.commonlisp</string>
+                        </dict>
+                        <key>4</key>
+                        <dict>
+                            <key>name</key>
+                            <string>variable.other.constant.commonlisp</string>
+                        </dict>
+                        <key>6</key>
+                        <dict>
+                            <key>name</key>
+                            <string>entity.name.function.commonlisp</string>
+                        </dict>
+                        <key>7</key>
+                        <dict>
+                            <key>name</key>
+                            <string>variable.other.constant.commonlisp</string>
+                        </dict>
+                        <key>9</key>
                         <dict>
                             <key>name</key>
                             <string>entity.name.function.commonlisp</string>
@@ -855,13 +911,15 @@
                 </dict>
 
                 <dict>
-                <!-- keyword name (params) -->
+                <!-- keyword name (params) | keyword name -->
                     <key>match</key>
                     <string>(?xi)
                         (?&lt;=^|\s|\()
-                        (deftype|defclass|define-condition)\s+ # keywords
-                        (\S+)                                  # name
-                        (?=\s|\()
+                        (deftype|defclass|define-condition|
+                        defpackage)              # keywords
+                        \s+
+                        (\S+?)                   # name
+                        (?=(\s|\(|\)))
                     </string>
                     <key>captures</key>
                     <dict>
@@ -883,9 +941,10 @@
                     <key>match</key>
                     <string>(?xi)
                         (?&lt;=^|\s|\()
-                        (defconstant)\s+     # keywords
-                        (\S+)                # name
-                        (?=\s)
+                        (defconstant)         # keywords
+                        \s+
+                        (\S+?)                # name
+                        (?=(\s|\(|\)))
                     </string>
                     <key>captures</key>
                     <dict>
@@ -907,8 +966,9 @@
                     <key>match</key>
                     <string>(?xi)
                         (?&lt;=^|\s|\()
-                        (defvar|defparameter)\s+ # keywords
-                        (?=\s)
+                        (defvar|defparameter) # keywords
+                        \s+
+                        (?=(\s|\(|\)))
                     </string>
                     <key>captures</key>
                     <dict>
@@ -921,37 +981,14 @@
                 </dict>
 
                 <dict>
-                <!-- keyword name -->
-                    <key>match</key>
-                    <string>(?xi)
-                        (?&lt;=^|\s|\()                           # preceded by (
-                        (defmethod|define-symbol-macro)\s+    # keywords
-                        (\S+)                                     # name
-                        (?=\s)
-                    </string>
-                    <key>captures</key>
-                    <dict>
-                        <key>1</key>
-                        <dict>
-                            <key>name</key>
-                            <string>storage.type.function.commonlisp</string>
-                        </dict>
-                        <key>2</key>
-                        <dict>
-                            <key>name</key>
-                            <string>entity.name.function.commonlisp</string>
-                        </dict>
-                    </dict>
-                </dict>
-
-                <dict>
-                <!-- keyword name -->
+                <!-- keyword name | keyword (name [[options]]) -->
                     <key>match</key>
                     <string>(?xi)
                         (?&lt;=^|\s|\()
-                        (defpackage)\s+     # keywords
-                        (\S+)                   # name
-                        (?=\s)
+                        (defstruct)         # keywords
+                        \s+\(?\s*
+                        (\S+?)              # name
+                        (?=(\s|\(|\)))
                     </string>
                     <key>captures</key>
                     <dict>
@@ -973,9 +1010,10 @@
                     <key>match</key>
                     <string>(?xi)
                         (?&lt;=^|\s|\()
-                        (flet|labels|macrolet)\s+\(\s*\(\s* # keywords
-                        (\S+)                               # name
-                        (?=\s|\()
+                        (flet|labels|macrolet)        # keywords
+                        \s+\(\s*\(\s*
+                        (\S+?)                        # name
+                        (?=(\s|\(|\)))
                     </string>
                     <key>captures</key>
                     <dict>
@@ -988,55 +1026,6 @@
                         <dict>
                             <key>name</key>
                             <string>entity.name.function.commonlisp</string>
-                        </dict>
-                    </dict>
-                </dict>
-
-                <dict>
-                <!-- keyword name (params)? -->
-                    <key>match</key>
-                    <string>(?xi)
-                        (?&lt;=^|\s|\()
-                        (define-method-combination)\s+ # keywords
-                        (\S+)            # name
-                        (?=\s)
-                    </string>
-                    <key>captures</key>
-                    <dict>
-                        <key>1</key>
-                        <dict>
-                            <key>name</key>
-                            <string>entity.name.function.commonlisp</string>
-                        </dict>
-                        <key>2</key>
-                        <dict>
-                            <key>name</key>
-                            <string>entity.name.function.commonlisp</string>
-                        </dict>
-                    </dict>
-                </dict>
-
-                <dict>
-                <!-- keyword (? name -->
-                    <key>match</key>
-                    <string>(?xi)
-                        (?&lt;=^|\s|\()
-                        (defstruct)\s+     # keywords
-                        (\(?)
-                        (\S*)              # name
-                        (?=\s?)
-                    </string>
-                    <key>captures</key>
-                    <dict>
-                        <key>1</key>
-                        <dict>
-                            <key>name</key>
-                            <string>storage.type.function.commonlisp</string>
-                        </dict>
-                        <key>3</key>
-                        <dict>
-                            <key>name</key>
-                            <string>entity.name.type.commonlisp</string>
                         </dict>
                     </dict>
                 </dict>
@@ -1054,7 +1043,7 @@
                     <string>(?xi)
                         (?&lt;=^|\s|\() # preceded by space or (
                         (?:\+\S+\+)
-                        (?=(\s|\(|\))) # followed by space, ( or )
+                        (?=(\s|\(|\)))  # followed by space, ( or )
                     </string>
                     <key>name</key>
                     <string>variable.other.constant.commonlisp</string>
@@ -1066,7 +1055,7 @@
                     <string>(?xi)
                         (?&lt;=^|\s|\() # preceded by space or (
                         (?:\*\S+\*)
-                        (?=(\s|\(|\))) # followed by space, ( or )
+                        (?=(\s|\(|\)))  # followed by space, ( or )
                     </string>
                     <key>name</key>
                     <string>constant.other.character-class.regexp.commonlisp</string>
@@ -1085,7 +1074,7 @@
                     <string>(?xi)
                         (?&lt;=^|\s|\(|,|,@) # preceded by space , ( or `,`|`,@`
                         (?:[a-zA-Z-]+?)
-                        (?=:\S+?|::\S+?) # followed by space, ( or )
+                        (?=:\S+?|::\S+?)     # followed by space, ( or )
                     </string>
                     <key>name</key>
                     <string>support.type.commonlisp</string>
