@@ -9,7 +9,7 @@
     "version": "0.1.2",
     "publisher": "qingpeng",
     "engines": {
-        "vscode": "^1.46.0"
+        "vscode": "^1.54.0"
     },
     "license": "MIT",
     "categories": [
@@ -26,8 +26,8 @@
     "contributes": {
         "languages": [{
             "id": "commonlisp",
-            "aliases": ["Common Lisp", "commonlisp"],
-            "extensions": [".lisp",".lsp",".l",".cl"],
+            "aliases": ["Common Lisp", "common lisp", "commonlisp"],
+            "extensions": [".lisp",".lsp",".l",".cl", ".asd", ".asdf"],
             "configuration": "./language-configuration.json"
         }],
         "grammars": [{
