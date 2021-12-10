@@ -349,7 +349,7 @@
                     <key>match</key>
                     <string>(?xi)
                         (?&lt;=^|\s|\() # preceded by space or (
-                        (?:\/=|&lt;=|=|&gt;|&gt;=|abs|acons|acos|acosh|adjoin|adjust-array|adjustable-array-p|
+                        (?:\/=|&lt;|&lt;=|=|&gt;|&gt;=|abs|acons|acos|acosh|adjoin|adjust-array|adjustable-array-p|
                         alpha-char-p|alphanumericp|append|apply|apropos|apropos-list|arithmetic-error-operands|
                         arithmetic-error-operation|array-dimension|array-dimensions|array-displacement|
                         array-element-type|array-has-fill-pointer-p|array-in-bounds-p|array-rank|
@@ -416,7 +416,7 @@
                         upper-case-p|values-list|vector-push|vector-push-extend|vectorp|wild-pathname-p|
                         write|write-line|write-string|write-to-string|zerop|user-homedir-pathname|
                         logical-pathname|char-lessp|complex|cons|float|list|null|pathname|rational|string|
-                        vector|eql|member|mod|not|atom|\*|\+|-|\/|1\+|call-next-method|next-method-p)
+                        vector|eql|member|mod|not|atom|\*|\+|-|\/|1\+|call-next-method|next-method-p|1-)
                         (?=(\s|\(|\))) # followed by space, ( or )
                     </string>
                     <key>name</key>
@@ -589,9 +589,10 @@
         <key>variable</key>
         <dict>
             <key>patterns</key>
+            <!-- CL-ANSI Variable -->
             <array>
                 <dict>
-                <!-- CL-ANSI Variable -->
+                    <!-- Same as Special Variables -->
                     <key>match</key>
                     <string>(?xi)
                         (?&lt;=^|\s|\() # preceded by space or (
@@ -602,7 +603,18 @@
                         \*print-escape\*|\*print-gensym\*|\*print-length\*|\*print-level\*|\*print-lines\*|\*print-miser-width\*|
                         \*print-pprint-dispatch\*|\*print-pretty\*|\*print-radix\*|\*print-readably\*|\*print-right-margin\*|\*query-io\*|
                         \*random-state\*|\*read-base\*|\*read-default-float-format\*|\*read-eval\*|\*read-suppress\*|\*readtable\*|
-                        \*standard-input\*|\*standard-output\*|\*terminal-io\*|\*trace-output\*|\/\/|\/\/\/|1-|&lt;)
+                        \*standard-input\*|\*standard-output\*|\*terminal-io\*|\*trace-output\*)
+                        (?=(\s|\(|\)))  # followed by space, ( or )
+                        </string>
+                    <key>name</key>
+                    <string>constant.other.character-class.regexp.commonlisp</string>
+                </dict>
+                <dict>
+                <!-- For Lisp REPL -->
+                    <key>match</key>
+                    <string>(?xi)
+                        (?&lt;=^|\s|\() # preceded by space or (
+                        (?:\*\*|\*\*\*|\+\+|\+\+\+|\/\/|\/\/\/)
                         (?=(\s|\(|\)))  # followed by space, ( or )
                         </string>
                     <key>name</key>
@@ -1042,7 +1054,7 @@
                     <key>match</key>
                     <string>(?xi)
                         (?&lt;=^|\s|\() # preceded by space or (
-                        (?:\+\S+\+)
+                        (?:\+[^\s\+]+\+)
                         (?=(\s|\(|\)))  # followed by space, ( or )
                     </string>
                     <key>name</key>
@@ -1054,7 +1066,7 @@
                     <key>match</key>
                     <string>(?xi)
                         (?&lt;=^|\s|\() # preceded by space or (
-                        (?:\*\S+\*)
+                        (?:\*[^\s\*]+\*)
                         (?=(\s|\(|\)))  # followed by space, ( or )
                     </string>
                     <key>name</key>
