@@ -6,7 +6,7 @@
         "name": "Qingpeng Li",
         "email": "qingpeng9802@gmail.com"
     },
-    "version": "0.1.2",
+    "version": "0.1.3",
     "publisher": "qingpeng",
     "engines": {
         "vscode": "^1.54.0"
