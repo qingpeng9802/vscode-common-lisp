@@ -6,7 +6,7 @@
         "name": "Qingpeng Li",
         "email": "qingpeng9802@gmail.com"
     },
-    "version": "0.1.3",
+    "version": "0.1.4",
     "publisher": "qingpeng",
     "engines": {
         "vscode": "^1.54.0"
@@ -28,7 +28,11 @@
             "id": "commonlisp",
             "aliases": ["Common Lisp", "common lisp", "commonlisp"],
             "extensions": [".lisp",".lsp",".l",".cl", ".asd", ".asdf"],
-            "configuration": "./language-configuration.json"
+            "configuration": "./language-configuration.json",
+            "icon": {
+                "light": "./icons/commonlisp_file_icon.svg",
+                "dark": "./icons/commonlisp_file_icon.svg"
+              }
         }],
         "grammars": [{
             "language": "commonlisp",
@@ -40,7 +44,7 @@
             "path": "./snippets/commonlisp.json"
         }]
     },
-    "icon": "images/icon.png",
+    "icon": "./images/icon.png",
     "repository": {
         "type": "git",
         "url": "https://github.com/qingpeng9802/vscode-common-lisp.git"
