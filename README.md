@@ -50,5 +50,8 @@ draft proposed American National Standard for Information Systems—Programming 
 [Scheme.tmLanguage](https://github.com/egrachev/sublime-scheme/blob/master/Scheme.tmLanguage)   
 [Lisp.tmLanguage](https://github.com/bradrobertson/sublime-packages/blob/master/Lisp/Lisp.tmLanguage)  
 [regex101](https://regex101.com/)  
-The `icon.png` is from [Common-Lisp.net](https://common-lisp.net/) and resized, and is used under [Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/)  
-The code segment in `Syntax Highlighting` is from [SBCL Repository](https://github.com/sbcl/sbcl)  
+### Images
+The `icon.png` is from [Common-Lisp.net](https://common-lisp.net/) and resized.  
+The `commonlisp_file_icon.svg` is extracted from common lisp icon and colored with the purple in Conrad Barski's [Logo](http://www.lisperati.com/logo.html).  
+`icon.png` and `commonlisp_file_icon.svg` are used under [Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).  
+The code segment in `Syntax Highlighting` is from [SBCL Repository](https://github.com/sbcl/sbcl).  
