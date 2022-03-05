@@ -29,6 +29,9 @@ jobs:
           
       - name: Install dependencies
         run: npm install
+      
+      - name: Install vsce
+        run: npm i -g vsce
 
       - name: run vsce package
         run: npm run package
