@@ -51,7 +51,7 @@ jobs:
       - name: run vsce publish
         run: npm run publish
         env:
-          VSCE_TOKEN: ${{ secrets.VSCE_PAT }}
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
         
       - name: Archive vsix production
         uses: actions/upload-artifact@v3
