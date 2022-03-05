@@ -33,8 +33,15 @@ jobs:
       - name: run vsce package
         run: npm run package
         
+      - name: Archive vsix production
+        uses: actions/upload-artifact@v3
+        with:
+          name: vsix production
+          path: ./*.vsix
+          if-no-files-found : error
+
       - name: print tag
         env:
           TAGS: ${{ github.event.inputs.tags }}
         run: |
-          echo "Tags: $TAGS"
+          echo "[$TAGS] has done."
