@@ -15,7 +15,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  prepare:
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -29,7 +29,11 @@ jobs:
           
       - name: Install dependencies
         run: npm install
-
+        
+  build:
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
       - name: run vsce package
         run: npm run package
         
@@ -44,4 +48,4 @@ jobs:
         env:
           TAGS: ${{ github.event.inputs.tags }}
         run: |
-          echo "[$TAGS] has done."
+          echo "[$TAGS] build completed."
