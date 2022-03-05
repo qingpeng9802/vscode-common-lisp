@@ -1,0 +1,40 @@
+name: vsce Package
+
+# Controls when the workflow will run
+on:
+  release:
+    types: [created]
+  
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+    inputs:
+          tags:
+            description: 'Tag Name'
+            required: true
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+          
+      - name: Install dependencies
+        run: npm install
+
+      - name: run vsce package
+        run: npm run package
+        
+      - name: print tag
+        env:
+          TAGS: ${{ github.event.inputs.tags }}
+        run: |
+          echo "Tags: $TAGS"
