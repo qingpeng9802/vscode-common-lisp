@@ -52,16 +52,9 @@ jobs:
         run: npm run publish
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
-        
-      - name: Archive vsix production
-        uses: actions/upload-artifact@v3
-        with:
-          name: vsix production
-          path: ./*.vsix
-          if-no-files-found : error
-
+      
       - name: print tag
         env:
           TAGS: ${{ github.event.inputs.tags }}
         run: |
-          echo "[$TAGS] build completed."
+          echo "[$TAGS] publish completed."
