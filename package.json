@@ -52,5 +52,12 @@
     "bugs": {
         "url": "https://github.com/qingpeng9802/vscode-common-lisp/issues"
     },
-    "homepage": "https://github.com/qingpeng9802/vscode-common-lisp/blob/master/README.md"
+    "homepage": "https://github.com/qingpeng9802/vscode-common-lisp/blob/master/README.md",
+    "scripts": {
+        "package": "vsce package",
+        "publish": "vsce publish"
+    },
+    "devDependencies": {
+		"vsce": "^2.6.7"
+	}
 }
