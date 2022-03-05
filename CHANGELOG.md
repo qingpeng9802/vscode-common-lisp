@@ -1,5 +1,5 @@
 # Change Log
-## [0.1.4] - 2022-03-04
+## [0.1.4] - 2022-03-05
 ### Added
 - `commonlisp_file_icon.svg` file for common lisp file icon
 
