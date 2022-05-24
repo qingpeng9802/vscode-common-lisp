@@ -6,13 +6,18 @@
 	"version": "0.2.0",
     "configurations": [
         {
-            "name": "Extension",
-            "type": "extensionHost",
+            "name": "Run Web Extension",
+            "type": "pwa-extensionHost",
+            "debugWebWorkerHost": true,
             "request": "launch",
-            "runtimeExecutable": "${execPath}",
             "args": [
-                "--extensionDevelopmentPath=${workspaceFolder}"
-            ]
+                "--extensionDevelopmentPath=${workspaceFolder}",
+				"--extensionDevelopmentKind=web"
+            ],
+            "outFiles": [
+				"${workspaceFolder}/dist/web/**/*.js"
+			],
+			"preLaunchTask": "npm: watch-web"
         }
     ]
 }

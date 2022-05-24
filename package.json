@@ -21,8 +21,15 @@
         "common lisp",
         "commonlisp",
         "lisp",
-        "snippet"
+        "snippet",
+        "snippets",
+        "autocomplete",
+        "intellisense"
     ],
+    "activationEvents": [
+        "onLanguage:commonlisp"
+    ],
+    "browser": "./dist/web/extension.js",
     "contributes": {
         "languages": [
             {
@@ -73,10 +80,27 @@
     "scripts": {
         "package": "vsce package",
         "publish": "vsce publish",
-        "bg": "node scripts/build_grammar.js"
+        "bg": "node scripts/build_grammar.js",
+        "pretest": "npm run compile-web",
+        "vscode:prepublish": "npm run package-web",
+        "compile-web": "webpack",
+        "watch-web": "webpack --watch",
+        "package-web": "webpack --mode production --devtool hidden-source-map",
+        "lint": "eslint src --ext ts"
     },
     "devDependencies": {
+        "@types/node": "^17.0.35",
+        "@types/vscode": "^1.67.0",
+        "@types/webpack-env": "^1.17.0",
+        "@typescript-eslint/eslint-plugin": "^5.26.0",
+        "assert": "^2.0.0",
+        "eslint": "^8.16.0",
         "fs": "^0.0.1-security",
-        "js-yaml": "^4.1.0"
+        "js-yaml": "^4.1.0",
+        "process": "^0.11.10",
+        "ts-loader": "^9.3.0",
+        "typescript": "^4.6.4",
+        "webpack": "^5.72.1",
+        "webpack-cli": "^4.9.2"
     }
 }

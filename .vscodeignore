@@ -1,6 +1,7 @@
 # vscode
 .vscode/**
 .vscode-test/**
+.vscode-test-web/**
 vsc-extension-quickstart.md
 *.vsix
 
@@ -9,7 +10,14 @@ vsc-extension-quickstart.md
 .github/**
 
 # node
+src/**
+out/**
 node_modules/**
+webpack.config.js
+**/tsconfig.json
+**/.eslintrc.json
+**/*.map
+**/*.ts
 *.log
 
 # dev
