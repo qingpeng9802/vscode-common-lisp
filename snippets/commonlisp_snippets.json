@@ -1,0 +1,168 @@
+{
+    "if": {
+        "scope": "commonlisp",
+        "prefix": "if ",
+        "body": "if ${1:test-form}\n    ${2:then-form}\n    ${3:else-form}",
+        "description": "Allows the execution of a form to be dependent on a single test-form."
+    },
+    "when": {
+        "scope": "commonlisp",
+        "prefix": "when ",
+        "body": "when ${1:test-form}\n\t${2:form*}"
+    },
+    "let": {
+        "scope": "commonlisp",
+        "prefix": "let ",
+        "body": "let ((${1:var1} ${2:init-form-1}))\n\t${3:form*}",
+        "description": "Creates new variable bindings and performs the bindings in parallel."
+    },
+    "defun": {
+        "scope": "commonlisp",
+        "prefix": "defun ",
+        "body": "defun ${1:function-name} (${2:lambda-list})\n\t${3:form*}",
+        "description": "Defines a new function in the global environment."
+    },
+    "defmethod": {
+        "scope": "commonlisp",
+        "prefix": "defmethod ",
+        "body": "defmethod ${1:function-name} (${2:specialized-lambda-list})\n\t${3:form*}"
+    },
+    "make-instance": {
+        "scope": "commonlisp",
+        "prefix": "make-instance ",
+        "body": "make-instance ${1:class} ${2:initargs}"
+    },
+    "lambda": {
+        "scope": "commonlisp",
+        "prefix": "lambda ",
+        "body": "lambda (${1:lambda-list})\n\t${2:form*}",
+        "description": "Provides a shorthand notation for a function special form involving a lambda expression."
+    },
+    "let*": {
+        "scope": "commonlisp",
+        "prefix": "let* ",
+        "body": "let* ((${1:var1} ${2:init-form-1}))\n\t${3:form*}",
+        "description": "Creates new variable bindings and performs the bindings sequentially."
+    },
+    "unless": {
+        "scope": "commonlisp",
+        "prefix": "unless ",
+        "body": "unless ${1:test-form}\n\t${2:form*}"
+    },
+    "do": {
+        "scope": "commonlisp",
+        "prefix": "do ",
+        "body": "do ((${1:init-form} ${2:step-form}))\n    (${3:end-test-form} ${4:result-form*})"
+    },
+    "cond": {
+        "scope": "commonlisp",
+        "prefix": "cond ",
+        "body": "cond (${1:test-form-1} ${2:form1})\n      (${3:test-form-2} ${4:form2})",
+        "description": "Allows the execution of forms to be dependent on test-form."
+    },
+    "search": {
+        "scope": "commonlisp",
+        "prefix": "search ",
+        "body": "search ${1:sequence-1} ${2:sequence-2}"
+    },
+    "apply": {
+        "scope": "commonlisp",
+        "prefix": "apply ",
+        "body": "apply ${1:function} ${2:args+}"
+    },
+    "defmacro": {
+        "scope": "commonlisp",
+        "prefix": "defmacro ",
+        "body": "defmacro ${1:name} (${2:lambda-list})\n\t${3:form*}"
+    },
+    "flet": {
+        "scope": "commonlisp",
+        "prefix": "flet ",
+        "body": "flet ((${1:function-name} (${2:lambda-list})\n       \t${3:local-form*}))\n\t${4:form*}"
+    },
+    "defclass": {
+        "scope": "commonlisp",
+        "prefix": "defclass ",
+        "body": "defclass ${1:class-name} (${2:superclass-name*})"
+    },
+    "sort": {
+        "scope": "commonlisp",
+        "prefix": "sort ",
+        "body": "sort ${1:sequence} ${2:predicate}"
+    },
+    "handler-case": {
+        "scope": "commonlisp",
+        "prefix": "handler-case ",
+        "body": "handler-case (${1:expression})\n\t(${3:clause})"
+    },
+    "aref": {
+        "scope": "commonlisp",
+        "prefix": "aref ",
+        "body": "aref ${1:array} ${2:subscripts}"
+    },
+    "multiple-value-bind": {
+        "scope": "commonlisp",
+        "prefix": "multiple-value-bind ",
+        "body": "multiple-value-bind (${1:var*})\n\t\t(${2:values-form})\n\t${3:form*}"
+    },
+    "case": {
+        "scope": "commonlisp",
+        "prefix": "case ",
+        "body": "case ${1:keyform}\n\t(${2:normal-clause})\n\t(${3:otherwise-clause})"
+    },
+    "labels": {
+        "scope": "commonlisp",
+        "prefix": "labels ",
+        "body": "labels ((${1:function-name} (${2:lambda-list})\n       \t${3:local-form*}))\n\t${4:form*}"
+    },
+    "pushnew": {
+        "scope": "commonlisp",
+        "prefix": "pushnew ",
+        "body": "pushnew ${1:item} ${2:place}"
+    },
+    "unwind-protect": {
+        "scope": "commonlisp",
+        "prefix": "unwind-protect ",
+        "body": "unwind-protect (${1:protected-form})\n\t(${2:cleanup-form*})"
+    },
+    "handler-bind": {
+        "scope": "commonlisp",
+        "prefix": "handler-bind ",
+        "body": "handler-bind ((${1:binding*}))\n\t{2:form*}"
+    },
+    "destructuring-bind": {
+        "scope": "commonlisp",
+        "prefix": "destructuring-bind ",
+        "body": "destructuring-bind (${1:lambda-list}) ${2:expression}\n\t${3:form*}"
+    },
+    "with-open-file": {
+        "scope": "commonlisp",
+        "prefix": "with-open-file ",
+        "body": "with-open-file (${1:stream} ${2:filespec} ${3:options*})\n\t${4:form*}"
+    },
+    "prog1": {
+        "scope": "commonlisp",
+        "prefix": "prog1 ",
+        "body": "prog1 ${1:first-form}\n\t${2:form*}"
+    },
+    "with-output-to-string": {
+        "scope": "commonlisp",
+        "prefix": "with-output-to-string ",
+        "body": "with-output-to-string (${1:var})\n\t${2:form*}"
+    },
+    "etypecase": {
+        "scope": "commonlisp",
+        "prefix": "etypecase ",
+        "body": "etypecase ${1:keyform}\n\t${2:normal-clause*}"
+    },
+    "defpackage": {
+        "scope": "commonlisp",
+        "prefix": "defpackage ",
+        "body": "defpackage ${1:defined-package-name}\n\t${2:options}"
+    },
+    "byte": {
+        "scope": "commonlisp",
+        "prefix": "byte ",
+        "body": "byte ${1:size} ${2:position}"
+    }
+}
