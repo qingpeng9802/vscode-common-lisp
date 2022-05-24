@@ -32,7 +32,7 @@ File Types: `lisp`, `lsp`, `l`, `cl`, `asd`, `asdf` and you can add more by your
 
 Snippets support: `defun`, `if`, `cond`, `let`, `let*`, `lambda`
 
-The demos above are using `"editor.bracketPairColorization.enabled": true` in `settings.json` in VS Code to get colorizing matching brackets. (Thanks to the past contributions of [Bracket Pair Colorizer 2](https://marketplace.visualstudio.com/items?itemName=CoenraadS.bracket-pair-colorizer-2) )
+Bracket pair colorization enabled [by default](https://code.visualstudio.com/updates/v1_67#_bracket-pair-colorization-enabled-by-default) in VS Code. Bracket pair colorization can be disabled by setting `"editor.bracketPairColorization.enabled"` to `false`. (Thanks to the past contributions of [Bracket Pair Colorizer 2](https://marketplace.visualstudio.com/items?itemName=CoenraadS.bracket-pair-colorizer-2) )
 
 ## Design
 Because of the funtional features of Common Lisp, we use the intuition of Common Lisp to design syntax highlighting instead of the intuition of non-functional language to design syntax highlighting. That is, we strictly follow the CL-ANSI 1.4.4.14 to classify the 978 external symbols in COMMON-LISP package. 
@@ -41,7 +41,7 @@ We processed [Common Lisp HyperSpec](http://www.lispworks.com/documentation/Hype
 
 We assign different colors to different kind of symbols, the assignment rule can be found in the start comment of `./syntaxes/commonlisp.tmLanguage`. This file includes comments (related info in `CL-ANSI`) for all rules.  
 
-> For best performance and profile consistency, please use VS Code 1.62.0 or later.  
+> For best performance and profile consistency, please use VS Code 1.67.0 or later.  
 
 ## Acknowledgement
 draft proposed American National Standard for Information Systems—Programming Language—Common Lisp X3J13/94-101R [(CL-ANSI)](https://franz.com/support/documentation/cl-ansi-standard-draft-w-sidebar.pdf)  
