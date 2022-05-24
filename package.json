@@ -6,7 +6,7 @@
         "name": "Qingpeng Li",
         "email": "qingpeng9802@gmail.com"
     },
-    "version": "0.1.4",
+    "version": "0.2.1",
     "publisher": "qingpeng",
     "engines": {
         "vscode": "^1.54.0"
@@ -24,25 +24,42 @@
         "snippet"
     ],
     "contributes": {
-        "languages": [{
-            "id": "commonlisp",
-            "aliases": ["Common Lisp", "common lisp", "commonlisp"],
-            "extensions": [".lisp",".lsp",".l",".cl", ".asd", ".asdf"],
-            "configuration": "./language-configuration.json",
-            "icon": {
-                "light": "./icons/commonlisp_file_icon.svg",
-                "dark": "./icons/commonlisp_file_icon.svg"
-              }
-        }],
-        "grammars": [{
-            "language": "commonlisp",
-            "scopeName": "source.commonlisp",
-            "path": "./syntaxes/commonlisp.tmLanguage"
-        }],
-        "snippets": [{
-			"language": "commonlisp",
-            "path": "./snippets/commonlisp.json"
-        }]
+        "languages": [
+            {
+                "id": "commonlisp",
+                "aliases": [
+                    "Common Lisp",
+                    "common lisp",
+                    "commonlisp"
+                ],
+                "extensions": [
+                    ".lisp",
+                    ".lsp",
+                    ".l",
+                    ".cl",
+                    ".asd",
+                    ".asdf"
+                ],
+                "configuration": "./language-configuration.json",
+                "icon": {
+                    "light": "./icons/commonlisp_file_icon.svg",
+                    "dark": "./icons/commonlisp_file_icon.svg"
+                }
+            }
+        ],
+        "grammars": [
+            {
+                "language": "commonlisp",
+                "scopeName": "source.commonlisp",
+                "path": "./syntaxes/commonlisp.tmLanguage.json"
+            }
+        ],
+        "snippets": [
+            {
+                "language": "commonlisp",
+                "path": "./snippets/commonlisp_snippets.json"
+            }
+        ]
     },
     "icon": "images/icon.png",
     "repository": {
@@ -55,6 +72,11 @@
     "homepage": "https://github.com/qingpeng9802/vscode-common-lisp/blob/master/README.md",
     "scripts": {
         "package": "vsce package",
-        "publish": "vsce publish"
+        "publish": "vsce publish",
+        "bg": "node scripts/build_grammar.js"
+    },
+    "devDependencies": {
+        "fs": "^0.0.1-security",
+        "js-yaml": "^4.1.0"
     }
 }

@@ -1,5 +1,21 @@
+# vscode
 .vscode/**
 .vscode-test/**
-.gitignore
 vsc-extension-quickstart.md
 *.vsix
+
+# git
+.gitignore
+.github/**
+
+# node
+node_modules/**
+*.log
+
+# dev
+assets/**
+scripts/**
+
+# prod
+syntaxes/**
+!syntaxes/commonlisp.tmLanguage.json

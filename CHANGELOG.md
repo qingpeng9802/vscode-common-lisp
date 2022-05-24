@@ -1,4 +1,17 @@
 # Change Log
+
+## [0.2.1] - 2022-05-24
+### Added
+- `syntaxes/commonlisp.yaml` added highlighting for formatted strings
+- `syntaxes/commonlisp.tmLanguage.json` is automatically built from `syntaxes/commonlisp.yaml`
+
+### Changed
+- `syntaxes/commonlisp.yaml` more accurate highlighting of packages and literal symbols
+- `snippets/commonlisp_snippets.json` more snippets
+
+### Deprecated
+- `syntaxes/commonlisp.tmLanguage` is achieved, and `syntaxes/commonlisp.yaml` will be actively maintained
+
 ## [0.1.4] - 2022-03-05
 ### Added
 - `commonlisp_file_icon.svg` file for common lisp file icon
