@@ -1,0 +1,789 @@
+---
+comment: |-
+    This tmLanguage file is for Common Lisp.
+    Map Rule (Common Lisp Token Type -|- tmLanguage) {
+        Accessor: support.function
+        Class: support.class
+        Condition Type: support.type.exception
+        Constant Variable: constant.language
+        Declaration: storage.type.function
+        Function: support.function
+        Macro: storage.type.function
+        macro lambda list: keyword.other.list
+        ordinary lambda list: keyword.other.list
+        Special Operator: keyword.control
+        Standard Generic Function: support.function
+        Symbol: support.other.symbol
+        System Class: support.class
+        Type: support.type
+        Type Specifier: support.type
+        Variable: variable.other
+    }
+
+fileTypes:
+- lisp
+- lsp
+- l
+- cl
+- asd
+- asdf
+foldingStartMarker: \(
+foldingStopMarker: \)
+keyEquivalent: ^~L
+name: Common Lisp
+
+patterns:
+-   include: '#comment'
+-   include: '#block-comment'
+-   include: '#string'
+-   include: '#escape'
+-   include: '#constant'
+-   include: '#lambda-list'
+-   include: '#function'
+-   include: '#style-guide'
+-   include: '#def-name'
+-   include: '#macro'
+-   include: '#special-operator'
+-   include: '#declaration'
+-   include: '#type'
+-   include: '#class'
+-   include: '#condition-type'
+-   include: '#package'
+-   include: '#variable'
+-   include: '#punctuation'
+
+repository:
+    comment:
+        # CL-ANSI 2.4.4 Semicolon
+        begin: (^[ \t]+)?(?=;)
+        beginCaptures:
+            '1':
+                name: punctuation.whitespace.comment.leading.commonlisp
+        end: (?!\G)
+        patterns:
+        -   begin: ;
+            beginCaptures:
+                '0':
+                    name: punctuation.definition.comment.commonlisp
+            end: \n
+            name: comment.line.semicolon.commonlisp
+
+    block-comment:
+        # CL-ANSI 2.4.8.19 Sharpsign Vertical-Bar
+        begin: \#\|
+        contentName: comment.block.commonlisp
+        end: \|\#
+        name: comment
+        patterns:
+        -   include: '#block-comment'
+            name: comment
+
+    string:
+        # CL-ANSI 2.4.5 Double-Quote
+        begin: (")
+        beginCaptures:
+            '1':
+                name: punctuation.definition.string.begin.commonlisp
+        end: (")
+        endCaptures:
+            '1':
+                name: punctuation.definition.string.end.commonlisp
+        name: string.quoted.double.commonlisp
+        patterns:
+        # CL-ANSI 2.1.4.6 Single Escape Character
+        -   match: \\.
+            name: constant.character.escape.commonlisp
+
+        # Formatted String, we do not check if `format` in current expression
+        # since formatted string may be passed as a parameter which should be also highlighted.
+        #
+        # FORMAT Common Lisp the Language, 2nd Edition
+        # 22.3.3. Formatted Output to Character Streams https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node200.html
+        # Control Structures Directives
+        -   match: |-
+                (?xi)
+
+                (~) #1 tilde
+                (
+                    (
+                        (([+-]?[0-9]+)|('.)|V|\#)*?
+                        (,)?
+                    )
+                *?) #2 prefix parameters, signed decimal numbers|single char, separated by commas
+                (
+                    (:@|@:|:|@)
+                ?) #8 modifiers
+                (\(|\)|\[|\]|;|{|}|<|>|\^) #10 control structures
+            captures:
+                '1':
+                    name: storage.type.function.commonlisp
+                '2':
+                    name: variable.other.constant.commonlisp
+                '8':
+                    name: storage.type.function.commonlisp
+                '10':
+                    name: storage.type.function.commonlisp
+
+        # FORMAT Common Lisp the Language, 2nd Edition
+        # 22.3.3. Formatted Output to Character Streams https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node200.html
+        # Simple Directives
+        -   match: |-
+                (?xi)
+
+                (~) #1 tilde
+                (
+                    (
+                        (([+-]?[0-9]+)|('.)|V|\#)*?
+                        (,)?
+                    )
+                *?) #2 prefix parameters, signed decimal numbers|single char, separated by commas
+                (
+                    (:@|@:|:|@)
+                ?) #8 modifiers
+                (A|S|D|B|O|X|R|P|C|F|E|G|\$|%|\&|\||~|T|\*|\?|_|W|I) #10 directives
+            captures:
+                '1':
+                    name: entity.name.variable.commonlisp
+                '2':
+                    name: variable.other.constant.commonlisp
+                '8':
+                    name: entity.name.variable.commonlisp
+                '10':
+                    name: entity.name.variable.commonlisp
+
+        # FORMAT Common Lisp the Language, 2nd Edition
+        # 27.4. Format Directive Interface https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node257.html
+        # Call Function
+        -   match: |-
+                (?xi)
+
+                (~) #1 tilde
+                (
+                    (
+                        (([+-]?[0-9]+)|('.)|V|\#)*?
+                        (,)?
+                    )
+                *?) #2 prefix parameters, signed decimal numbers|single char, separated by commas
+                (
+                    (:@|@:|:|@)
+                ?) #8 modifiers
+                (\/) #10
+                (\S+?) #11 call function
+                (\/) #12
+            captures:
+                '1':
+                    name: entity.name.variable.commonlisp
+                '2':
+                    name: variable.other.constant.commonlisp
+                '8':
+                    name: entity.name.variable.commonlisp
+                '10':
+                    name: entity.name.variable.commonlisp
+                '11':
+                    name: entity.name.variable.commonlisp
+                '12':
+                    name: entity.name.variable.commonlisp
+
+        # FORMAT Common Lisp the Language, 2nd Edition
+        # 22.3.3. Formatted Output to Character Streams https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node200.html
+        # Nothing Tilde
+        -   match: (~\n)
+            name: variable.other.constant.commonlisp
+
+    escape:
+        # CL-ANSI 22.1.3.2 Printing Characters
+        # CL-ANSI 2.4.8.1 Sharpsign Backslash
+        match: |-
+            (?xi)
+            (?<=^|\s|\() # preceded by space or (
+            (?:\#\\\S+?)
+            (?=(\s|\(|\)))  # followed by space, ( or )
+        name: constant.character.escape.commonlisp
+
+    constant:
+        patterns:
+        # CL-ANSI Constant Variable
+        -   match: |-
+                (?xi)
+                (?<=^|\s|\() # preceded by space or (
+                (?:t|single-float-negative-epsilon|single-float-epsilon|short-float-negative-epsilon|short-float-epsilon|pi|
+                nil|multiple-values-limit|most-positive-single-float|most-positive-short-float|most-positive-long-float|
+                most-positive-fixnum|most-positive-double-float|most-negative-single-float|most-negative-short-float|
+                most-negative-long-float|most-negative-fixnum|most-negative-double-float|long-float-negative-epsilon|
+                long-float-epsilon|least-positive-single-float|least-positive-short-float|least-positive-normalized-single-float|
+                least-positive-normalized-short-float|least-positive-normalized-long-float|least-positive-normalized-double-float|
+                least-positive-long-float|least-positive-double-float|least-negative-single-float|least-negative-short-float|
+                least-negative-normalized-single-float|least-negative-normalized-short-float|least-negative-normalized-long-float|
+                least-negative-normalized-double-float|least-negative-long-float|least-negative-double-float|lambda-parameters-limit|
+                lambda-list-keywords|internal-time-units-per-second|double-float-negative-epsilon|double-float-epsilon|char-not-greaterp|
+                call-arguments-limit|boolean|boole-xor|boole-set|boole-orc2|boole-orc1|boole-nor|boole-nand|boole-ior|boole-eqv|
+                boole-clr|boole-c2|boole-c1|boole-andc2|boole-andc1|boole-2|boole-1|arrayp|array-row-major-index|array-dimension-limit)
+                (?=(\s|\(|\))) # followed by space, ( or )
+            name: constant.language.commonlisp
+
+        # CL-ANSI 2.3.2 Constructing Numbers from Tokens
+        # CL-ANSI 2.4.8.7 Sharpsign B
+        # CL-ANSI 2.4.8.8 Sharpsign O
+        # CL-ANSI 2.4.8.9 Sharpsign X
+        # CL-ANSI 2.4.8.10 Sharpsign R
+        -   match: |-
+                (?x)
+                (?<=^|\s|\()                           # preceded by space or (
+                ([+-]?[0-9]+(?:\/[0-9]+)*|                # ratio
+                [-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?|   # integer, float
+                (\#b|\#B)[01\/+-]+|(\#o|\#O)[0-7\/+-]+|(\#x|\#X)[0-9a-fA-F\/+-]+|(\#[0-9]+[rR]?)[0-9a-zA-Z\/+-]+)
+                (?=(\s|\)))                               # followed by space, )
+            name: constant.numeric.commonlisp
+
+        # CL-ANSI Dot
+        -   match: |-
+                (?xi)
+                (?<=\s) # preceded by space or (
+                (\.)
+                (?=\s)
+            name: variable.other.constant.commonlisp
+
+        # CL-ANSI 2.1.3. Floating-Point Numbers
+        # Common Lisp the Language, 2nd Edition
+        # 2.1.3. Floating-Point Numbers https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node19.html#SECTION00613000000000000000
+        -   match: |-
+                (?x)
+                (?<=^|\s|\()                           # preceded by space or (
+                ([+-]?[0-9]*\.[0-9]*((e|s|f|d|l|E|S|F|D|L)[+-]?[0-9]+)?|
+                [+-]?[0-9]+(\.[0-9]*)?(e|s|f|d|l|E|S|F|D|L)[+-]?[0-9]+)
+                (?=(\s|\)))                               # followed by space, )
+            name: constant.numeric.commonlisp
+
+    lambda-list:
+        # CL-ANSI macro lambda list, ordinary lambda list,
+        # Style Guide: start with &
+        # Common Lisp the Language, 2nd Edition
+        # 5.2.2. Lambda-Expressions https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node64.html
+        match: |-
+            (?xi)
+            (?<=^|\s|\() # preceded by space or (
+            (?:&\S+?|&whole|&rest|&optional|&key|&environment|&body|&aux|&allow-other-keys)
+            (?=(\s|\(|\))) # followed by space, ( or )
+        name: keyword.other.list.commonlisp
+
+    function:
+        patterns:
+        # CL-ANSI Accessor
+        -   match: |-
+                (?xi)
+                (?<=^|\s|\() # preceded by space or (
+                (?:values|third|tenth|symbolp|symbol-value|symbol-function|svref|subseq|sixth|seventh|second|schar|sbit|row-major-aref|rest|
+                readtable-case|nth|ninth|mask-field|macroexpand-1|logical-pathname-translations|ldb|get-internal-run-time|get-internal-real-time|
+                get|fourth|first|find-class|fill-pointer|fifth|fdefinition|elt|eighth|compiler-macro-function|char|cdr|cddr|cdddr|cddddr|
+                cdddar|cddar|cddadr|cddaar|cdar|cdadr|cdaddr|cdadar|cdaar|cdaadr|cdaaar|car|cadr|caddr|cadddr|caddar|cadar|cadadr|cadaar|caar|
+                caadr|caaddr|caadar|caaar|caaadr|caaaar|bit|aref)
+                (?=(\s|\(|\)))  # followed by space, ( or )
+            name: support.function.commonlisp
+
+        # CL-ANSI Function No Side Effects
+        -   match: |-
+                (?xi)
+                (?<=^|\s|\() # preceded by space or (
+                (?:zerop|write-to-string|write-string|write-line|write|wild-pathname-p|vectorp|vector-push-extend|vector-push|vector|
+                values-list|user-homedir-pathname|upper-case-p|upgraded-complex-part-type|upgraded-array-element-type|unread-char|
+                unbound-slot-instance|typep|typecase|type-of|type-error-expected-type|two-way-stream-output-stream|two-way-stream-input-stream|
+                truncate|truename|tree-equal|translate-pathname|translate-logical-pathname|tanh|tan|synonym-stream-symbol|symbol-plist|
+                symbol-package|symbol-name|sxhash|subtypep|subsetp|stringp|string\/=|string>=|string=|string<=|string<|string-trim|
+                string-stream|string-right-trim|string-not-lessp|string-not-greaterp|string-not-equal|string-lessp|string-left-trim|string-greaterp|
+                string-equal|string|streamp|stream-external-format|stream-error-stream|stream-element-type|standard-char-p|stable-sort|sqrt|
+                special-operator-p|sort|some|software-version|software-type|slot-value|slot-exists-p|slot-boundp|sinh|sin|simple-vector-p|
+                simple-string-p|simple-condition-format-control|simple-condition-format-arguments|simple-bit-vector-p|signum|short-site-name|
+                set-pprint-dispatch|search|scale-float|round|restart-name|rename-package|rename-file|rem|reduce|realpart|realp|readtablep|
+                reader-error|read-preserving-whitespace|read-line|read-delimited-list|read-char-no-hang|read-char|read|rationalp|rationalize|
+                rational|rassoc-if-not|rassoc-if|rassoc|random-state-p|proclaim|probe-file|print-not-readable-object|print|princ-to-string|
+                princ|prin1-to-string|prin1|pprint-tab|pprint-indent|pprint-dispatch|pprint|position-if-not|position-if|position|plusp|phase|
+                peek-char|pathnamep|pathname-version|pathname-type|pathname-name|pathname-match-p|pathname-host|pathname-directory|pathname-device|
+                pathname|parse-namestring|parse-integer|pairlis|packagep|package-used-by-list|package-use-list|package-shadowing-symbols|
+                package-nicknames|package-name|package-error-package|output-stream-p|open-stream-p|open|oddp|numerator|numberp|null|nth-value|
+                notevery|notany|not|next-method-p|nbutlast|namestring|name-char|mod|mismatch|minusp|min|merge-pathnames|merge|member-if-not|
+                member-if|member|max|maplist|mapl|mapcon|mapcar|mapcan|mapc|map-into|map|makunbound|make-two-way-stream|make-synonym-stream|
+                make-symbol|make-string-output-stream|make-string-input-stream|make-string|make-sequence|make-random-state|make-pathname|make-package|
+                make-load-form-saving-slots|make-list|make-hash-table|make-echo-stream|make-dispatch-macro-character|make-condition|
+                make-concatenated-stream|make-broadcast-stream|make-array|macroexpand|macro-function|machine-version|machine-type|machine-instance|
+                lower-case-p|long-site-name|logxor|logtest|logorc2|logorc1|lognot|lognor|lognand|logior|logical-pathname|logeqv|logcount|logbitp|
+                logandc2|logandc1|logand|log|load-logical-pathname-translations|load|listp|listen|list\*|list-length|list-all-packages|list|
+                lisp-implementation-version|lisp-implementation-type|length|ldb-test|lcm|last|keywordp|isqrt|intern|interactive-stream-p|integerp|
+                integer-length|integer-decode-float|input-stream-p|imagpart|identity|host-namestring|hash-table-test|hash-table-size|
+                hash-table-rehash-threshold|hash-table-rehash-size|hash-table-p|hash-table-count|graphic-char-p|gethash|getf|get-universal-time|
+                get-setf-expansion|get-properties|get-decoded-time|gcd|functionp|function-lambda-expression|funcall|ftruncate|fround|format|
+                force-output|fmakunbound|floor|floatp|floating-point-underflow|floating-point-overflow|floating-point-invalid-operation|float-digits|
+                float|finish-output|find-symbol|find-restart|find-package|find-if-not|find-if|find-all-symbols|find|file-write-date|file-string-length|
+                file-namestring|file-length|file-error-pathname|file-author|ffloor|fceiling|fboundp|expt|exp|every|evenp|eval|equalp|equal|eql|eq|
+                ensure-generic-function|ensure-directories-exist|enough-namestring|endp|encode-universal-time|ed|echo-stream-output-stream|echo-stream-input-stream|
+                dribble|dpb|disassemble|directory-namestring|directory|digit-char-p|digit-char|deposit-field|denominator|delete-package|delete-file|
+                decode-universal-time|decode-float|count-if-not|count-if|count|cosh|cos|copy-tree|copy-symbol|copy-structure|copy-seq|copy-readtable|
+                copy-pprint-dispatch|copy-list|copy-alist|constantp|constantly|consp|cons|conjugate|concatenated-stream-streams|concatenate|compute-restarts|
+                complexp|complex|complement|compiled-function-p|compiled-function|compile-file-pathname|compile|coerce|code-char|clear-output|class-of|cis|
+                characterp|character|char\/=|char>=|char>|char=|char<=|char<|char-upcase|char-not-lessp|char-not-equal|char-name|char-lessp|
+                char-int|char-greaterp|char-equal|char-downcase|char-code-limit|char-code|cerror|cell-error-name|ceiling|call-next-method|byte-size|
+                byte-position|byte|butlast|broadcast-stream-streams|boundp|both-case-p|boole|bit-xor|bit-vector-p|bit-orc2|bit-orc1|bit-not|bit-nor|
+                bit-nand|bit-ior|bit-eqv|bit-andc2|bit-andc1|bit-and|atom|atanh|atan|assoc-if-not|assoc-if|assoc|asinh|asin|ash|array-total-size-limit|
+                array-total-size|array-rank-limit|array-rank|array-in-bounds-p|array-has-fill-pointer-p|array-element-type|array-displacement|array-dimensions|
+                array-dimension|arithmetic-error-operation|arithmetic-error-operands|apropos-list|apropos|apply|append|alphanumericp|alpha-char-p|
+                adjustable-array-p|adjust-array|adjoin|acosh|acos|acons|abs|\/=|\/|\+|\*|>=|>|=|<=|<|1\+|1-|-)
+                (?=(\s|\(|\))) # followed by space, ( or )
+            name: support.function.sideeffects.commonlisp
+
+        # CL-ANSI Standard Generic Function NO Side Effects
+        -   match: |-
+                (?xi)
+                (?<=^|\s|\() # preceded by space or (
+                (?:variable|update-instance-for-redefined-class|update-instance-for-different-class|structure|slot-unbound|slot-missing|shared-initialize|
+                remove-method|print-object|no-next-method|no-applicable-method|method-qualifiers|make-load-form|make-instances-obsolete|make-instance|
+                function-keywords|find-method|do-external-symbols|describe-object|compute-applicable-methods|compiler-macro|class-name|change-class|allocate-instance|add-method)
+                (?=(\s|\(|\)))  # followed by space, ( or )
+            name: support.function.nosideeffects.commonlisp
+
+        # CL-ANSI Function, Standard Generic Function WITH Side Effects
+        -   match: |-
+                (?xi)
+                (?<=^|\s|\() # preceded by space or (
+                (?:yes-or-no-p|y-or-n-p|write-sequence|write-char|write-byte|warn|vector-pop|use-value|use-package|unuse-package|union|unintern|unexport|
+                terpri|tailp|substitute-if-not|substitute-if|substitute|subst-if-not|subst-if|subst|sublis|string-upcase|string-downcase|string-capitalize|
+                store-value|slot-makunbound|sleep|signal|shadowing-import|shadow|setq|set-syntax-from-char|set-exclusive-or|set-dispatch-macro-character|
+                set-difference|set|rplacd|rplaca|room|reverse|revappend|require|replace|remprop|remove-if-not|remove-if|remove-duplicates|remove|remhash|
+                reinitialize-instance|read-sequence|read-byte|random|provide|pprint-tabular|pprint-newline|pprint-linear|pprint-fill|nunion|nsubstitute-if-not|
+                nsubstitute-if|nsubstitute|nsubst-if-not|nsubst-if|nsubst|nsublis|nstring-upcase|nstring-downcase|nstring-capitalize|nset-exclusive-or|
+                nset-difference|nreverse|nreconc|nintersection|nconc|muffle-warning|method-combination-error|maphash|ldiff|invoke-restart-interactively|
+                invoke-restart|invoke-debugger|invalid-method-error|intersection|inspect|incf|import|get-output-stream-string|get-macro-character|
+                get-dispatch-macro-character|gentemp|gensym|fresh-line|fill|file-position|export|describe|delete-if-not|delete-if|delete-duplicates|delete|
+                continue|clrhash|close|clear-input|break|abort)
+                (?=(\s|\(|\)))  # followed by space, ( or )
+            name: support.function.sideeffects.commonlisp
+
+    macro:
+        patterns:
+        # CL-ANSI Macro, Symbol NO Side Effects
+        -   match: |-
+                (?xi)
+                (?<=^|\s|\() # preceded by space or (
+                (?:with-standard-io-syntax|with-slots|with-simple-restart|with-package-iterator|with-hash-table-iterator|with-condition-restarts|
+                with-compilation-unit|with-accessors|when|unless|type-error|time|step|shiftf|setf|rotatef|return|restart-case|restart-bind|
+                psetf|prog\*|prog2|prog1|prog|print-unreadable-object|pprint-logical-block|pprint-exit-if-list-exhausted|otherwise|or|nthcdr|
+                multiple-value-setq|multiple-value-list|multiple-value-bind|make-method|loop|lambda|inline|ignore-errors|handler-case|handler-bind|
+                formatter|etypecase|dotimes|dolist|documentation|do\*|do-symbols|do-all-symbols|do|destructuring-bind|defun|deftype|defstruct|
+                defsetf|defpackage|defmethod|defmacro|define-symbol-macro|define-setf-expander|define-condition|define-compiler-macro|defgeneric|
+                defconstant|defclass|declare|declaim|ctypecase|cond|call-method|assert|and)
+                (?=(\s|\(|\)))  # followed by space, ( or )
+            name: storage.type.function.nosideeffects.commonlisp
+
+        # CL-ANSI Macro, Symbol WITH Side Effects
+        -   match: |-
+                (?xi)
+                (?<=^|\s|\() # preceded by space or (
+                (?:with-output-to-string|with-open-stream|with-open-file|with-input-from-string|untrace|trace|set-macro-character|remf|pushnew|push|
+                psetq|pprint-pop|pop|loop-finish|in-package|ecase|defvar|defparameter|define-modify-macro|define-method-combination|decf|check-type|ccase|case)
+                (?=(\s|\(|\)))  # followed by space, ( or )
+            name: storage.type.function.sideeffects.commonlisp
+
+    special-operator:
+        # CL-ANSI Special Operator
+        match: |-
+            (?xi)
+            (?<=^|\s|\() # preceded by space or (
+            (?:unwind-protect|throw|the|tagbody|symbol-macrolet|return-from|quote|progv|progn|multiple-value-prog1|multiple-value-call|macrolet|locally|load-time-value|
+            let\*|let|labels|if|go|function|flet|eval-when|catch|block)
+            (?=(\s|\(|\)))  # followed by space, ( or )
+        name: keyword.control.commonlisp
+
+    declaration:
+        # CL-ANSI Declaration
+        match: |-
+            (?xi)
+            (?<=^|\s|\() # preceded by space or (
+            (?:type|speed|special|space|safety|optimize|notinline|initialize-instance|ignore|ignorable|ftype|dynamic-extent|declaration|debug|compilation-speed)
+            (?=(\s|\(|\)))  # followed by space, ( or )
+        name: storage.type.function.commonlisp
+
+    type:
+        # CL-ANSI Type, Type Specifier
+        match: |-
+            (?xi)
+            (?<=^|\s|\() # preceded by space or (
+            (?:unsigned-byte|standard-char|single-float|simple-vector|simple-string|simple-bit-vector|simple-base-string|simple-array|signed-byte|short-float|
+            satisfies|long-float|keyword|fixnum|extended-char|double-float|compile-file|boole-and|bignum|base-string|base-char)
+            (?=(\s|\(|\)))  # followed by space, ( or )
+        name: support.type.commonlisp
+
+    class:
+        # CL-ANSI class, System Class
+        match: |-
+            (?xi)
+            (?<=^|\s|\() # preceded by space or (
+            (?:two-way-stream|synonym-stream|symbol|structure-object|structure-class|string>|stream|standard-object|standard-method|
+            standard-generic-function|standard-class|standard|sequence|restart|real|readtable|ratio|random-state|package|number|method-combination|
+            method|integer|hash-table|generic-function|file-stream|echo-stream|concatenated-stream|class|built-in-class|broadcast-stream|bit-vector|array)
+            (?=(\s|\(|\)))  # followed by space, ( or )
+        name: support.class.commonlisp
+
+    condition-type:
+        # CL-ANSI Condition Type
+        match: |-
+            (?xi)
+            (?<=^|\s|\() # preceded by space or (
+            (?:warning|undefined-function|unbound-variable|unbound-slot|type-error-datum|style-warning|stream-error|storage-condition|simple-warning|
+            simple-type-error|simple-error|simple-condition|serious-condition|read-from-string|program-error|print-not-readable|parse-error|package-error|
+            floating-point-inexact|float-sign|float-radix|float-precision|file-error|error|end-of-file|division-by-zero|control-error|condition|cell-error|arithmetic-error)
+            (?=(\s|\(|\)))  # followed by space, ( or )
+        name: support.type.exception.commonlisp
+
+    variable:
+        # CL-ANSI Variable
+        patterns:
+
+        # Same as Special Variables
+        -   match: |-
+                (?xi)
+                (?<=^|\s|\() # preceded by space or (
+                (?:\*trace-output\*|\*terminal-io\*|\*standard-output\*|\*standard-input\*|\*readtable\*|\*read-suppress\*|\*read-eval\*|\*read-default-float-format\*|
+                \*read-base\*|\*random-state\*|\*query-io\*|\*print-right-margin\*|\*print-readably\*|\*print-radix\*|\*print-pretty\*|\*print-pprint-dispatch\*|
+                \*print-miser-width\*|\*print-lines\*|\*print-level\*|\*print-length\*|\*print-gensym\*|\*print-escape\*|\*print-circle\*|\*print-case\*|
+                \*print-base\*|\*print-array\*|\*package\*|\*modules\*|\*macroexpand-hook\*|\*load-verbose\*|\*load-truename\*|\*load-print\*|\*load-pathname\*|
+                \*gensym-counter\*|\*features\*|\*error-output\*|\*default-pathname-defaults\*|\*debugger-hook\*|\*debug-io\*|\*compile-verbose\*|\*compile-print\*|
+                \*compile-file-truename\*|\*compile-file-pathname\*|\*break-on-signals\*)
+                (?=(\s|\(|\)))  # followed by space, ( or )
+            name: constant.other.character-class.regexp.commonlisp
+
+        # For Lisp REPL
+        -   match: |-
+                (?xi)
+                (?<=^|\s|\() # preceded by space or (
+                (?:\*\*\*|\*\*|\+\+\+|\+\+|\/\/\/|\/\/)
+                (?=(\s|\(|\)))  # followed by space, ( or )
+            name: variable.other.commonlisp
+
+    punctuation:
+        # CL-ANSI 2.4 Standard Macro Characters
+        patterns:
+
+        # CL-ANSI 2.4.3 Single-Quote
+        # Notice that the char immediately followed by ' will not be highlighted
+        # since 1. might reduce the recognition of '
+        # 2. might cannot distinguish ' and followed char's syntax when they are combined.
+        # This case be searched by '[^\(\s]+\s
+        -   match: |-
+                (?xi)
+                (?<=^|\s|\(|,@|,\.|,) # preceded by space , ( or `,`|`,@`|`,.`
+                ('+)
+                (?=\S)
+            name: variable.other.constant.commonlisp
+
+        # CL-ANSI 22.1.3.3.1 Package Prefixes for Symbols
+        -   match: |-
+                (?xi)
+                (?<=^|\s|\(|,@|,\.|,) # preceded by space , ( or `,`|`,@`|`,.`
+                (?:\:\S+?)
+                (?=(\s|\(|\)))       # followed by space, ( or )
+            name: entity.name.variable.commonlisp
+
+        # CL-ANSI 2.4.8.3 Sharpsign Left-Parenthesis
+        -   match: |-
+                (?xi)
+                (?<=^|\s|\(|,@|,\.|,) # preceded by space , ( or `,`|`,@`|`,.`
+                (\#)([0-9]*)
+                (?=\()
+            captures:
+                '1':
+                    name: variable.other.constant.commonlisp
+                '2':
+                    name: constant.numeric.commonlisp
+
+        # CL-ANSI 2.4.8.4 Sharpsign Asterisk
+        -   match: |-
+                (?xi)
+                (?<=^|\s|\(|,@|,\.|,) # preceded by space , ( or `,`|`,@`|`,.`
+                (\#)
+                ([0-9]*)
+                (\*)
+                (?=0|1)
+            captures:
+                '1':
+                    name: variable.other.constant.commonlisp
+                '2':
+                    name: constant.numeric.commonlisp
+                '3':
+                    name: variable.other.constant.commonlisp
+
+        # CL-ANSI 2.4.8.4 Sharpsign Asterisk empty bit vector-->
+        -   match: |-
+                (?xi)
+                (?<=^|\s|\(|,@|,\.|,) # preceded by space , ( or `,`|`,@`|`,.`
+                (\#\*|\#0\*)
+                (?=(\s|\(|\)))       # followed by space, ( or )
+            name: variable.other.constant.commonlisp
+
+        # CL-ANSI 2.4.8.12 Sharpsign A
+        -   match: |-
+                (?xi)
+                (?<=^|\s|\(|,@|,\.|,) # preceded by space , ( or `,`|`,@`|`,.`
+                (\#)
+                ([0-9]+)
+                (a|A)
+                (?=.)
+            captures:
+                '1':
+                    name: variable.other.constant.commonlisp
+                '2':
+                    name: constant.numeric.commonlisp
+                '3':
+                    name: variable.other.constant.commonlisp
+
+        # CL-ANSI 2.4.8.15 Sharpsign Equal-Sign
+        -   match: |-
+                (?xi)
+                (?<=^|\s|\(|,@|,\.|,) # preceded by space , ( or `,`|`,@`|`,.`
+                (\#)
+                ([0-9]+)
+                (=)
+                (?=.)
+            captures:
+                '1':
+                    name: variable.other.constant.commonlisp
+                '2':
+                    name: constant.numeric.commonlisp
+                '3':
+                    name: variable.other.constant.commonlisp
+
+        # CL-ANSI 2.4.8.16 Sharpsign Sharpsign
+        -   match: |-
+                (?xi)
+                (?<=^|\s|\(|,@|,\.|,) # preceded by space , ( or `,`|`,@`|`,.`
+                (\#)
+                ([0-9]+)
+                (\#)
+                (?=.)
+            captures:
+                '1':
+                    name: variable.other.constant.commonlisp
+                '2':
+                    name: constant.numeric.commonlisp
+                '3':
+                    name: variable.other.constant.commonlisp
+
+        # CL-ANSI 2.4.8.17 Sharpsign Plus
+        # CL-ANSI 2.4.8.18 Sharpsign Minus
+        -   match: |-
+                (?xi)
+                (?<=^|\s|\(|,@|,\.|,) # preceded by space , ( or `,`|`,@`|`,.`
+                (\#(\+|-))
+                (?=\S)
+            name: variable.other.constant.commonlisp
+
+        # CL-ANSI 2.4.8.2 Sharpsign
+        # CL-ANSI 2.4.8.6 Sharpsign Dot
+        # CL-ANSI 2.4.8.11 Sharpsign C
+        # CL-ANSI 2.4.8.13 Sharpsign S
+        # CL-ANSI 2.4.8.14 Sharpsign P
+        -   match: |-
+                (?xi)
+                (?<=^|\s|\(|,@|,\.|,) # preceded by space , ( or `,`|`,@`|`,.`
+                (\#('|,|\.|c|C|s|S|p|P))
+                (?=\S)
+            name: variable.other.constant.commonlisp
+
+        # CL-ANSI 2.4.8.5 Sharpsign Colon
+        # CL-ANSI 22.1.3.3.1 Package Prefixes for Symbols
+        -   match: |-
+                (?xi)
+                (?<=^|\s|\(|,@|,\.|,) # preceded by space , ( or `,`|`,@`|`,.`
+                (\#)
+                (:)
+                (?=\S)
+            captures:
+                '1':
+                    name: support.type.commonlisp
+
+        # CL-ANSI 2.4.6 Backquote
+        -   match: |-
+                (?xi)
+                (?<=^|\s|\() # preceded by space or (
+                (
+                    (`\#) #2
+                    |
+                    (`)(,@|,\.|,)? #3, #4
+                    |
+                    (,@|,\.|,) #5
+                )
+                (?=\S)
+            captures:
+                '2':
+                    name: variable.other.constant.commonlisp
+                '3':
+                    name: variable.other.constant.commonlisp
+                '4':
+                    name: variable.other.constant.commonlisp
+                '5':
+                    name: variable.other.constant.commonlisp
+
+    # the keywords are not matched in other parts, only matched here
+    # defclass|defconstant|defgeneric|define-compiler-macro|define-condition|
+    # define-method-combination|define-modify-macro|define-setf-expander|define-symbol-macro|
+    # defmacro|defmethod|defpackage|defparameter|defsetf|defstruct|deftype|defun|defvar
+    #
+    def-name:
+        patterns:
+        # keyword name | keyword (setf name) | keyword name (params)?
+        -   match: |-
+                (?xi)
+                (?<=^|\s|\()                     # preceded by (
+                (defun|defsetf|defmethod|defmacro|define-symbol-macro|define-setf-expander|
+                define-modify-macro|define-method-combination|define-compiler-macro|defgeneric)  # keywords
+                \s+
+                (   \(\s*
+                        (\S+)
+                    \s*
+                        ((,@|,\.|,)?)
+                        (\S+?)      # (something+ name)
+                    |
+                        ((,@|,\.|,)?)
+                        (\S+?)      # name
+                )
+                (?=(\s|\(|\)))
+            captures:
+                '1':
+                    name: storage.type.function.commonlisp
+                '3':
+                    name: storage.type.function.commonlisp
+                '4':
+                    name: variable.other.constant.commonlisp
+                '6':
+                    patterns:
+                    -   include: '#package'
+                    -   match: \S+?
+                        name: entity.name.function.commonlisp
+                '7':
+                    name: variable.other.constant.commonlisp
+                '9':
+                    patterns:
+                    -   include: '#package'
+                    -   match: \S+?
+                        name: entity.name.function.commonlisp
+
+        # keyword name (params) | keyword name
+        -   match: |-
+                (?xi)
+                (?<=^|\s|\()
+                (deftype|defpackage|define-condition|defclass)              # keywords
+                \s+
+                (\S+?)                   # name
+                (?=(\s|\(|\)))
+            captures:
+                '1':
+                    name: storage.type.function.commonlisp
+                '2':
+                    name: entity.name.type.commonlisp
+
+        # keyword name
+        -   match: |-
+                (?xi)
+                (?<=^|\s|\()
+                (defconstant)         # keywords
+                \s+
+                (\S+?)                # name
+                (?=(\s|\(|\)))
+            captures:
+                '1':
+                    name: storage.type.function.commonlisp
+                '2':
+                    patterns:
+                    -   include: '#package'
+                    -   match: \S+?
+                        name: variable.other.constant.commonlisp
+
+        # keyword name
+        -   match: |-
+                (?xi)
+                (?<=^|\s|\()
+                (defvar|defparameter) # keywords
+                \s+
+                (?=(\s|\(|\)))
+            captures:
+                '1':
+                    name: storage.type.function.commonlisp
+
+        # keyword name | keyword (name [[options]])
+        -   match: |-
+                (?xi)
+                (?<=^|\s|\()
+                (defstruct)         # keywords
+                \s+\(?\s*
+                (\S+?)              # name
+                (?=(\s|\(|\)))
+            captures:
+                '1':
+                    name: storage.type.function.commonlisp
+                '2':
+                    name: entity.name.type.commonlisp
+
+        # keyword ((name (params)
+        -   match: |-
+                (?xi)
+                (?<=^|\s|\()
+                (macrolet|labels|flet)        # keywords
+                \s+\(\s*\(\s*
+                (\S+?)                        # name
+                (?=(\s|\(|\)))
+            captures:
+                '1':
+                    name: keyword.control.commonlisp
+                '2':
+                    patterns:
+                    -   include: '#package'
+                    -   match: \S+?
+                        name: entity.name.function.commonlisp
+
+    style-guide:
+        # Google Common Lisp Style Guide
+        # Style Guide: https://google.github.io/styleguide/lispguide.xml?showone=Global_variables_and_constants#Global_variables_and_constants
+        patterns:
+
+        # Except start with ' , then ::/: case; see Single-Quote part
+        # For example: '#:*source-directory*
+        -   match: |-
+                (?xi)
+                (?<=^'|\s'|\('|,@'|,\.'|,')
+                (\S+?)
+                (\:\:|\:)
+                ((\+[^\s\+]+\+)|(\*[^\s\*]+\*))
+                (?=(\s|\(|\)))
+            captures:
+                '3':
+                    name: source.commonlisp
+
+        # Style Guide: Constants, earmuffs +
+        -   match: |-
+                (?xi)
+                (?<=\S:|^|\s|\() # preceded by space or (
+                (\+[^\s\+]+\+)
+                (?=(\s|\(|\)))  # followed by space, ( or )
+            name: variable.other.constant.commonlisp
+        # Style Guide: Special variables, earmuffs *
+        -   match: |-
+                (?xi)
+                (?<=\S:|^|\s|\() # preceded by space or (
+                (\*[^\s\*]+\*)
+                (?=(\s|\(|\)))  # followed by space, ( or )
+            name: constant.other.character-class.regexp.commonlisp
+
+    package:
+        # Common Lisp the Language, 2nd Edition
+        # 11.3. Translating Strings to Symbols https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node114.html
+        patterns:
+        -   match: |-
+                (?xi)
+                (?<=^|\s|\(|,@|,\.|,) # preceded by space , ( or `,`|`,@`|`,.`
+                ([a-zA-Z-]+?)
+                (?=\:\:|\:)
+            captures:
+                '1':
+                    name: support.type.commonlisp
+
+scopeName: source.commonlisp
+uuid: 18AAF6A7-CE21-47DF-AD06-C066181965B6
+
+...

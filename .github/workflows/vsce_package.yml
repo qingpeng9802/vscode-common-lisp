@@ -29,6 +29,9 @@ jobs:
           
       - name: Install dependencies
         run: npm install
+
+      - name: Build Grammar from yaml to json
+        run: npm run bg
       
       - name: Install vsce
         run: npm i -g vsce

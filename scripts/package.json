@@ -1,0 +1,4 @@
+{
+    "main": "build_grammar.js",
+    "type":"module"
+}

@@ -211,8 +211,168 @@
                     <key>match</key>
                     <string>\\.</string>
                     <key>name</key>
-                    <string>constant.character.escape.scheme</string>
+                    <string>constant.character.escape.commonlisp</string>
                 </dict>
+
+                <!-- Formatted String, we do not check if `format` in current expression -->
+                <!-- since formatted string may be passed as a parameter which should be also highlighted. -->
+                <dict>
+                <!-- FORMAT Common Lisp the Language, 2nd Edition -->
+                <!-- 22.3.3. Formatted Output to Character Streams https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node200.html -->
+                <!-- Control Structures Directives -->
+                    <key>match</key>
+                    <string>(?xi)
+
+                            (~) #1 tilde
+                            (
+                                (
+                                    (([+-]?[0-9]+)|('.)|V|\#)*?
+                                    (,)?
+                                )
+                            *?) #2 prefix parameters, signed decimal numbers|single char, separated by commas
+                            (
+                                (:@|@:|:|@)
+                            ?) #8 modifiers
+                            (\(|\)|\[|\]|;|{|}|&lt;|&gt;|\^) #10 control structures
+                    </string>
+                    <key>captures</key>
+                    <dict>
+                        <key>1</key>
+                        <dict>
+                            <key>name</key>
+                            <string>storage.type.function.commonlisp</string>
+                        </dict>
+                        <key>2</key>
+                        <dict>
+                            <key>name</key>
+                            <string>variable.other.constant.commonlisp</string>
+                        </dict>
+                        <key>8</key>
+                        <dict>
+                            <key>name</key>
+                            <string>storage.type.function.commonlisp</string>
+                        </dict>
+                        <key>10</key>
+                        <dict>
+                            <key>name</key>
+                            <string>storage.type.function.commonlisp</string>
+                        </dict>
+
+                    </dict>
+                </dict>
+
+                <dict>
+                <!-- FORMAT Common Lisp the Language, 2nd Edition -->
+                <!-- 22.3.3. Formatted Output to Character Streams https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node200.html -->
+                <!-- Simple Directives -->
+                    <key>match</key>
+                    <string>(?xi)
+
+                            (~) #1 tilde
+                            (
+                                (
+                                    (([+-]?[0-9]+)|('.)|V|\#)*?
+                                    (,)?
+                                )
+                            *?) #2 prefix parameters, signed decimal numbers|single char, separated by commas
+                            (
+                                (:@|@:|:|@)
+                            ?) #8 modifiers
+                            (A|S|D|B|O|X|R|P|C|F|E|G|\$|%|\&amp;|\||~|T|\*|\?|_|W|I) #10 directives
+                    </string>
+                    <key>captures</key>
+                    <dict>
+                        <key>1</key>
+                        <dict>
+                            <key>name</key>
+                            <string>entity.name.variable.commonlisp</string>
+                        </dict>
+                        <key>2</key>
+                        <dict>
+                            <key>name</key>
+                            <string>variable.other.constant.commonlisp</string>
+                        </dict>
+                        <key>8</key>
+                        <dict>
+                            <key>name</key>
+                            <string>entity.name.variable.commonlisp</string>
+                        </dict>
+                        <key>10</key>
+                        <dict>
+                            <key>name</key>
+                            <string>entity.name.variable.commonlisp</string>
+                        </dict>
+
+                    </dict>
+                </dict>
+
+                <dict>
+                <!-- FORMAT Common Lisp the Language, 2nd Edition -->
+                <!-- 27.4. Format Directive Interface https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node257.html -->
+                <!-- Call Function -->
+                    <key>match</key>
+                    <string>(?xi)
+
+                            (~) #1 tilde
+                            (
+                                (
+                                    (([+-]?[0-9]+)|('.)|V|\#)*?
+                                    (,)?
+                                )
+                            *?) #2 prefix parameters, signed decimal numbers|single char, separated by commas
+                            (
+                                (:@|@:|:|@)
+                            ?) #8 modifiers
+                            (\/) #10
+                            (\S+?) #11 call function
+                            (\/) #12
+                    </string>
+                    <key>captures</key>
+                    <dict>
+                        <key>1</key>
+                        <dict>
+                            <key>name</key>
+                            <string>entity.name.variable.commonlisp</string>
+                        </dict>
+                        <key>2</key>
+                        <dict>
+                            <key>name</key>
+                            <string>variable.other.constant.commonlisp</string>
+                        </dict>
+                        <key>8</key>
+                        <dict>
+                            <key>name</key>
+                            <string>entity.name.variable.commonlisp</string>
+                        </dict>
+                        <key>10</key>
+                        <dict>
+                            <key>name</key>
+                            <string>entity.name.variable.commonlisp</string>
+                        </dict>
+                        <key>11</key>
+                        <dict>
+                            <key>name</key>
+                            <string>entity.name.variable.commonlisp</string>
+                        </dict>
+                        <key>12</key>
+                        <dict>
+                            <key>name</key>
+                            <string>entity.name.variable.commonlisp</string>
+                        </dict>
+
+                    </dict>
+                </dict>
+
+                <dict>
+                <!-- FORMAT Common Lisp the Language, 2nd Edition -->
+                <!-- 22.3.3. Formatted Output to Character Streams https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node200.html -->
+                <!-- Nothing Tilde -->
+                    <key>match</key>
+                    <string>(~\n)</string>
+                    <key>name</key>
+                    <string>variable.other.constant.commonlisp</string>
+                </dict>
+
             </array>
         </dict>
 
@@ -239,21 +399,18 @@
                     <key>match</key>
                     <string>(?xi)
                         (?&lt;=^|\s|\() # preceded by space or (
-                        (?:array-dimension-limit|array-row-major-index|arrayp|boole-1|boole-2|boole-andc1|
-                        boole-andc2|boole-c1|boole-c2|boole-clr|boole-eqv|boole-ior|boole-nand|boole-nor|boole-orc1|
-                        boole-orc2|boole-set|boole-xor|boolean|call-arguments-limit|char-not-greaterp|double-float-epsilon|
-                        double-float-negative-epsilon|internal-time-units-per-second|lambda-list-keywords|
-                        lambda-parameters-limit|least-negative-double-float|least-negative-long-float|
-                        least-negative-normalized-double-float|least-negative-normalized-long-float|
-                        least-negative-normalized-short-float|least-negative-normalized-single-float|
-                        least-negative-short-float|least-negative-single-float|least-positive-double-float|
-                        least-positive-long-float|least-positive-normalized-double-float|least-positive-normalized-long-float|
-                        least-positive-normalized-short-float|least-positive-normalized-single-float|least-positive-short-float|
-                        least-positive-single-float|long-float-epsilon|long-float-negative-epsilon|
-                        most-negative-double-float|most-negative-fixnum|most-negative-long-float|most-negative-short-float|
-                        most-negative-single-float|most-positive-double-float|most-positive-fixnum|most-positive-long-float|
-                        most-positive-short-float|most-positive-single-float|multiple-values-limit|pi|short-float-epsilon|
-                        short-float-negative-epsilon|single-float-epsilon|single-float-negative-epsilon|t|nil)
+                        (?:t|single-float-negative-epsilon|single-float-epsilon|short-float-negative-epsilon|short-float-epsilon|pi|
+                        nil|multiple-values-limit|most-positive-single-float|most-positive-short-float|most-positive-long-float|
+                        most-positive-fixnum|most-positive-double-float|most-negative-single-float|most-negative-short-float|
+                        most-negative-long-float|most-negative-fixnum|most-negative-double-float|long-float-negative-epsilon|
+                        long-float-epsilon|least-positive-single-float|least-positive-short-float|least-positive-normalized-single-float|
+                        least-positive-normalized-short-float|least-positive-normalized-long-float|least-positive-normalized-double-float|
+                        least-positive-long-float|least-positive-double-float|least-negative-single-float|least-negative-short-float|
+                        least-negative-normalized-single-float|least-negative-normalized-short-float|least-negative-normalized-long-float|
+                        least-negative-normalized-double-float|least-negative-long-float|least-negative-double-float|lambda-parameters-limit|
+                        lambda-list-keywords|internal-time-units-per-second|double-float-negative-epsilon|double-float-epsilon|char-not-greaterp|
+                        call-arguments-limit|boolean|boole-xor|boole-set|boole-orc2|boole-orc1|boole-nor|boole-nand|boole-ior|boole-eqv|
+                        boole-clr|boole-c2|boole-c1|boole-andc2|boole-andc1|boole-2|boole-1|arrayp|array-row-major-index|array-dimension-limit)
                         (?=(\s|\(|\))) # followed by space, ( or )
                         </string>
                     <key>name</key>
@@ -292,7 +449,8 @@
 
                 <dict>
                 <!-- CL-ANSI 2.1.3. Floating-Point Numbers -->
-                <!-- Common Lisp the Language, 2nd Edition: https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node19.html#SECTION00613000000000000000 -->
+                <!-- Common Lisp the Language, 2nd Edition -->
+                <!-- 2.1.3. Floating-Point Numbers https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node19.html#SECTION00613000000000000000 -->
                     <key>match</key>
                     <string>(?x)
                         (?&lt;=^|\s|\()                           # preceded by space or (
@@ -310,11 +468,12 @@
         <dict>
         <!-- CL-ANSI macro lambda list, ordinary lambda list, -->
         <!-- Style Guide: start with & -->
-        <!-- https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node64.html Common Lisp the Language, 2nd Edition 5.2.2. Lambda-Expressions-->
+        <!-- Common Lisp the Language, 2nd Edition -->
+        <!-- 5.2.2. Lambda-Expressions https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node64.html -->
             <key>match</key>
             <string>(?xi)
                 (?&lt;=^|\s|\() # preceded by space or (
-                (?:&amp;\S+?|&amp;body|&amp;environment|&amp;whole|&amp;allow-other-keys|&amp;aux|&amp;key|&amp;optional|&amp;rest)
+                (?:&amp;\S+?|&amp;whole|&amp;rest|&amp;optional|&amp;key|&amp;environment|&amp;body|&amp;aux|&amp;allow-other-keys)
                 (?=(\s|\(|\))) # followed by space, ( or )
                 </string>
             <key>name</key>
@@ -330,14 +489,11 @@
                     <key>match</key>
                     <string>(?xi)
                         (?&lt;=^|\s|\() # preceded by space or (
-                        (?:aref|caaaar|caaadr|caaar|caadar|caaddr|caadr|caar|cadaar|cadadr|cadar|
-                        caddar|cadddr|caddr|cadr|car|cdaaar|cdaadr|cdaar|cdadar|cdaddr|cdadr|
-                        cdar|cddaar|cddadr|cddar|cdddar|cddddr|cdddr|cddr|cdr|char|compiler-macro-function|
-                        eighth|elt|fdefinition|fifth|fill-pointer|find-class|first|fourth|get|
-                        get-internal-real-time|get-internal-run-time|ldb|logical-pathname-translations|
-                        macroexpand-1|mask-field|ninth|nth|readtable-case|rest|row-major-aref|sbit|
-                        schar|second|seventh|sixth|subseq|svref|symbol-function|symbol-value|symbolp|
-                        tenth|third|values|bit)
+                        (?:values|third|tenth|symbolp|symbol-value|symbol-function|svref|subseq|sixth|seventh|second|schar|sbit|row-major-aref|rest|
+                        readtable-case|nth|ninth|mask-field|macroexpand-1|logical-pathname-translations|ldb|get-internal-run-time|get-internal-real-time|
+                        get|fourth|first|find-class|fill-pointer|fifth|fdefinition|elt|eighth|compiler-macro-function|char|cdr|cddr|cdddr|cddddr|
+                        cdddar|cddar|cddadr|cddaar|cdar|cdadr|cdaddr|cdadar|cdaar|cdaadr|cdaaar|car|cadr|caddr|cadddr|caddar|cadar|cadadr|cadaar|caar|
+                        caadr|caaddr|caadar|caaar|caaadr|caaaar|bit|aref)
                         (?=(\s|\(|\)))  # followed by space, ( or )
                     </string>
                     <key>name</key>
@@ -349,74 +505,48 @@
                     <key>match</key>
                     <string>(?xi)
                         (?&lt;=^|\s|\() # preceded by space or (
-                        (?:\/=|&lt;|&lt;=|=|&gt;|&gt;=|abs|acons|acos|acosh|adjoin|adjust-array|adjustable-array-p|
-                        alpha-char-p|alphanumericp|append|apply|apropos|apropos-list|arithmetic-error-operands|
-                        arithmetic-error-operation|array-dimension|array-dimensions|array-displacement|
-                        array-element-type|array-has-fill-pointer-p|array-in-bounds-p|array-rank|
-                        array-rank-limit|array-total-size|array-total-size-limit|ash|asin|asinh|
-                        assoc|assoc-if|assoc-if-not|atan|atanh|bit-and|bit-andc1|bit-andc2|bit-eqv|
-                        bit-ior|bit-nand|bit-nor|bit-not|bit-orc1|bit-orc2|bit-vector-p|bit-xor|
-                        boole|both-case-p|boundp|broadcast-stream-streams|butlast|byte|byte-position|
-                        byte-size|ceiling|cell-error-name|cerror|char-code|char-code-limit|
-                        char-downcase|char-equal|char-greaterp|char-int|char-name|char-not-equal|
-                        char-not-lessp|char-upcase|char\/=|char&lt;|char&lt;=|char=|char&gt;|char&gt;=|character|
-                        characterp|cis|class-of|clear-output|code-char|coerce|compile|compile-file-pathname|
-                        compiled-function|compiled-function-p|complement|complexp|compute-restarts|
-                        concatenate|concatenated-stream-streams|conjugate|consp|constantly|constantp|
-                        copy-alist|copy-list|copy-pprint-dispatch|copy-readtable|copy-seq|
-                        copy-structure|copy-symbol|copy-tree|cos|cosh|count|count-if|count-if-not|
-                        decode-float|decode-universal-time|delete-file|delete-package|denominator|
-                        deposit-field|digit-char|digit-char-p|directory|directory-namestring|disassemble|
-                        dpb|dribble|echo-stream-input-stream|echo-stream-output-stream|ed|
-                        encode-universal-time|endp|enough-namestring|ensure-directories-exist|
-                        ensure-generic-function|eq|equal|equalp|eval|evenp|every|exp|expt|fboundp|
-                        fceiling|ffloor|file-author|file-error-pathname|file-length|file-namestring|
-                        file-string-length|file-write-date|find|find-all-symbols|find-if|find-if-not|
-                        find-package|find-restart|find-symbol|finish-output|float-digits|
-                        floating-point-invalid-operation|floating-point-overflow|floating-point-underflow|
-                        floatp|floor|fmakunbound|force-output|format|fround|ftruncate|funcall|
-                        function-lambda-expression|functionp|gcd|get-decoded-time|get-properties|
-                        get-setf-expansion|get-universal-time|getf|gethash|graphic-char-p|hash-table-count|
-                        hash-table-p|hash-table-rehash-size|hash-table-rehash-threshold|hash-table-size|
-                        hash-table-test|host-namestring|identity|imagpart|input-stream-p|integer-decode-float|
-                        integer-length|integerp|interactive-stream-p|intern|isqrt|keywordp|last|lcm|
-                        ldb-test|length|lisp-implementation-type|lisp-implementation-version|list\*|
-                        list-all-packages|list-length|listen|listp|load|load-logical-pathname-translations|
-                        log|logand|logandc1|logandc2|logbitp|logcount|logeqv|logior|lognand|lognor|
-                        lognot|logorc1|logorc2|logtest|logxor|long-site-name|lower-case-p|machine-instance|
-                        machine-type|machine-version|macro-function|macroexpand|make-array|
-                        make-broadcast-stream|make-concatenated-stream|make-condition|make-dispatch-macro-character|
-                        make-echo-stream|make-hash-table|make-list|make-load-form-saving-slots|make-package|
-                        make-pathname|make-random-state|make-sequence|make-string|make-string-input-stream|
-                        make-string-output-stream|make-symbol|make-synonym-stream|make-two-way-stream|makunbound|
-                        map|map-into|mapc|mapcan|mapcar|mapcon|mapl|maplist|max|member-if|member-if-not|merge|
-                        merge-pathnames|min|minusp|mismatch|name-char|namestring|nbutlast|notany|notevery|
-                        nth-value|numberp|numerator|oddp|open|open-stream-p|output-stream-p|package-error-package|
-                        package-name|package-nicknames|package-shadowing-symbols|package-use-list|
-                        package-used-by-list|packagep|pairlis|parse-integer|parse-namestring|pathname-device|
-                        pathname-directory|pathname-host|pathname-match-p|pathname-name|pathname-type|
-                        pathname-version|pathnamep|peek-char|phase|plusp|position|position-if|position-if-not|
-                        pprint|pprint-dispatch|pprint-indent|pprint-tab|prin1|prin1-to-string|princ|
-                        princ-to-string|print|print-not-readable-object|probe-file|proclaim|random-state-p|
-                        rassoc|rassoc-if|rassoc-if-not|rationalize|rationalp|read|read-char|read-char-no-hang|
-                        read-delimited-list|read-line|read-preserving-whitespace|reader-error|readtablep|
-                        realp|realpart|reduce|rem|rename-file|rename-package|restart-name|round|scale-float|
-                        search|set-pprint-dispatch|short-site-name|signum|simple-bit-vector-p|
-                        simple-condition-format-arguments|simple-condition-format-control|simple-string-p|
-                        simple-vector-p|sin|sinh|slot-boundp|slot-exists-p|slot-value|software-type|
-                        software-version|some|sort|special-operator-p|sqrt|stable-sort|standard-char-p|
-                        stream-element-type|stream-error-stream|stream-external-format|streamp|string-equal|
-                        string-greaterp|string-left-trim|string-lessp|string-not-equal|string-not-greaterp|
-                        string-not-lessp|string-right-trim|string-stream|string-trim|string\/=|string&lt;|
-                        string&lt;=|string=|string&gt;=|stringp|subsetp|subtypep|sxhash|symbol-name|symbol-package|
-                        symbol-plist|synonym-stream-symbol|tan|tanh|translate-logical-pathname|
-                        translate-pathname|tree-equal|truename|truncate|two-way-stream-input-stream|
-                        two-way-stream-output-stream|type-error-expected-type|type-of|typecase|typep|
-                        unbound-slot-instance|unread-char|upgraded-array-element-type|upgraded-complex-part-type|
-                        upper-case-p|values-list|vector-push|vector-push-extend|vectorp|wild-pathname-p|
-                        write|write-line|write-string|write-to-string|zerop|user-homedir-pathname|
-                        logical-pathname|char-lessp|complex|cons|float|list|null|pathname|rational|string|
-                        vector|eql|member|mod|not|atom|\*|\+|-|\/|1\+|call-next-method|next-method-p|1-)
+                        (?:zerop|write-to-string|write-string|write-line|write|wild-pathname-p|vectorp|vector-push-extend|vector-push|vector|
+                        values-list|user-homedir-pathname|upper-case-p|upgraded-complex-part-type|upgraded-array-element-type|unread-char|
+                        unbound-slot-instance|typep|typecase|type-of|type-error-expected-type|two-way-stream-output-stream|two-way-stream-input-stream|
+                        truncate|truename|tree-equal|translate-pathname|translate-logical-pathname|tanh|tan|synonym-stream-symbol|symbol-plist|
+                        symbol-package|symbol-name|sxhash|subtypep|subsetp|stringp|string\/=|string&gt;=|string=|string&lt;=|string&lt;|string-trim|
+                        string-stream|string-right-trim|string-not-lessp|string-not-greaterp|string-not-equal|string-lessp|string-left-trim|string-greaterp|
+                        string-equal|string|streamp|stream-external-format|stream-error-stream|stream-element-type|standard-char-p|stable-sort|sqrt|
+                        special-operator-p|sort|some|software-version|software-type|slot-value|slot-exists-p|slot-boundp|sinh|sin|simple-vector-p|
+                        simple-string-p|simple-condition-format-control|simple-condition-format-arguments|simple-bit-vector-p|signum|short-site-name|
+                        set-pprint-dispatch|search|scale-float|round|restart-name|rename-package|rename-file|rem|reduce|realpart|realp|readtablep|
+                        reader-error|read-preserving-whitespace|read-line|read-delimited-list|read-char-no-hang|read-char|read|rationalp|rationalize|
+                        rational|rassoc-if-not|rassoc-if|rassoc|random-state-p|proclaim|probe-file|print-not-readable-object|print|princ-to-string|
+                        princ|prin1-to-string|prin1|pprint-tab|pprint-indent|pprint-dispatch|pprint|position-if-not|position-if|position|plusp|phase|
+                        peek-char|pathnamep|pathname-version|pathname-type|pathname-name|pathname-match-p|pathname-host|pathname-directory|pathname-device|
+                        pathname|parse-namestring|parse-integer|pairlis|packagep|package-used-by-list|package-use-list|package-shadowing-symbols|
+                        package-nicknames|package-name|package-error-package|output-stream-p|open-stream-p|open|oddp|numerator|numberp|null|nth-value|
+                        notevery|notany|not|next-method-p|nbutlast|namestring|name-char|mod|mismatch|minusp|min|merge-pathnames|merge|member-if-not|
+                        member-if|member|max|maplist|mapl|mapcon|mapcar|mapcan|mapc|map-into|map|makunbound|make-two-way-stream|make-synonym-stream|
+                        make-symbol|make-string-output-stream|make-string-input-stream|make-string|make-sequence|make-random-state|make-pathname|make-package|
+                        make-load-form-saving-slots|make-list|make-hash-table|make-echo-stream|make-dispatch-macro-character|make-condition|
+                        make-concatenated-stream|make-broadcast-stream|make-array|macroexpand|macro-function|machine-version|machine-type|machine-instance|
+                        lower-case-p|long-site-name|logxor|logtest|logorc2|logorc1|lognot|lognor|lognand|logior|logical-pathname|logeqv|logcount|logbitp|
+                        logandc2|logandc1|logand|log|load-logical-pathname-translations|load|listp|listen|list\*|list-length|list-all-packages|list|
+                        lisp-implementation-version|lisp-implementation-type|length|ldb-test|lcm|last|keywordp|isqrt|intern|interactive-stream-p|integerp|
+                        integer-length|integer-decode-float|input-stream-p|imagpart|identity|host-namestring|hash-table-test|hash-table-size|
+                        hash-table-rehash-threshold|hash-table-rehash-size|hash-table-p|hash-table-count|graphic-char-p|gethash|getf|get-universal-time|
+                        get-setf-expansion|get-properties|get-decoded-time|gcd|functionp|function-lambda-expression|funcall|ftruncate|fround|format|
+                        force-output|fmakunbound|floor|floatp|floating-point-underflow|floating-point-overflow|floating-point-invalid-operation|float-digits|
+                        float|finish-output|find-symbol|find-restart|find-package|find-if-not|find-if|find-all-symbols|find|file-write-date|file-string-length|
+                        file-namestring|file-length|file-error-pathname|file-author|ffloor|fceiling|fboundp|expt|exp|every|evenp|eval|equalp|equal|eql|eq|
+                        ensure-generic-function|ensure-directories-exist|enough-namestring|endp|encode-universal-time|ed|echo-stream-output-stream|echo-stream-input-stream|
+                        dribble|dpb|disassemble|directory-namestring|directory|digit-char-p|digit-char|deposit-field|denominator|delete-package|delete-file|
+                        decode-universal-time|decode-float|count-if-not|count-if|count|cosh|cos|copy-tree|copy-symbol|copy-structure|copy-seq|copy-readtable|
+                        copy-pprint-dispatch|copy-list|copy-alist|constantp|constantly|consp|cons|conjugate|concatenated-stream-streams|concatenate|compute-restarts|
+                        complexp|complex|complement|compiled-function-p|compiled-function|compile-file-pathname|compile|coerce|code-char|clear-output|class-of|cis|
+                        characterp|character|char\/=|char&gt;=|char&gt;|char=|char&lt;=|char&lt;|char-upcase|char-not-lessp|char-not-equal|char-name|char-lessp|
+                        char-int|char-greaterp|char-equal|char-downcase|char-code-limit|char-code|cerror|cell-error-name|ceiling|call-next-method|byte-size|
+                        byte-position|byte|butlast|broadcast-stream-streams|boundp|both-case-p|boole|bit-xor|bit-vector-p|bit-orc2|bit-orc1|bit-not|bit-nor|
+                        bit-nand|bit-ior|bit-eqv|bit-andc2|bit-andc1|bit-and|atom|atanh|atan|assoc-if-not|assoc-if|assoc|asinh|asin|ash|array-total-size-limit|
+                        array-total-size|array-rank-limit|array-rank|array-in-bounds-p|array-has-fill-pointer-p|array-element-type|array-displacement|array-dimensions|
+                        array-dimension|arithmetic-error-operation|arithmetic-error-operands|apropos-list|apropos|apply|append|alphanumericp|alpha-char-p|
+                        adjustable-array-p|adjust-array|adjoin|acosh|acos|acons|abs|\/=|\/|\+|\*|&gt;=|&gt;|=|&lt;=|&lt;|1\+|1-|-)
                         (?=(\s|\(|\))) # followed by space, ( or )
                     </string>
                     <key>name</key>
@@ -428,12 +558,9 @@
                     <key>match</key>
                     <string>(?xi)
                         (?&lt;=^|\s|\() # preceded by space or (
-                        (?:add-method|allocate-instance|change-class|class-name|compiler-macro|
-                        compute-applicable-methods|describe-object|do-external-symbols|find-method|
-                        function-keywords|make-instance|make-instances-obsolete|make-load-form|
-                        method-qualifiers|no-applicable-method|no-next-method|print-object|remove-method|
-                        shared-initialize|slot-missing|slot-unbound|structure|update-instance-for-different-class|
-                        update-instance-for-redefined-class|variable)
+                        (?:variable|update-instance-for-redefined-class|update-instance-for-different-class|structure|slot-unbound|slot-missing|shared-initialize|
+                        remove-method|print-object|no-next-method|no-applicable-method|method-qualifiers|make-load-form|make-instances-obsolete|make-instance|
+                        function-keywords|find-method|do-external-symbols|describe-object|compute-applicable-methods|compiler-macro|class-name|change-class|allocate-instance|add-method)
                         (?=(\s|\(|\)))  # followed by space, ( or )
                     </string>
                     <key>name</key>
@@ -445,20 +572,16 @@
                     <key>match</key>
                     <string>(?xi)
                         (?&lt;=^|\s|\() # preceded by space or (
-                        (?:abort|break|clear-input|close|clrhash|delete|delete-duplicates|delete-if|delete-if-not|
-                        describe|export|file-position|fill|fresh-line|gensym|gentemp|get-dispatch-macro-character|
-                        get-macro-character|get-output-stream-string|import|inspect|intersection|invalid-method-error|
-                        invoke-debugger|invoke-restart|invoke-restart-interactively|ldiff|maphash|
-                        method-combination-error|nconc|nintersection|nreconc|nreverse|nset-difference|nset-exclusive-or|
-                        nstring-capitalize|nstring-downcase|nstring-upcase|nsublis|nsubst|nsubst-if|nsubst-if-not|
-                        nsubstitute|nsubstitute-if|nsubstitute-if-not|nunion|pprint-fill|pprint-linear|pprint-newline|
-                        pprint-tabular|provide|random|read-byte|read-sequence|remhash|remove|remove-duplicates|remove-if|
-                        remove-if-not|remprop|replace|require|revappend|reverse|room|rplaca|rplacd|set|set-difference|
-                        set-dispatch-macro-character|set-exclusive-or|set-syntax-from-char|setq|shadow|shadowing-import|
-                        signal|sleep|slot-makunbound|string-capitalize|string-downcase|string-upcase|sublis|subst|
-                        subst-if|subst-if-not|substitute|substitute-if|substitute-if-not|tailp|terpri|unexport|unintern|
-                        union|unuse-package|use-package|use-value|vector-pop|warn|write-byte|write-char|write-sequence|
-                        y-or-n-p|yes-or-no-p|continue|muffle-warning|store-value|incf|reinitialize-instance)
+                        (?:yes-or-no-p|y-or-n-p|write-sequence|write-char|write-byte|warn|vector-pop|use-value|use-package|unuse-package|union|unintern|unexport|
+                        terpri|tailp|substitute-if-not|substitute-if|substitute|subst-if-not|subst-if|subst|sublis|string-upcase|string-downcase|string-capitalize|
+                        store-value|slot-makunbound|sleep|signal|shadowing-import|shadow|setq|set-syntax-from-char|set-exclusive-or|set-dispatch-macro-character|
+                        set-difference|set|rplacd|rplaca|room|reverse|revappend|require|replace|remprop|remove-if-not|remove-if|remove-duplicates|remove|remhash|
+                        reinitialize-instance|read-sequence|read-byte|random|provide|pprint-tabular|pprint-newline|pprint-linear|pprint-fill|nunion|nsubstitute-if-not|
+                        nsubstitute-if|nsubstitute|nsubst-if-not|nsubst-if|nsubst|nsublis|nstring-upcase|nstring-downcase|nstring-capitalize|nset-exclusive-or|
+                        nset-difference|nreverse|nreconc|nintersection|nconc|muffle-warning|method-combination-error|maphash|ldiff|invoke-restart-interactively|
+                        invoke-restart|invoke-debugger|invalid-method-error|intersection|inspect|incf|import|get-output-stream-string|get-macro-character|
+                        get-dispatch-macro-character|gentemp|gensym|fresh-line|fill|file-position|export|describe|delete-if-not|delete-if|delete-duplicates|delete|
+                        continue|clrhash|close|clear-input|break|abort)
                         (?=(\s|\(|\)))  # followed by space, ( or )
                     </string>
                     <key>name</key>
@@ -476,16 +599,13 @@
                     <key>match</key>
                     <string>(?xi)
                         (?&lt;=^|\s|\() # preceded by space or (
-                        (?:declare|
-                        call-method|make-method|pprint-exit-if-list-exhausted|assert|cond|ctypecase|declaim|defclass|defconstant|
-                        defgeneric|define-compiler-macro|define-condition|define-setf-expander|define-symbol-macro|defmacro|
-                        defmethod|defpackage|defsetf|defstruct|deftype|defun|destructuring-bind|do|do\*|do-all-symbols|do-symbols|
-                        documentation|dolist|dotimes|etypecase|formatter|handler-bind|handler-case|ignore-errors|inline|loop|
-                        multiple-value-bind|multiple-value-list|multiple-value-setq|nthcdr|otherwise|pprint-logical-block|
-                        print-unreadable-object|prog|prog\*|prog1|prog2|psetf|restart-bind|restart-case|return|rotatef|shiftf|step|
-                        time|type-error|unless|when|with-accessors|with-compilation-unit|with-condition-restarts|
-                        with-hash-table-iterator|with-package-iterator|with-simple-restart|with-slots|with-standard-io-syntax|lambda|
-                        setf|and|or)
+                        (?:with-standard-io-syntax|with-slots|with-simple-restart|with-package-iterator|with-hash-table-iterator|with-condition-restarts|
+                        with-compilation-unit|with-accessors|when|unless|type-error|time|step|shiftf|setf|rotatef|return|restart-case|restart-bind|
+                        psetf|prog\*|prog2|prog1|prog|print-unreadable-object|pprint-logical-block|pprint-exit-if-list-exhausted|otherwise|or|nthcdr|
+                        multiple-value-setq|multiple-value-list|multiple-value-bind|make-method|loop|lambda|inline|ignore-errors|handler-case|handler-bind|
+                        formatter|etypecase|dotimes|dolist|documentation|do\*|do-symbols|do-all-symbols|do|destructuring-bind|defun|deftype|defstruct|
+                        defsetf|defpackage|defmethod|defmacro|define-symbol-macro|define-setf-expander|define-condition|define-compiler-macro|defgeneric|
+                        defconstant|defclass|declare|declaim|ctypecase|cond|call-method|assert|and)
                         (?=(\s|\(|\)))  # followed by space, ( or )
                     </string>
                     <key>name</key>
@@ -497,9 +617,8 @@
                     <key>match</key>
                     <string>(?xi)
                         (?&lt;=^|\s|\() # preceded by space or (
-                        (?:loop-finish|pprint-pop|case|ccase|check-type|decf|define-method-combination|define-modify-macro|
-                        defparameter|defvar|ecase|in-package|pop|psetq|push|pushnew|remf|trace|untrace|with-input-from-string|
-                        with-open-file|with-open-stream|with-output-to-string|set-macro-character)
+                        (?:with-output-to-string|with-open-stream|with-open-file|with-input-from-string|untrace|trace|set-macro-character|remf|pushnew|push|
+                        psetq|pprint-pop|pop|loop-finish|in-package|ecase|defvar|defparameter|define-modify-macro|define-method-combination|decf|check-type|ccase|case)
                         (?=(\s|\(|\)))  # followed by space, ( or )
                     </string>
                     <key>name</key>
@@ -514,9 +633,8 @@
             <key>match</key>
             <string>(?xi)
                 (?&lt;=^|\s|\() # preceded by space or (
-                (?:block|catch|eval-when|flet|go|if|labels|let|let\*|load-time-value|locally|macrolet|
-                multiple-value-call|multiple-value-prog1|progn|progv|quote|return-from|symbol-macrolet|
-                tagbody|the|throw|unwind-protect|function)
+                (?:unwind-protect|throw|the|tagbody|symbol-macrolet|return-from|quote|progv|progn|multiple-value-prog1|multiple-value-call|macrolet|locally|load-time-value|
+                let\*|let|labels|if|go|function|flet|eval-when|catch|block)
                 (?=(\s|\(|\)))  # followed by space, ( or )
                 </string>
             <key>name</key>
@@ -529,8 +647,7 @@
             <key>match</key>
             <string>(?xi)
                 (?&lt;=^|\s|\() # preceded by space or (
-                (?:compilation-speed|debug|declaration|dynamic-extent|ftype|ignorable|ignore|
-                initialize-instance|notinline|optimize|safety|space|special|speed|type)
+                (?:type|speed|special|space|safety|optimize|notinline|initialize-instance|ignore|ignorable|ftype|dynamic-extent|declaration|debug|compilation-speed)
                 (?=(\s|\(|\)))  # followed by space, ( or )
                 </string>
             <key>name</key>
@@ -543,9 +660,8 @@
             <key>match</key>
             <string>(?xi)
                 (?&lt;=^|\s|\() # preceded by space or (
-                (?:base-char|base-string|bignum|boole-and|compile-file|double-float|extended-char|
-                fixnum|keyword|long-float|short-float|signed-byte|simple-array|simple-base-string|simple-bit-vector|simple-string|simple-vector|
-                single-float|standard-char|unsigned-byte|satisfies)
+                (?:unsigned-byte|standard-char|single-float|simple-vector|simple-string|simple-bit-vector|simple-base-string|simple-array|signed-byte|short-float|
+                satisfies|long-float|keyword|fixnum|extended-char|double-float|compile-file|boole-and|bignum|base-string|base-char)
                 (?=(\s|\(|\)))  # followed by space, ( or )
                 </string>
             <key>name</key>
@@ -558,11 +674,9 @@
             <key>match</key>
             <string>(?xi)
                 (?&lt;=^|\s|\() # preceded by space or (
-                (?:standard|standard-object|structure-object|array|bit-vector|broadcast-stream|
-                built-in-class|class|concatenated-stream|echo-stream|file-stream|generic-function|
-                hash-table|integer|method|method-combination|number|package|random-state|ratio|readtable|real|restart|
-                sequence|standard-class|standard-generic-function|standard-method|stream|string&gt;|
-                structure-class|symbol|synonym-stream|two-way-stream)
+                (?:two-way-stream|synonym-stream|symbol|structure-object|structure-class|string&gt;|stream|standard-object|standard-method|
+                standard-generic-function|standard-class|standard|sequence|restart|real|readtable|ratio|random-state|package|number|method-combination|
+                method|integer|hash-table|generic-function|file-stream|echo-stream|concatenated-stream|class|built-in-class|broadcast-stream|bit-vector|array)
                 (?=(\s|\(|\)))  # followed by space, ( or )
                 </string>
             <key>name</key>
@@ -575,11 +689,9 @@
             <key>match</key>
             <string>(?xi)
                 (?&lt;=^|\s|\() # preceded by space or (
-                (?:arithmetic-error|cell-error|condition|control-error|division-by-zero|end-of-file|
-                file-error|float-precision|float-radix|float-sign|floating-point-inexact|package-error|
-                parse-error|print-not-readable|program-error|read-from-string|serious-condition|simple-condition|
-                simple-error|simple-type-error|simple-warning|storage-condition|stream-error|style-warning|
-                type-error-datum|unbound-slot|unbound-variable|undefined-function|warning|error)
+                (?:warning|undefined-function|unbound-variable|unbound-slot|type-error-datum|style-warning|stream-error|storage-condition|simple-warning|
+                simple-type-error|simple-error|simple-condition|serious-condition|read-from-string|program-error|print-not-readable|parse-error|package-error|
+                floating-point-inexact|float-sign|float-radix|float-precision|file-error|error|end-of-file|division-by-zero|control-error|condition|cell-error|arithmetic-error)
                 (?=(\s|\(|\)))  # followed by space, ( or )
                 </string>
             <key>name</key>
@@ -596,14 +708,12 @@
                     <key>match</key>
                     <string>(?xi)
                         (?&lt;=^|\s|\() # preceded by space or (
-                        (?:\*break-on-signals\*|\*compile-file-pathname\*|\*compile-file-truename\*|\*compile-print\*|
-                        \*compile-verbose\*|\*debug-io\*|\*debugger-hook\*|\*default-pathname-defaults\*|\*error-output\*|
-                        \*features\*|\*gensym-counter\*|\*load-pathname\*|\*load-print\*|\*load-truename\*|\*load-verbose\*|
-                        \*macroexpand-hook\*|\*modules\*|\*package\*|\*print-array\*|\*print-base\*|\*print-case\*|\*print-circle\*|
-                        \*print-escape\*|\*print-gensym\*|\*print-length\*|\*print-level\*|\*print-lines\*|\*print-miser-width\*|
-                        \*print-pprint-dispatch\*|\*print-pretty\*|\*print-radix\*|\*print-readably\*|\*print-right-margin\*|\*query-io\*|
-                        \*random-state\*|\*read-base\*|\*read-default-float-format\*|\*read-eval\*|\*read-suppress\*|\*readtable\*|
-                        \*standard-input\*|\*standard-output\*|\*terminal-io\*|\*trace-output\*)
+                        (?:\*trace-output\*|\*terminal-io\*|\*standard-output\*|\*standard-input\*|\*readtable\*|\*read-suppress\*|\*read-eval\*|\*read-default-float-format\*|
+                        \*read-base\*|\*random-state\*|\*query-io\*|\*print-right-margin\*|\*print-readably\*|\*print-radix\*|\*print-pretty\*|\*print-pprint-dispatch\*|
+                        \*print-miser-width\*|\*print-lines\*|\*print-level\*|\*print-length\*|\*print-gensym\*|\*print-escape\*|\*print-circle\*|\*print-case\*|
+                        \*print-base\*|\*print-array\*|\*package\*|\*modules\*|\*macroexpand-hook\*|\*load-verbose\*|\*load-truename\*|\*load-print\*|\*load-pathname\*|
+                        \*gensym-counter\*|\*features\*|\*error-output\*|\*default-pathname-defaults\*|\*debugger-hook\*|\*debug-io\*|\*compile-verbose\*|\*compile-print\*|
+                        \*compile-file-truename\*|\*compile-file-pathname\*|\*break-on-signals\*)
                         (?=(\s|\(|\)))  # followed by space, ( or )
                         </string>
                     <key>name</key>
@@ -614,7 +724,7 @@
                     <key>match</key>
                     <string>(?xi)
                         (?&lt;=^|\s|\() # preceded by space or (
-                        (?:\*\*|\*\*\*|\+\+|\+\+\+|\/\/|\/\/\/)
+                        (?:\*\*\*|\*\*|\+\+\+|\+\+|\/\/\/|\/\/)
                         (?=(\s|\(|\)))  # followed by space, ( or )
                         </string>
                     <key>name</key>
@@ -629,22 +739,38 @@
             <!-- CL-ANSI 2.4 Standard Macro Characters -->
             <array>
                 <dict>
+                <!-- CL-ANSI 2.4.3 Single-Quote -->
+                <!-- Notice that the char immediately followed by ' will not be highlighted -->
+                <!-- since 1. might reduce the recognition of ' -->
+                <!-- 2. might cannot distinguish ' and followed char's syntax when they are combined. -->
+                <!-- This case be searched by '[^\(\s]+\s -->
+                <key>match</key>
+                    <string>(?xi)
+                        (?&lt;=^|\s|\(|,@|,\.|,) # preceded by space , ( or `,`|`,@`|`,.`
+                        ('+)
+                        (?=\S)
+                    </string>
+                    <key>name</key>
+                    <string>variable.other.constant.commonlisp</string>
+                </dict>
+
+                <dict>
                 <!-- CL-ANSI 22.1.3.3.1 Package Prefixes for Symbols -->
                     <key>match</key>
                     <string>(?xi)
-                        (?&lt;=^|\s|\(|,|,@) # preceded by space , ( or `,`|`,@`
-                        (?::\S+?)
+                        (?&lt;=^|\s|\(|,@|,\.|,) # preceded by space , ( or `,`|`,@`|`,.`
+                        (?:\:\S+?)
                         (?=(\s|\(|\)))       # followed by space, ( or )
                     </string>
                     <key>name</key>
                     <string>entity.name.variable.commonlisp</string>
                 </dict>
-               
+
                 <dict>
                 <!-- CL-ANSI 2.4.8.3 Sharpsign Left-Parenthesis -->
                     <key>match</key>
                     <string>(?xi)
-                        (?&lt;=^|\s|\(|,|,@) # preceded by space , ( or `,`|`,@`
+                        (?&lt;=^|\s|\(|,@|,\.|,) # preceded by space , ( or `,`|`,@`|`,.`
                         (\#)([0-9]*)
                         (?=\()
                     </string>
@@ -667,7 +793,7 @@
                 <!-- CL-ANSI 2.4.8.4 Sharpsign Asterisk -->
                     <key>match</key>
                     <string>(?xi)
-                        (?&lt;=^|\s|\(|,|,@) # preceded by space , ( or `,`|`,@`
+                        (?&lt;=^|\s|\(|,@|,\.|,) # preceded by space , ( or `,`|`,@`|`,.`
                         (\#)
                         ([0-9]*)
                         (\*)
@@ -696,7 +822,7 @@
                 <!-- CL-ANSI 2.4.8.4 Sharpsign Asterisk empty bit vector-->
                     <key>match</key>
                     <string>(?xi)
-                        (?&lt;=^|\s|\(|,|,@) # preceded by space , ( or `,`|`,@`
+                        (?&lt;=^|\s|\(|,@|,\.|,) # preceded by space , ( or `,`|`,@`|`,.`
                         (\#\*|\#0\*)
                         (?=(\s|\(|\)))       # followed by space, ( or )
                     </string>
@@ -708,7 +834,7 @@
                 <!-- CL-ANSI 2.4.8.12 Sharpsign A -->
                     <key>match</key>
                     <string>(?xi)
-                        (?&lt;=^|\s|\(|,|,@) # preceded by space , ( or `,`|`,@`
+                        (?&lt;=^|\s|\(|,@|,\.|,) # preceded by space , ( or `,`|`,@`|`,.`
                         (\#)
                         ([0-9]+)
                         (a|A)
@@ -738,7 +864,7 @@
                 <!-- CL-ANSI 2.4.8.15 Sharpsign Equal-Sign -->
                     <key>match</key>
                     <string>(?xi)
-                        (?&lt;=^|\s|\(|,|,@) # preceded by space , ( or `,`|`,@`
+                        (?&lt;=^|\s|\(|,@|,\.|,) # preceded by space , ( or `,`|`,@`|`,.`
                         (\#)
                         ([0-9]+)
                         (=)
@@ -768,13 +894,13 @@
                 <!-- CL-ANSI 2.4.8.16 Sharpsign Sharpsign -->
                     <key>match</key>
                     <string>(?xi)
-                        (?&lt;=^|\s|\(|,|,@) # preceded by space , ( or `,`|`,@`
+                        (?&lt;=^|\s|\(|,@|,\.|,) # preceded by space , ( or `,`|`,@`|`,.`
                         (\#)
                         ([0-9]+)
                         (\#)
                         (?=.)
                     </string>
-                   <key>captures</key>
+                    <key>captures</key>
                     <dict>
                         <key>1</key>
                         <dict>
@@ -799,7 +925,7 @@
                 <!-- CL-ANSI 2.4.8.18 Sharpsign Minus -->
                     <key>match</key>
                     <string>(?xi)
-                        (?&lt;=^|\s|\(|,|,@) # preceded by space , ( or `,`|`,@`
+                        (?&lt;=^|\s|\(|,@|,\.|,) # preceded by space , ( or `,`|`,@`|`,.`
                         (\#(\+|-))
                         (?=\S)
                     </string>
@@ -815,8 +941,8 @@
                 <!-- CL-ANSI 2.4.8.14 Sharpsign P -->
                     <key>match</key>
                     <string>(?xi)
-                        (?&lt;=^|\s|\(|,|,@) # preceded by space , ( or `,`|`,@`
-                        (\#('|’|,|\.|c|C|s|S|p|P))
+                        (?&lt;=^|\s|\(|,@|,\.|,) # preceded by space , ( or `,`|`,@`|`,.`
+                        (\#('|,|\.|c|C|s|S|p|P))
                         (?=\S)
                     </string>
                     <key>name</key>
@@ -825,11 +951,12 @@
 
                 <dict>
                 <!-- CL-ANSI 2.4.8.5 Sharpsign Colon -->
+                <!-- CL-ANSI 22.1.3.3.1 Package Prefixes for Symbols -->
                     <key>match</key>
                     <string>(?xi)
-                        (?&lt;=^|\s|\(|,|,@) # preceded by space , ( or `,`|`,@`
+                        (?&lt;=^|\s|\(|,@|,\.|,) # preceded by space , ( or `,`|`,@`|`,.`
                         (\#)
-                        :
+                        (:)
                         (?=\S)
                     </string>
                     <key>captures</key>
@@ -837,22 +964,48 @@
                         <key>1</key>
                         <dict>
                             <key>name</key>
-                            <string>variable.other.constant.commonlisp</string>
+                            <string>support.type.commonlisp</string>
                         </dict>
                     </dict>
                 </dict>
 
                 <dict>
-                <!-- CL-ANSI 2.4.3 Single-Quote -->
                 <!-- CL-ANSI 2.4.6 Backquote -->
                     <key>match</key>
                     <string>(?xi)
                         (?&lt;=^|\s|\() # preceded by space or (
-                        (?:(',@|’,@|`,@|',|’,|`,|,@|,|'|’|`))
+                        (
+                            (`\#) #2
+                            |
+                            (`)(,@|,\.|,)? #3, #4
+                            |
+                            (,@|,\.|,) #5
+                        )
                         (?=\S)
                     </string>
-                    <key>name</key>
-                    <string>variable.other.constant.commonlisp</string>
+                    <key>captures</key>
+                    <dict>
+                        <key>2</key>
+                        <dict>
+                            <key>name</key>
+                            <string>variable.other.constant.commonlisp</string>
+                        </dict>
+                        <key>3</key>
+                        <dict>
+                            <key>name</key>
+                            <string>variable.other.constant.commonlisp</string>
+                        </dict>
+                        <key>4</key>
+                        <dict>
+                            <key>name</key>
+                            <string>variable.other.constant.commonlisp</string>
+                        </dict>
+                        <key>5</key>
+                        <dict>
+                            <key>name</key>
+                            <string>variable.other.constant.commonlisp</string>
+                        </dict>
+                    </dict>
                 </dict>
 
             </array>
@@ -872,17 +1025,16 @@
                     <key>match</key>
                     <string>(?xi)
                         (?&lt;=^|\s|\()                     # preceded by (
-                        (define-compiler-macro|defmacro|defun|define-setf-expander|
-                        defmethod|define-symbol-macro|define-modify-macro|defgeneric|
-                        define-method-combination|defsetf)  # keywords
+                        (defun|defsetf|defmethod|defmacro|define-symbol-macro|define-setf-expander|
+                        define-modify-macro|define-method-combination|define-compiler-macro|defgeneric)  # keywords
                         \s+
                         (   \(\s*
                                 (\S+)
-                            \s* 
-                                ((,@|,)?)
+                            \s*
+                                ((,@|,\.|,)?)
                                 (\S+?)      # (something+ name)
                             |
-                                ((,@|,)?)
+                                ((,@|,\.|,)?)
                                 (\S+?)      # name
                         )
                         (?=(\s|\(|\)))
@@ -906,8 +1058,19 @@
                         </dict>
                         <key>6</key>
                         <dict>
-                            <key>name</key>
-                            <string>entity.name.function.commonlisp</string>
+                            <key>patterns</key>
+                            <array>
+                                <dict>
+                                <key>include</key>
+                                <string>#package</string>
+                            </dict>
+                            <dict>
+                                <key>match</key>
+                                <string>\S+?</string>
+                                <key>name</key>
+                                <string>entity.name.function.commonlisp</string>
+                            </dict>
+                            </array>
                         </dict>
                         <key>7</key>
                         <dict>
@@ -916,8 +1079,19 @@
                         </dict>
                         <key>9</key>
                         <dict>
-                            <key>name</key>
-                            <string>entity.name.function.commonlisp</string>
+                            <key>patterns</key>
+                            <array>
+                                <dict>
+                                <key>include</key>
+                                <string>#package</string>
+                            </dict>
+                            <dict>
+                                <key>match</key>
+                                <string>\S+?</string>
+                                <key>name</key>
+                                <string>entity.name.function.commonlisp</string>
+                            </dict>
+                            </array>
                         </dict>
                     </dict>
                 </dict>
@@ -927,8 +1101,7 @@
                     <key>match</key>
                     <string>(?xi)
                         (?&lt;=^|\s|\()
-                        (deftype|defclass|define-condition|
-                        defpackage)              # keywords
+                        (deftype|defpackage|define-condition|defclass)              # keywords
                         \s+
                         (\S+?)                   # name
                         (?=(\s|\(|\)))
@@ -967,9 +1140,21 @@
                         </dict>
                         <key>2</key>
                         <dict>
-                            <key>name</key>
-                            <string>variable.other.constant.commonlisp</string>
+                            <key>patterns</key>
+                            <array>
+                                <dict>
+                                <key>include</key>
+                                <string>#package</string>
+                                </dict>
+                                <dict>
+                                <key>match</key>
+                                <string>\S+?</string>
+                                <key>name</key>
+                                <string>variable.other.constant.commonlisp</string>
+                                </dict>
+                            </array>
                         </dict>
+
                     </dict>
                 </dict>
 
@@ -1022,7 +1207,7 @@
                     <key>match</key>
                     <string>(?xi)
                         (?&lt;=^|\s|\()
-                        (flet|labels|macrolet)        # keywords
+                        (macrolet|labels|flet)        # keywords
                         \s+\(\s*\(\s*
                         (\S+?)                        # name
                         (?=(\s|\(|\)))
@@ -1036,8 +1221,19 @@
                         </dict>
                         <key>2</key>
                         <dict>
-                            <key>name</key>
-                            <string>entity.name.function.commonlisp</string>
+                            <key>patterns</key>
+                            <array>
+                                <dict>
+                                <key>include</key>
+                                <string>#package</string>
+                                </dict>
+                                <dict>
+                                <key>match</key>
+                                <string>\S+?</string>
+                                <key>name</key>
+                                <string>entity.name.function.commonlisp</string>
+                                </dict>
+                            </array>
                         </dict>
                     </dict>
                 </dict>
@@ -1047,14 +1243,36 @@
         <key>style-guide</key>
         <dict>
             <key>patterns</key>
+            <!-- Google Common Lisp Style Guide -->
             <!-- Style Guide: https://google.github.io/styleguide/lispguide.xml?showone=Global_variables_and_constants#Global_variables_and_constants -->
             <array>
+                <dict>
+                <!-- Except start with ' , then ::/: case; see Single-Quote part -->
+                <!-- For example: '#:*source-directory* -->
+                <key>match</key>
+                    <string>(?xi)
+                        (?&lt;=^'|\s'|\('|,@'|,\.'|,')
+                        (\S+?)
+                        (\:\:|\:)
+                        ((\+[^\s\+]+\+)|(\*[^\s\*]+\*))
+                        (?=(\s|\(|\)))
+                    </string>
+                    <key>captures</key>
+                    <dict>
+                        <key>3</key>
+                        <dict>
+                            <key>name</key>
+                            <string>source.commonlisp</string>
+                        </dict>
+                    </dict>
+                </dict>
+
                <dict>
                 <!-- Style Guide: Constants, earmuffs + -->
                     <key>match</key>
                     <string>(?xi)
-                        (?&lt;=^|\s|\() # preceded by space or (
-                        (?:\+[^\s\+]+\+)
+                        (?&lt;=\S:|^|\s|\() # preceded by space or (
+                        (\+[^\s\+]+\+)
                         (?=(\s|\(|\)))  # followed by space, ( or )
                     </string>
                     <key>name</key>
@@ -1065,8 +1283,8 @@
                 <!-- Style Guide: Special variables, earmuffs * -->
                     <key>match</key>
                     <string>(?xi)
-                        (?&lt;=^|\s|\() # preceded by space or (
-                        (?:\*[^\s\*]+\*)
+                        (?&lt;=\S:|^|\s|\() # preceded by space or (
+                        (\*[^\s\*]+\*)
                         (?=(\s|\(|\)))  # followed by space, ( or )
                     </string>
                     <key>name</key>
@@ -1078,22 +1296,29 @@
         <key>package</key>
         <dict>
             <key>patterns</key>
-            <!-- Common Lisp the Language, 2nd Edition 11.3. Translating Strings to Symbols -->
-            <!-- https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node114.html -->
+            <!-- Common Lisp the Language, 2nd Edition -->
+            <!-- 11.3. Translating Strings to Symbols https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node114.html -->
             <array>
                <dict>
                     <key>match</key>
                     <string>(?xi)
-                        (?&lt;=^|\s|\(|,|,@) # preceded by space , ( or `,`|`,@`
-                        (?:[a-zA-Z-]+?)
-                        (?=:\S+?|::\S+?)     # followed by space, ( or )
+                        (?&lt;=^|\s|\(|,@|,\.|,) # preceded by space , ( or `,`|`,@`|`,.`
+                        ([a-zA-Z-]+?)
+                        (?=\:\:|\:)
                     </string>
-                    <key>name</key>
-                    <string>support.type.commonlisp</string>
+                    <key>captures</key>
+                    <dict>
+                        <key>1</key>
+                        <dict>
+                            <key>name</key>
+                            <string>support.type.commonlisp</string>
+                        </dict>
+
+                    </dict>
                 </dict>
             </array>
         </dict>
-        
+
     </dict>
 
     <key>scopeName</key>
