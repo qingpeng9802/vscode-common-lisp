@@ -1,5 +1,11 @@
 # Change Log
 
+## [1.1.2] - 2022-06-28
+### Added
+- `src/web` become a web extension
+- `syntaxes/commonlisp.yaml` improve syntax highlighting
+- `syntaxes/cl_codeblock.yaml` for highlighting code block in Markdown
+
 ## [0.2.2] - 2022-05-30
 ### Fixed
 - `syntaxes/commonlisp.yaml` fixed syntax highlighting

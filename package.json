@@ -6,7 +6,7 @@
         "name": "Qingpeng Li",
         "email": "qingpeng9802@gmail.com"
     },
-    "version": "0.2.2",
+    "version": "1.1.2",
     "publisher": "qingpeng",
     "engines": {
         "vscode": "^1.54.0"
@@ -52,6 +52,12 @@
                     "light": "./icons/commonlisp_file_icon.svg",
                     "dark": "./icons/commonlisp_file_icon.svg"
                 }
+            },
+            {
+                "id": "commonlisp-injection",
+                "aliases": [
+                    "commonlisp-inj"
+                ]
             }
         ],
         "grammars": [
@@ -59,6 +65,17 @@
                 "language": "commonlisp",
                 "scopeName": "source.commonlisp",
                 "path": "./syntaxes/commonlisp.tmLanguage.json"
+            },
+            {
+                "language": "commonlisp-injection",
+                "scopeName": "markdown.commonlisp.codeblock",
+                "path": "./syntaxes/cl_codeblock.tmLanguage.json",
+                "injectTo": [
+                    "text.html.markdown"
+                ],
+                "embeddedLanguages": {
+                    "meta.embedded.block.commonlisp": "commonlisp"
+                }
             }
         ],
         "snippets": [
@@ -66,7 +83,190 @@
                 "language": "commonlisp",
                 "path": "./snippets/commonlisp_snippets.json"
             }
-        ]
+        ],
+        "configuration": {
+            "title": "Common Lisp",
+            "properties": {
+                "commonLisp.StaticAnalysis.enabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "markdownDescription": "Enable Language Features Service. If this is disabled, no [Programmatic Language Features](https://code.visualstudio.com/api/language-extensions/programmatic-language-features) will be executed."
+                },
+                "commonLisp.providers.CompletionItemProviders.user.enabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "markdownDescription": "Enable user symbol Completion Item Provider"
+                },
+                "commonLisp.providers.CompletionItemProviders.original.enabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "markdownDescription": "Enable original symbol Completion Item Provider"
+                },
+                "commonLisp.providers.CompletionItemProviders.ampersand.enabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "markdownDescription": "Enable start-with-ampersand Completion Item Provider"
+                },
+                "commonLisp.providers.CompletionItemProviders.asterisk.enabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "markdownDescription": "Enable start-with-asterisk Completion Item Provider"
+                },
+                "commonLisp.providers.CompletionItemProviders.colon.enabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "markdownDescription": "Enable start-with-colon Completion Item Provider"
+                },
+                "commonLisp.providers.CompletionItemProviders.tilde.enabled": {
+                    "type": "boolean",
+                    "default": false,
+                    "markdownDescription": "Enable start-with-tilde Completion Item Provider"
+                },
+                "commonLisp.providers.CompletionItemProviders.sharpsign.enabled": {
+                    "type": "boolean",
+                    "default": false,
+                    "markdownDescription": "Enable start-with-sharpsign Completion Item Provider"
+                },
+                "commonLisp.providers.HoverProvider.enabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "markdownDescription": "Enable Hover Provider"
+                },
+                "commonLisp.providers.DefinitionProvider.enabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "markdownDescription": "Enable Definition Provider"
+                },
+                "commonLisp.providers.DocumentSymbolProvider.enabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "markdownDescription": "Enable Document Symbol Provider"
+                },
+                "commonLisp.providers.ReferenceProvider.enabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "markdownDescription": "Enable Reference Provider"
+                },
+                "commonLisp.providers.DocumentSemanticTokensProvider.enabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "markdownDescription": "Enable Document Semantic Tokens Provider"
+                },
+                "commonLisp.providers.CallHierarchyProvider.enabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "markdownDescription": "Enable Call Hierarchy Provider"
+                },
+                "commonLisp.backupUpdater.debounceTimeout": {
+                    "type": "number",
+                    "default": 750,
+                    "markdownDescription": "`> 0`. The debounce timeout in ms controls how often the symbol info is updated. Only applies when `#commonLisp.providers.DocumentSemanticTokensProvider.enabled#` and `#commonLisp.providers.DocumentSymbolProvider.enabled#` are set to `false`."
+                },
+                "commonLisp.Updater.throttleTimeout": {
+                    "type": "number",
+                    "default": 200,
+                    "markdownDescription": "`> 0`. If you don't fully understand, don't change this. The throttle timeout in ms to avoid duplicate update. Only applies when `#commonLisp.providers.DocumentSemanticTokensProvider.enabled#` and `#commonLisp.providers.DocumentSymbolProvider.enabled#` are set to `true`."
+                },
+                "commonLisp.ReferenceProvider.ExcludedRanges": {
+                    "type": "string",
+                    "default": "comment and string",
+                    "enum": [
+                        "comment and string",
+                        "comment",
+                        "string",
+                        "none"
+                    ],
+                    "markdownEnumDescriptions": [
+                        "Reference result will exclude the ranges inside comments and strings.",
+                        "Reference result will exclude the ranges inside comments only.",
+                        "Reference result will exclude the ranges inside strings only.",
+                        "Reference result will include all the ranges."
+                    ]
+                },
+                "commonLisp.DefinitionProvider.ExcludedRanges": {
+                    "type": "string",
+                    "default": "none",
+                    "enum": [
+                        "comment and string",
+                        "comment",
+                        "string",
+                        "none"
+                    ],
+                    "markdownEnumDescriptions": [
+                        "Response to the selected word which is NOT inside comments and strings.",
+                        "Response to the selected word which is NOT inside comments.",
+                        "Response to the selected word which is NOT inside strings.",
+                        "Response to all the selected word."
+                    ]
+                },
+                "commonLisp.DocumentSemanticTokensProvider.ExcludedRanges": {
+                    "type": "string",
+                    "default": "comment and string",
+                    "enum": [
+                        "comment and string",
+                        "comment",
+                        "string",
+                        "none"
+                    ],
+                    "markdownEnumDescriptions": [
+                        "Highlight the tokens which is NOT inside comments and strings.",
+                        "Highlight the tokens which is NOT inside comments.",
+                        "Highlight the tokens which is NOT inside strings.",
+                        "Highlight all the tokens."
+                    ]
+                },
+                "commonLisp.DocumentSemanticTokensProvider.SingleQuoteAndBackQuote.Highlight": {
+                    "type": "string",
+                    "default": "single quote and backquote's comma only",
+                    "enum": [
+                        "single quote",
+                        "single quote and backquote's comma only",
+                        "single quote and backquote's all",
+                        "backquote's comma only",
+                        "backquote's all",
+                        "none"
+                    ],
+                    "markdownEnumDescriptions": [
+                        "Highlight normal tokens and the tokens which is in Single Quote.",
+                        "Highlight normal tokens and the tokens which is in Single Quote and BackQuote's comma only.",
+                        "Highlight normal tokens and the tokens which is in Single Quote and BackQuote.",
+                        "Highlight normal tokens and the tokens which is in BackQuote's comma only.",
+                        "Highlight normal tokens and the tokens which is in BackQuote.",
+                        "Highlight normal tokens only."
+                    ]
+                },
+                "commonLisp.StaticAnalysis.SingleQuoteAndBackQuote.ExcludedRanges": {
+                    "type": "string",
+                    "default": "backquote, but comma is saved",
+                    "enum": [
+                        "single quote",
+                        "single quote and backquote, but comma is saved",
+                        "single quote and backquote's all",
+                        "backquote, but comma is saved",
+                        "backquote's all",
+                        "none"
+                    ],
+                    "markdownEnumDescriptions": [
+                        "Perform static analysis on normal tokens and the tokens which is NOT in Single Quote.",
+                        "Perform static analysis on normal tokens and the tokens which is NOT in Single Quote and NOT in BackQuote, but comma is saved.",
+                        "Perform static analysis on normal tokens and the tokens which is NOT in Single Quote and NOT in BackQuote.",
+                        "Perform static analysis on normal tokens and the tokens which is NOT in BackQuote, but comma is saved.",
+                        "Perform static analysis on normal tokens and the tokens which is NOT in BackQuote.",
+                        "Perform static analysis on all the tokens, even though they are in Single Quote or BackQuote."
+                    ]
+                },
+                "commonLisp.ReferenceProvider.BackQuoteFilter.enabled": {
+                    "type": "boolean",
+                    "default": true,   
+                    "markdownDescription": "Enable BackQuote Filter to only include symbols with comma in backquote result."
+                },
+                "commonLisp.DefinitionProvider.BackQuoteFilter.enabled": {
+                    "type": "boolean",
+                    "default": true,   
+                    "markdownDescription": "Enable BackQuote Filter to only response to the symbols with comma in backquote result."
+                }
+            }
+        }
     },
     "icon": "images/icon.png",
     "repository": {
@@ -80,27 +280,29 @@
     "scripts": {
         "package": "vsce package",
         "publish": "vsce publish",
-        "bg": "node scripts/build_grammar.js",
+        "bg": "node scripts/build_grammar.mjs",
         "pretest": "npm run compile-web",
-        "vscode:prepublish": "npm run package-web",
+        "vscode:prepublish": "npm run package-web & npm run bg",
         "compile-web": "webpack",
         "watch-web": "webpack --watch",
         "package-web": "webpack --mode production --devtool hidden-source-map",
         "lint": "eslint src --ext ts"
     },
     "devDependencies": {
-        "@types/node": "^17.0.35",
-        "@types/vscode": "^1.67.0",
+        "@types/js-yaml": "^4.0.5",
+        "@types/node": "^17.0.42",
+        "@types/vscode": "^1.54.0",
         "@types/webpack-env": "^1.17.0",
-        "@typescript-eslint/eslint-plugin": "^5.26.0",
+        "@typescript-eslint/eslint-plugin": "^5.27.1",
         "assert": "^2.0.0",
-        "eslint": "^8.16.0",
+        "eslint": "^8.17.0",
+        "fork-ts-checker-webpack-plugin": "^7.2.11",
         "fs": "^0.0.1-security",
         "js-yaml": "^4.1.0",
         "process": "^0.11.10",
         "ts-loader": "^9.3.0",
-        "typescript": "^4.6.4",
-        "webpack": "^5.72.1",
+        "typescript": "^4.7.3",
+        "webpack": "^5.73.0",
         "webpack-cli": "^4.9.2"
     }
 }

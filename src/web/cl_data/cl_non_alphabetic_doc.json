@@ -1,0 +1,362 @@
+{
+"abort":
+  "```text\nFunction CLOSE\n```",
+"absolute":
+  "```text\nRestrictions on Examining a Pathname Directory Component\n```",
+"accessor":
+  "```text\nRedefining Classes\nAccessing Slots\nInheritance of Slots and Slot Options\nMacro DEFCLASS\nMacro DEFINE-CONDITION\n```",
+"adjustable":
+  "```text\nFunction MAKE-ARRAY\n```",
+"after":
+  "```text\nIntroduction to Methods\nStandard Method Combination\nMacro DEFMETHOD\nGlossary Section ``A''\n```",
+"allocation":
+  "```text\nIntroduction to Slots\nInheritance of Slots and Slot Options\nMacro DEFCLASS\nMacro DEFINE-CONDITION\n```",
+"allow-other-keys":
+  "```text\nSpecifiers for keyword parameters\nSuppressing Keyword Argument Checking\nExamples of Ordinary Lambda Lists\nDeclaring the Validity of Initialization Arguments\nCongruent Lambda-lists for all Methods of a Generic Function\n```",
+"ansi-cl":
+  "```text\nVariable *FEATURES*\nGlossary Section ``F''\n```",
+"append":
+  "```text\nFunction OPEN\n```",
+"argument-precedence-order":
+  "```text\nSorting the Applicable Methods by Precedence Order\nFunction ENSURE-GENERIC-FUNCTION\nMacro DEFGENERIC\n```",
+"arguments":
+  "```text\nLambda Lists\nDefine-method-combination Arguments Lambda Lists\nMacro DEFINE-METHOD-COMBINATION\nGlossary Section ``D''\n```",
+"around":
+  "```text\nIntroduction to Methods\nStandard Method Combination\nBuilt-in Method Combination Types\nMacro DEFMETHOD\nMacro DEFINE-METHOD-COMBINATION\nGlossary Section ``A''\n```",
+"array":
+  "```text\nFunction WRITE, PRIN1, PRINT, PPRINT, PRINC\nFunction WRITE-TO-STRING, PRIN1-TO-STRING, PRINC-TO-STRING\n```",
+"back":
+  "```text\nRestrictions on Examining a Pathname Directory Component\nDirectory Components in Non-Hierarchical File Systems\nFunction MERGE-PATHNAMES\n```",
+"base":
+  "```text\nFunction WRITE, PRIN1, PRINT, PPRINT, PRINC\nFunction WRITE-TO-STRING, PRIN1-TO-STRING, PRINC-TO-STRING\n```",
+"before":
+  "```text\nIntroduction to Methods\nStandard Method Combination\nMacro DEFMETHOD\nGlossary Section ``B''\n```",
+"block":
+  "```text\nFunction PPRINT-INDENT\n```",
+"capitalize":
+  "```text\nVariable *PRINT-CASE*\n```",
+"case":
+  "```text\nCase in Pathname Components\nLocal Case in Pathname Components\nCommon Case in Pathname Components\nFunction MAKE-PATHNAME\nFunction PATHNAME-HOST, PATHNAME-DEVICE, PATHNAME-DIRECTORY, PATHNAME-NAME, PATHNAME-TYPE, PATHNAME-VERSION\nFunction WRITE, PRIN1, PRINT, PPRINT, PRINC\nFunction WRITE-TO-STRING, PRIN1-TO-STRING, PRINC-TO-STRING\n```",
+"class":
+  "```text\nIntroduction to Slots\nInheritance of Slots and Slot Options\nMacro DEFCLASS\nMacro DEFINE-CONDITION\n```",
+"cltl1":
+  "```text\nVariable *FEATURES*\n```",
+"cltl2":
+  "```text\nVariable *FEATURES*\n```",
+"common":
+  "```text\nCommon Case in Pathname Components\nFunction MAKE-PATHNAME\nFunction PATHNAME-HOST, PATHNAME-DEVICE, PATHNAME-DIRECTORY, PATHNAME-NAME, PATHNAME-TYPE, PATHNAME-VERSION\n```",
+"common-lisp":
+  "```text\nVariable *FEATURES*\n```",
+"compile-toplevel":
+  "```text\nFile Compilation\nProcessing of Top Level Forms\nSpecial Operator EVAL-WHEN\n```",
+"conc-name":
+  "```text\nMacro DEFSTRUCT\n```",
+"constructor":
+  "```text\nLambda Lists\nBoa Lambda Lists\nMacro DEFSTRUCT\n```",
+"copier":
+  "```text\nMacro DEFSTRUCT\nFunction COPY-STRUCTURE\n```",
+"count":
+  "```text\nFunction SUBSTITUTE, SUBSTITUTE-IF, SUBSTITUTE-IF-NOT, NSUBSTITUTE, NSUBSTITUTE-IF, NSUBSTITUTE-IF-NOT\nFunction REMOVE, REMOVE-IF, REMOVE-IF-NOT, DELETE, DELETE-IF, DELETE-IF-NOT\n```",
+"create":
+  "```text\nFunction OPEN\n```",
+"current":
+  "```text\nFunction PPRINT-INDENT\n```",
+"declare":
+  "```text\nFunction ENSURE-GENERIC-FUNCTION\n```",
+"default":
+  "```text\nSystem Class BROADCAST-STREAM\nFunction OPEN\nFunction COMPILE-FILE\nFunction LOAD\nFunction ROOM\nGlossary Section ``E''\n```",
+"default-initargs":
+  "```text\nInheritance of Class Options\nObject Creation and Initialization\nDefaulting of Initialization Arguments\nRules for Initialization Arguments\nDefinitions of Make-Instance and Initialize-Instance\nMacro DEFCLASS\nMacro DEFINE-CONDITION\n```",
+"defaults":
+  "```text\nFunction MAKE-PATHNAME\n```",
+"description":
+  "```text\nMacro DEFINE-METHOD-COMBINATION\n```",
+"device":
+  "```text\nFunction MAKE-PATHNAME\nFunction WILD-PATHNAME-P\n```",
+"direction":
+  "```text\nFunction OPEN\nGlossary Section ``C''\n```",
+"directory":
+  "```text\nFunction MAKE-PATHNAME\nFunction WILD-PATHNAME-P\n```",
+"displaced-index-offset":
+  "```text\nFunction MAKE-ARRAY\nFunction ADJUST-ARRAY\nFunction ARRAY-DISPLACEMENT\n```",
+"displaced-to":
+  "```text\nFunction MAKE-ARRAY\nFunction ADJUST-ARRAY\nFunction ARRAY-DISPLACEMENT\n```",
+"documentation":
+  "```text\nInheritance of Slots and Slot Options\nFunction ENSURE-GENERIC-FUNCTION\nMacro DEFCLASS\nMacro DEFGENERIC\nMacro DEFINE-METHOD-COMBINATION\nMacro DEFINE-CONDITION\nMacro DEFPACKAGE\n```",
+"downcase":
+  "```text\nEffect of Readtable Case on the Lisp Printer\nVariable *PRINT-CASE*\nEffect of Readtable Case on the Lisp Reader\nGlossary Section ``C''\n```",
+"draft-ansi-cl":
+  "```text\nVariable *FEATURES*\n```",
+"draft-ansi-cl-2":
+  "```text\nVariable *FEATURES*\n```",
+"element-type":
+  "```text\nFunction TYPEP\nType SIMPLE-ARRAY\nSystem Class VECTOR\nFunction MAKE-ARRAY\nFunction ADJUST-ARRAY\nFunction MAKE-STRING\nFunction OPEN\nFunction MAKE-STRING-OUTPUT-STREAM\nMacro WITH-OUTPUT-TO-STRING\n```",
+"end":
+  "```text\nExamples of Ordinary Lambda Lists\nFunction PARSE-INTEGER\nFunction STRING-UPCASE, STRING-DOWNCASE, STRING-CAPITALIZE, NSTRING-UPCASE, NSTRING-DOWNCASE, NSTRING-CAPITALIZE\nFunction FILL\nFunction REDUCE\nFunction COUNT, COUNT-IF, COUNT-IF-NOT\nFunction FIND, FIND-IF, FIND-IF-NOT\nFunction POSITION, POSITION-IF, POSITION-IF-NOT\nFunction SUBSTITUTE, SUBSTITUTE-IF, SUBSTITUTE-IF-NOT, NSUBSTITUTE, NSUBSTITUTE-IF, NSUBSTITUTE-IF-NOT\nFunction REMOVE, REMOVE-IF, REMOVE-IF-NOT, DELETE, DELETE-IF, DELETE-IF-NOT\nFunction REMOVE-DUPLICATES, DELETE-DUPLICATES\nFunction PARSE-NAMESTRING\nFunction WRITE-STRING, WRITE-LINE\nFunction READ-SEQUENCE\nFunction WRITE-SEQUENCE\nMacro WITH-INPUT-FROM-STRING\nFunction READ-FROM-STRING\nGlossary Section ``F''\n```",
+"end1":
+  "```text\nFunction STRING=, STRING/=, STRING<, STRING>, STRING<=, STRING>=, STRING-EQUAL, STRING-NOT-EQUAL, STRING-LESSP, STRING-GREATERP, STRING-NOT-GREATERP, STRING-NOT-LESSP\nFunction SEARCH\nFunction MISMATCH\nFunction REPLACE\n```",
+"end2":
+  "```text\nFunction STRING=, STRING/=, STRING<, STRING>, STRING<=, STRING>=, STRING-EQUAL, STRING-NOT-EQUAL, STRING-LESSP, STRING-GREATERP, STRING-NOT-GREATERP, STRING-NOT-LESSP\nFunction SEARCH\nFunction MISMATCH\nFunction REPLACE\n```",
+"environment":
+  "```text\nSafe and Unsafe Calls\nFunction ENSURE-GENERIC-FUNCTION\nFunction MAKE-LOAD-FORM-SAVING-SLOTS\n```",
+"error":
+  "```text\nFunction OPEN\n```",
+"escape":
+  "```text\nFunction WRITE, PRIN1, PRINT, PPRINT, PRINC\nFunction WRITE-TO-STRING, PRIN1-TO-STRING, PRINC-TO-STRING\n```",
+"execute":
+  "```text\nFile Compilation\nProcessing of Top Level Forms\nSpecial Operator EVAL-WHEN\nFunction LOAD\n```",
+"expected-type":
+  "```text\nCondition Type TYPE-ERROR\n```",
+"export":
+  "```text\nMacro DEFPACKAGE\n```",
+"external":
+  "```text\nFunction FIND-SYMBOL\nMacro WITH-PACKAGE-ITERATOR\nFunction INTERN\n```",
+"external-format":
+  "```text\nFunction OPEN\nFunction STREAM-EXTERNAL-FORMAT\nFunction COMPILE-FILE\nFunction LOAD\n```",
+"fill":
+  "```text\nFunction PPRINT-NEWLINE\n```",
+"fill-pointer":
+  "```text\nFunction MAKE-ARRAY\nFunction ADJUST-ARRAY\n```",
+"format-arguments":
+  "```text\nCondition Type SIMPLE-CONDITION\n```",
+"from-end":
+  "```text\nFunction REDUCE\nFunction COUNT, COUNT-IF, COUNT-IF-NOT\nFunction FIND, FIND-IF, FIND-IF-NOT\nFunction POSITION, POSITION-IF, POSITION-IF-NOT\nFunction SEARCH\nFunction MISMATCH\nFunction SUBSTITUTE, SUBSTITUTE-IF, SUBSTITUTE-IF-NOT, NSUBSTITUTE, NSUBSTITUTE-IF, NSUBSTITUTE-IF-NOT\nFunction REMOVE, REMOVE-IF, REMOVE-IF-NOT, DELETE, DELETE-IF, DELETE-IF-NOT\nFunction REMOVE-DUPLICATES, DELETE-DUPLICATES\n```",
+"generic-function":
+  "```text\nMacro DEFINE-METHOD-COMBINATION\n```",
+"generic-function-class":
+  "```text\nFunction ENSURE-GENERIC-FUNCTION\nMacro DEFGENERIC\n```",
+"gensym":
+  "```text\nFunction WRITE, PRIN1, PRINT, PPRINT, PRINC\nFunction WRITE-TO-STRING, PRIN1-TO-STRING, PRINC-TO-STRING\n```",
+"host":
+  "```text\nFunction MAKE-PATHNAME\nFunction WILD-PATHNAME-P\n```",
+"identity":
+  "```text\nMacro PRINT-UNREADABLE-OBJECT\n```",
+"identity-with-one-argument":
+  "```text\nMacro DEFINE-METHOD-COMBINATION\n```",
+"ieee-floating-point":
+  "```text\nVariable *FEATURES*\n```",
+"if-does-not-exist":
+  "```text\nFunction OPEN\nFunction LOAD\n```",
+"if-exists":
+  "```text\nFunction OPEN\n```",
+"import-from":
+  "```text\nMacro DEFPACKAGE\n```",
+"include":
+  "```text\nType Relationships\nIntegrating Types and Classes\nMacro DEFSTRUCT\n```",
+"index":
+  "```text\nMacro WITH-INPUT-FROM-STRING\n```",
+"inherited":
+  "```text\nFunction FIND-SYMBOL\nMacro WITH-PACKAGE-ITERATOR\nFunction INTERN\n```",
+"init-form":
+  "```text\nMacro DEFCLASS\n```",
+"initarg":
+  "```text\nObject Creation and Initialization\nDeclaring the Validity of Initialization Arguments\nRules for Initialization Arguments\nDefinitions of Make-Instance and Initialize-Instance\nInheritance of Slots and Slot Options\nStandard Generic Function REINITIALIZE-INSTANCE\nStandard Generic Function SHARED-INITIALIZE\nStandard Generic Function UPDATE-INSTANCE-FOR-DIFFERENT-CLASS\nStandard Generic Function UPDATE-INSTANCE-FOR-REDEFINED-CLASS\nMacro DEFCLASS\nMacro DEFINE-CONDITION\n```",
+"initform":
+  "```text\nObject Creation and Initialization\nInitialization Arguments\nDefaulting of Initialization Arguments\nRules for Initialization Arguments\nShared-Initialize\nInitialize-Instance\nDefinitions of Make-Instance and Initialize-Instance\nReinitializing an Instance\nIntroduction to Slots\nInheritance of Slots and Slot Options\nStandard Generic Function SHARED-INITIALIZE\nStandard Generic Function UPDATE-INSTANCE-FOR-DIFFERENT-CLASS\nStandard Generic Function UPDATE-INSTANCE-FOR-REDEFINED-CLASS\nStandard Generic Function SLOT-UNBOUND\nMacro DEFCLASS\nStandard Generic Function INITIALIZE-INSTANCE\nMacro DEFINE-CONDITION\nGlossary Section ``I''\n```",
+"initial-contents":
+  "```text\nSharpsign A\nFunction MAKE-ARRAY\nFunction ADJUST-ARRAY\nPrinting Other Arrays\n```",
+"initial-element":
+  "```text\nFunction MAKE-LIST\nFunction MAKE-ARRAY\nFunction ADJUST-ARRAY\nFunction MAKE-STRING\nFunction MAKE-SEQUENCE\n```",
+"initial-offset":
+  "```text\nMacro DEFSTRUCT\n```",
+"initial-value":
+  "```text\nFunction REDUCE\n```",
+"input":
+  "```text\nFunction OPEN\n```",
+"installed":
+  "```text\nGlossary Section ``V''\n```",
+"instance":
+  "```text\nIntroduction to Slots\nInheritance of Slots and Slot Options\nMacro DEFCLASS\nMacro DEFINE-CONDITION\n```",
+"interactive":
+  "```text\nInteractive Use of Restarts\nFunction INVOKE-RESTART-INTERACTIVELY\nMacro RESTART-CASE\n```",
+"interactive-function":
+  "```text\nInteractive Use of Restarts\nFunction INVOKE-RESTART-INTERACTIVELY\nMacro RESTART-BIND\n```",
+"intern":
+  "```text\nMacro DEFPACKAGE\n```",
+"internal":
+  "```text\nFunction FIND-SYMBOL\nMacro WITH-PACKAGE-ITERATOR\nFunction INTERN\n```",
+"invert":
+  "```text\nEffect of Readtable Case on the Lisp Printer\nEffect of Readtable Case on the Lisp Reader\nGlossary Section ``C''\n```",
+"io":
+  "```text\nFunction OPEN\n```",
+"junk-allowed":
+  "```text\nFunction PARSE-INTEGER\nFunction PARSE-NAMESTRING\n```",
+"key":
+  "```text\nFunction SUBLIS, NSUBLIS\nFunction SUBST, SUBST-IF, SUBST-IF-NOT, NSUBST, NSUBST-IF, NSUBST-IF-NOT\nFunction MEMBER, MEMBER-IF, MEMBER-IF-NOT\nFunction ASSOC, ASSOC-IF, ASSOC-IF-NOT\nFunction RASSOC, RASSOC-IF, RASSOC-IF-NOT\nFunction INTERSECTION, NINTERSECTION\nFunction ADJOIN\nMacro PUSHNEW\nFunction SET-DIFFERENCE, NSET-DIFFERENCE\nFunction SET-EXCLUSIVE-OR, NSET-EXCLUSIVE-OR\nFunction SUBSETP\nFunction UNION, NUNION\nSatisfying a Two-Argument Test\nSatisfying a One-Argument Test\nFunction REDUCE\nFunction COUNT, COUNT-IF, COUNT-IF-NOT\nFunction SORT, STABLE-SORT\nFunction FIND, FIND-IF, FIND-IF-NOT\nFunction POSITION, POSITION-IF, POSITION-IF-NOT\nFunction SEARCH\nFunction MISMATCH\nFunction SUBSTITUTE, SUBSTITUTE-IF, SUBSTITUTE-IF-NOT, NSUBSTITUTE, NSUBSTITUTE-IF, NSUBSTITUTE-IF-NOT\nFunction MERGE\nFunction REMOVE, REMOVE-IF, REMOVE-IF-NOT, DELETE, DELETE-IF, DELETE-IF-NOT\nFunction REMOVE-DUPLICATES, DELETE-DUPLICATES\n```",
+"lambda-list":
+  "```text\nFunction ENSURE-GENERIC-FUNCTION\n```",
+"length":
+  "```text\nFunction WRITE, PRIN1, PRINT, PPRINT, PRINC\nFunction WRITE-TO-STRING, PRIN1-TO-STRING, PRINC-TO-STRING\n```",
+"level":
+  "```text\nFunction WRITE, PRIN1, PRINT, PPRINT, PRINC\nFunction WRITE-TO-STRING, PRIN1-TO-STRING, PRINC-TO-STRING\n```",
+"line":
+  "```text\nFunction PPRINT-TAB\n```",
+"line-relative":
+  "```text\nFunction PPRINT-TAB\n```",
+"linear":
+  "```text\nFunction PPRINT-NEWLINE\n```",
+"lines":
+  "```text\nFunction WRITE, PRIN1, PRINT, PPRINT, PRINC\nFunction WRITE-TO-STRING, PRIN1-TO-STRING, PRINC-TO-STRING\n```",
+"load-toplevel":
+  "```text\nFile Compilation\nProcessing of Top Level Forms\nSpecial Operator EVAL-WHEN\n```",
+"local":
+  "```text\nLocal Case in Pathname Components\nCommon Case in Pathname Components\nFunction MAKE-PATHNAME\nFunction PATHNAME-HOST, PATHNAME-DEVICE, PATHNAME-DIRECTORY, PATHNAME-NAME, PATHNAME-TYPE, PATHNAME-VERSION\n```",
+"mandatory":
+  "```text\nFunction PPRINT-NEWLINE\n```",
+"metaclass":
+  "```text\nDefining Classes\nMacro DEFCLASS\n```",
+"method":
+  "```text\nMacro DEFGENERIC\n```",
+"method-class":
+  "```text\nFunction ENSURE-GENERIC-FUNCTION\nMacro DEFGENERIC\n```",
+"method-combination":
+  "```text\nApplying method combination to the sorted list of applicable methods\nBuilt-in Method Combination Types\nFunction ENSURE-GENERIC-FUNCTION\nMacro DEFGENERIC\nMacro DEFINE-METHOD-COMBINATION\n```",
+"miser":
+  "```text\nFunction PPRINT-NEWLINE\n```",
+"miser-width":
+  "```text\nFunction WRITE, PRIN1, PRINT, PPRINT, PRINC\nFunction WRITE-TO-STRING, PRIN1-TO-STRING, PRINC-TO-STRING\n```",
+"most-specific-first":
+  "```text\nBuilt-in Method Combination Types\nMacro DEFGENERIC\nMacro DEFINE-METHOD-COMBINATION\n```",
+"most-specific-last":
+  "```text\nBuilt-in Method Combination Types\nMacro DEFGENERIC\nMacro DEFINE-METHOD-COMBINATION\n```",
+"name":
+  "```text\nFunction MAKE-PATHNAME\nFunction WILD-PATHNAME-P\n```",
+"named":
+  "```text\nMacro DEFSTRUCT\n```",
+"new-version":
+  "```text\nFunction OPEN\n```",
+"newest":
+  "```text\nPathnames as Filenames\nThe Pathname Version Component\nRestrictions on Examining a Pathname Version Component\nRestrictions on Constructing Pathnames\nFunction MERGE-PATHNAMES\nExamples of Truenames\nFunction OPEN\nGlossary Section ``V''\n```",
+"nicknames":
+  "```text\nFunction MAKE-PACKAGE\nMacro DEFPACKAGE\n```",
+"no-error":
+  "```text\nMacro HANDLER-CASE\n```",
+"off":
+  "```text\nNotes about The KEYWORD Package\n```",
+"oldest":
+  "```text\nNotes about the Pathname Version Component\nGlossary Section ``V''\n```",
+"on":
+  "```text\nNotes about The KEYWORD Package\n```",
+"operands":
+  "```text\nCondition Type ARITHMETIC-ERROR\n```",
+"operator":
+  "```text\nMacro DEFINE-METHOD-COMBINATION\n```",
+"order":
+  "```text\nMacro DEFINE-METHOD-COMBINATION\n```",
+"output":
+  "```text\nFunction OPEN\n```",
+"output-file":
+  "```text\nFunction COMPILE-FILE\nFunction COMPILE-FILE-PATHNAME\n```",
+"override":
+  "```text\nMacro WITH-COMPILATION-UNIT\n```",
+"overwrite":
+  "```text\nFunction OPEN\n```",
+"per-line-prefix":
+  "```text\nTilde Less-Than-Sign: Logical Block\nMacro PPRINT-LOGICAL-BLOCK\n```",
+"pixel-size":
+  "```text\nExamples of Keyword Arguments in Generic Functions and Methods\n```",
+"pprint-dispatch":
+  "```text\nFunction WRITE, PRIN1, PRINT, PPRINT, PRINC\nFunction WRITE-TO-STRING, PRIN1-TO-STRING, PRINC-TO-STRING\n```",
+"pre-line-prefix":
+  "```text\nMacro PPRINT-LOGICAL-BLOCK\n```",
+"predicate":
+  "```text\nMacro DEFSTRUCT\n```",
+"prefix":
+  "```text\nTilde Less-Than-Sign: Logical Block\nMacro PPRINT-LOGICAL-BLOCK\n```",
+"preserve":
+  "```text\nEffect of Readtable Case on the Lisp Printer\nEffect of Readtable Case on the Lisp Reader\nGlossary Section ``C''\n```",
+"preserve-whitespace":
+  "```text\nFunction READ-FROM-STRING\n```",
+"pretty":
+  "```text\nFunction WRITE, PRIN1, PRINT, PPRINT, PRINC\nFunction WRITE-TO-STRING, PRIN1-TO-STRING, PRINC-TO-STRING\n```",
+"previous":
+  "```text\nGlossary Section ``V''\n```",
+"print":
+  "```text\nFunction COMPILE-FILE\nFunction LOAD\nVariable *COMPILE-PRINT*, *COMPILE-VERBOSE*\nVariable *LOAD-PRINT*, *LOAD-VERBOSE*\n```",
+"print-function":
+  "```text\nMacro DEFSTRUCT\nPrinting Structures\n```",
+"print-object":
+  "```text\nMacro DEFSTRUCT\nPrinting Structures\n```",
+"probe":
+  "```text\nFunction OPEN\n```",
+"radix":
+  "```text\nFunction PARSE-INTEGER\nFunction WRITE, PRIN1, PRINT, PPRINT, PRINC\nFunction WRITE-TO-STRING, PRIN1-TO-STRING, PRINC-TO-STRING\n```",
+"read-only":
+  "```text\nMacro DEFSTRUCT\n```",
+"readably":
+  "```text\nFunction WRITE, PRIN1, PRINT, PPRINT, PRINC\nFunction WRITE-TO-STRING, PRIN1-TO-STRING, PRINC-TO-STRING\n```",
+"reader":
+  "```text\nRedefining Classes\nAccessing Slots\nInheritance of Slots and Slot Options\nMacro DEFCLASS\nMacro DEFINE-CONDITION\n```",
+"rehash-size":
+  "```text\nFunction MAKE-HASH-TABLE\n```",
+"rehash-threshold":
+  "```text\nFunction MAKE-HASH-TABLE\n```",
+"relative":
+  "```text\nRestrictions on Examining a Pathname Directory Component\nDirectory Components in Non-Hierarchical File Systems\nFunction MERGE-PATHNAMES\n```",
+"rename":
+  "```text\nFunction OPEN\n```",
+"rename-and-delete":
+  "```text\nFunction OPEN\n```",
+"report":
+  "```text\nPrinting Conditions\nInteractive Use of Restarts\nCondition Type CONDITION\nMacro DEFINE-CONDITION\nMacro RESTART-CASE\n```",
+"report-function":
+  "```text\nInteractive Use of Restarts\nMacro RESTART-BIND\n```",
+"required":
+  "```text\nMacro DEFINE-METHOD-COMBINATION\n```",
+"right-margin":
+  "```text\nFunction WRITE, PRIN1, PRINT, PPRINT, PRINC\nFunction WRITE-TO-STRING, PRIN1-TO-STRING, PRINC-TO-STRING\n```",
+"section":
+  "```text\nFunction PPRINT-TAB\n```",
+"section-relative":
+  "```text\nFunction PPRINT-TAB\n```",
+"shadow":
+  "```text\nMacro DEFPACKAGE\n```",
+"shadowing-import-from":
+  "```text\nMacro DEFPACKAGE\n```",
+"size":
+  "```text\nMacro DEFPACKAGE\nFunction MAKE-HASH-TABLE\n```",
+"slot-names":
+  "```text\nFunction MAKE-LOAD-FORM-SAVING-SLOTS\n```",
+"start":
+  "```text\nExamples of Ordinary Lambda Lists\nFunction PARSE-INTEGER\nFunction STRING-UPCASE, STRING-DOWNCASE, STRING-CAPITALIZE, NSTRING-UPCASE, NSTRING-DOWNCASE, NSTRING-CAPITALIZE\nFunction FILL\nFunction REDUCE\nFunction COUNT, COUNT-IF, COUNT-IF-NOT\nFunction FIND, FIND-IF, FIND-IF-NOT\nFunction POSITION, POSITION-IF, POSITION-IF-NOT\nFunction SUBSTITUTE, SUBSTITUTE-IF, SUBSTITUTE-IF-NOT, NSUBSTITUTE, NSUBSTITUTE-IF, NSUBSTITUTE-IF-NOT\nFunction REMOVE, REMOVE-IF, REMOVE-IF-NOT, DELETE, DELETE-IF, DELETE-IF-NOT\nFunction REMOVE-DUPLICATES, DELETE-DUPLICATES\nFunction PARSE-NAMESTRING\nFunction WRITE-STRING, WRITE-LINE\nFunction READ-SEQUENCE\nFunction WRITE-SEQUENCE\nMacro WITH-INPUT-FROM-STRING\nFunction READ-FROM-STRING\nGlossary Section ``F''\n```",
+"start1":
+  "```text\nFunction STRING=, STRING/=, STRING<, STRING>, STRING<=, STRING>=, STRING-EQUAL, STRING-NOT-EQUAL, STRING-LESSP, STRING-GREATERP, STRING-NOT-GREATERP, STRING-NOT-LESSP\nFunction SEARCH\nFunction MISMATCH\nFunction REPLACE\n```",
+"start2":
+  "```text\nFunction STRING=, STRING/=, STRING<, STRING>, STRING<=, STRING>=, STRING-EQUAL, STRING-NOT-EQUAL, STRING-LESSP, STRING-GREATERP, STRING-NOT-GREATERP, STRING-NOT-LESSP\nFunction SEARCH\nFunction MISMATCH\nFunction REPLACE\n```",
+"stream":
+  "```text\nFunction WRITE, PRIN1, PRINT, PPRINT, PRINC\n```",
+"suffix":
+  "```text\nTilde Less-Than-Sign: Logical Block\nMacro PPRINT-LOGICAL-BLOCK\n```",
+"supersede":
+  "```text\nFunction OPEN\n```",
+"test":
+  "```text\nFunction EQUALP\nFunction COMPLEMENT\nRestart Tests\nMacro RESTART-CASE\nFunction SUBLIS, NSUBLIS\nFunction SUBST, SUBST-IF, SUBST-IF-NOT, NSUBST, NSUBST-IF, NSUBST-IF-NOT\nFunction TREE-EQUAL\nFunction MEMBER, MEMBER-IF, MEMBER-IF-NOT\nFunction ASSOC, ASSOC-IF, ASSOC-IF-NOT\nFunction RASSOC, RASSOC-IF, RASSOC-IF-NOT\nFunction INTERSECTION, NINTERSECTION\nFunction ADJOIN\nMacro PUSHNEW\nFunction SET-DIFFERENCE, NSET-DIFFERENCE\nFunction SET-EXCLUSIVE-OR, NSET-EXCLUSIVE-OR\nFunction SUBSETP\nFunction UNION, NUNION\nSatisfying a Two-Argument Test\nSatisfying a One-Argument Test\nFunction COUNT, COUNT-IF, COUNT-IF-NOT\nFunction FIND, FIND-IF, FIND-IF-NOT\nFunction POSITION, POSITION-IF, POSITION-IF-NOT\nFunction SEARCH\nFunction MISMATCH\nFunction SUBSTITUTE, SUBSTITUTE-IF, SUBSTITUTE-IF-NOT, NSUBSTITUTE, NSUBSTITUTE-IF, NSUBSTITUTE-IF-NOT\nFunction REMOVE, REMOVE-IF, REMOVE-IF-NOT, DELETE, DELETE-IF, DELETE-IF-NOT\nFunction REMOVE-DUPLICATES, DELETE-DUPLICATES\nModifying Hash Table Keys\nVisible Modifications by Language Extensions\nFunction MAKE-HASH-TABLE\n```",
+"test-function":
+  "```text\nRestart Tests\nMacro RESTART-BIND\n```",
+"test-not":
+  "```text\nDeprecated Argument Conventions\nFunction COMPLEMENT\nFunction SUBLIS, NSUBLIS\nFunction SUBST, SUBST-IF, SUBST-IF-NOT, NSUBST, NSUBST-IF, NSUBST-IF-NOT\nFunction TREE-EQUAL\nFunction MEMBER, MEMBER-IF, MEMBER-IF-NOT\nFunction ASSOC, ASSOC-IF, ASSOC-IF-NOT\nFunction RASSOC, RASSOC-IF, RASSOC-IF-NOT\nFunction INTERSECTION, NINTERSECTION\nFunction ADJOIN\nMacro PUSHNEW\nFunction SET-DIFFERENCE, NSET-DIFFERENCE\nFunction SET-EXCLUSIVE-OR, NSET-EXCLUSIVE-OR\nFunction SUBSETP\nFunction UNION, NUNION\nSatisfying a Two-Argument Test\nFunction COUNT, COUNT-IF, COUNT-IF-NOT\nFunction FIND, FIND-IF, FIND-IF-NOT\nFunction POSITION, POSITION-IF, POSITION-IF-NOT\nFunction SEARCH\nFunction MISMATCH\nFunction SUBSTITUTE, SUBSTITUTE-IF, SUBSTITUTE-IF-NOT, NSUBSTITUTE, NSUBSTITUTE-IF, NSUBSTITUTE-IF-NOT\nFunction REMOVE, REMOVE-IF, REMOVE-IF-NOT, DELETE, DELETE-IF, DELETE-IF-NOT\nFunction REMOVE-DUPLICATES, DELETE-DUPLICATES\n```",
+"type":
+  "```text\nBoa Lambda Lists\nType Specifiers\nIntegrating Types and Classes\nFunction TYPE-OF\nInheritance of Slots and Slot Options\nMacro DEFCLASS\nMacro DEFSTRUCT\nMacro DEFINE-CONDITION\nFunction MAKE-PATHNAME\nFunction WILD-PATHNAME-P\nMacro PRINT-UNREADABLE-OBJECT\nGlossary Section ``S''\n```",
+"unspecific":
+  "```text\nThe Pathname Type Component\nThe Pathname Version Component\n:UNSPECIFIC as a Component Value\nRelation between component values NIL and :UNSPECIFIC\nRestrictions on Examining a Pathname Device Component\nRestrictions on Examining a Pathname Directory Component\nRestrictions on Examining a Pathname Name Component\nRestrictions on Examining a Pathname Type Component\nRestrictions on Examining a Pathname Version Component\nMerging Pathnames\nExamples of Merging Pathnames\nThe Device part of a Logical Pathname Namestring\nUnspecific Components of a Logical Pathname\nFunction MAKE-PATHNAME\nFunction USER-HOMEDIR-PATHNAME\nGlossary Section ``V''\n```",
+"up":
+  "```text\nRestrictions on Examining a Pathname Directory Component\nDirectory Components in Non-Hierarchical File Systems\n```",
+"upcase":
+  "```text\nThe Standard Readtable\nSymbols as Tokens\nValid Patterns for Tokens\nEffect of Readtable Case on the Lisp Printer\nVariable *PRINT-CASE*\nEffect of Readtable Case on the Lisp Reader\nMacro WITH-STANDARD-IO-SYNTAX\nGlossary Section ``C''\n```",
+"use":
+  "```text\nFunction MAKE-PACKAGE\nMacro DEFPACKAGE\n```",
+"verbose":
+  "```text\nFunction ENSURE-DIRECTORIES-EXIST\nFunction COMPILE-FILE\nFunction LOAD\nVariable *COMPILE-PRINT*, *COMPILE-VERBOSE*\nVariable *LOAD-PRINT*, *LOAD-VERBOSE*\n```",
+"version":
+  "```text\nFunction MAKE-PATHNAME\nFunction WILD-PATHNAME-P\n```",
+"wild":
+  "```text\nThe Pathname Type Component\nThe Pathname Version Component\n:WILD as a Component Value\nRestrictions on Wildcard Pathnames\nRestrictions on Examining a Pathname Device Component\nRestrictions on Examining a Pathname Directory Component\nRestrictions on Examining a Pathname Name Component\nRestrictions on Examining a Pathname Type Component\nRestrictions on Examining a Pathname Version Component\nThe Version part of a Logical Pathname Namestring\nWildcard Words in a Logical Pathname Namestring\nFunction MAKE-PATHNAME\nFunction PATHNAME-MATCH-P\nFunction TRANSLATE-PATHNAME\nFunction MERGE-PATHNAMES\nGlossary Section ``V''\nGlossary Section ``W''\n```",
+"wild-inferiors":
+  "```text\n:WILD as a Component Value\nRestrictions on Examining a Pathname Directory Component\nDirectory Components in Non-Hierarchical File Systems\nThe Directory part of a Logical Pathname Namestring\nFunction MAKE-PATHNAME\n```",
+"wild-inferors":
+  "```text\nGlossary Section ``W''\n```",
+"writer":
+  "```text\nRedefining Classes\nAccessing Slots\nInheritance of Slots and Slot Options\nMacro DEFCLASS\nMacro DEFINE-CONDITION\n```",
+"x3j13":
+  "```text\nVariable *FEATURES*\n```"
+}

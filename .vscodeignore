@@ -25,5 +25,3 @@ assets/**
 scripts/**
 
 # prod
-syntaxes/**
-!syntaxes/commonlisp.tmLanguage.json

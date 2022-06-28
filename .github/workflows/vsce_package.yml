@@ -32,6 +32,9 @@ jobs:
 
       - name: Build Grammar from yaml to json
         run: npm run bg
+
+      - name: Webpack package web
+        run: npm run vscode:prepublish
       
       - name: Install vsce
         run: npm i -g vsce

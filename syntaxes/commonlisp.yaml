@@ -20,10 +20,14 @@ comment: |-
         System Class: support.class
         Type: support.type.t
         Type Specifier: support.function.typespecifier
-        Variable: constant.other.character-class.regexp
+        Variable: variable.other.constant.earmuffsplus string.regexp.earmuffsasterisk
     }
     Note: Alternatives in Regex are ordered by
     reversed alphabetical order to make sure longest match.
+
+    We try not to capture the parentheses as far as possible since
+    we would like to leave the parentheses to other specialized
+    program to process.
 
 fileTypes:
 - lisp
@@ -174,7 +178,7 @@ repository:
                     (:@|@:|:|@)
                 ?) #8 modifiers
                 (\/) #10
-                (\S+?) #11 call function
+                ([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+?) #11 call function
                 (\/) #12
             captures:
                 '1':
@@ -268,7 +272,7 @@ repository:
         match: |-
             (?xi)
             (?<=^|\s|\() # preceded by space or (
-            (?:&\S+?|&whole|&rest|&optional|&key|&environment|&body|&aux|&allow-other-keys)
+            (?:&[#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+?|&whole|&rest|&optional|&key|&environment|&body|&aux|&allow-other-keys)
             (?=(\s|\(|\))) # followed by space, ( or )
         name: keyword.other.lambdalist.commonlisp
 
@@ -277,7 +281,7 @@ repository:
         # CL-ANSI Accessor
         -   match: |-
                 (?xi)
-                (?<=^|\s|\() # preceded by space or (
+                (?<=^|\s|\(|\#') # preceded by space or (
                 (?:values|third|tenth|symbol-value|symbol-plist|symbol-function|svref|subseq|sixth|seventh|second|schar|sbit|row-major-aref|
                    rest|readtable-case|nth|ninth|mask-field|macro-function|logical-pathname-translations|ldb|gethash|getf|get|fourth|first|
                    find-class|fill-pointer|fifth|fdefinition|elt|eighth|compiler-macro-function|char|cdr|cddr|cdddr|cddddr|cdddar|cddar|cddadr|
@@ -289,7 +293,7 @@ repository:
         # CL-ANSI Function and Local Function WITH Side Effects
         -   match: |-
                 (?xi)
-                (?<=^|\s|\() # preceded by space or (
+                (?<=^|\s|\(|\#') # preceded by space or (
                 (?:yes-or-no-p|y-or-n-p|write-sequence|write-char|write-byte|warn|vector-pop|use-value|use-package|unuse-package|union|unintern|
                 unexport|terpri|tailp|substitute-if-not|substitute-if|substitute|subst-if-not|subst-if|subst|sublis|string-upcase|string-downcase|
                 string-capitalize|store-value|sleep|signal|shadowing-import|shadow|set-syntax-from-char|set-macro-character|set-exclusive-or|
@@ -307,7 +311,7 @@ repository:
         # CL-ANSI Function and Local Function No Side Effects
         -   match: |-
                 (?xi)
-                (?<=^|\s|\() # preceded by space or (
+                (?<=^|\s|\(|\#') # preceded by space or (
                 (?:zerop|write-to-string|write-string|write-line|write|wild-pathname-p|vectorp|vector-push-extend|vector-push|vector|values-list|
                 user-homedir-pathname|upper-case-p|upgraded-complex-part-type|upgraded-array-element-type|unread-char|unbound-slot-instance|typep|type-of|
                 type-error-expected-type|type-error-datum|two-way-stream-output-stream|two-way-stream-input-stream|truncate|truename|tree-equal|translate-pathname|
@@ -353,7 +357,7 @@ repository:
         # CL-ANSI Standard Generic Function NO Side Effects
         -   match: |-
                 (?xi)
-                (?<=^|\s|\() # preceded by space or (
+                (?<=^|\s|\(|\#') # preceded by space or (
                 (?:variable|update-instance-for-redefined-class|update-instance-for-different-class|structure|slot-unbound|slot-missing|shared-initialize|
                 remove-method|print-object|no-next-method|no-applicable-method|method-qualifiers|make-load-form|make-instances-obsolete|make-instance|
                 initialize-instance|function-keywords|find-method|documentation|describe-object|compute-applicable-methods|compiler-macro|class-name|
@@ -364,7 +368,7 @@ repository:
         # CL-ANSI Standard Generic Function WITH Side Effects
         -   match: |-
                 (?xi)
-                (?<=^|\s|\() # preceded by space or (
+                (?<=^|\s|\(|\#') # preceded by space or (
                 (?:reinitialize-instance)
                 (?=(\s|\(|\)))  # followed by space, ( or )
             name: support.function.sgf.sideeffects.commonlisp
@@ -372,7 +376,7 @@ repository:
         # CL-ANSI Type Specifier
         -   match: |-
                 (?xi)
-                (?<=^|\s|\() # preceded by space or (
+                (?<=^|\s|\(|\#') # preceded by space or (
                 (?:satisfies)
                 (?=(\s|\(|\)))  # followed by space, ( or )
             name: support.function.typespecifier.commonlisp
@@ -422,11 +426,13 @@ repository:
         # CL-ANSI Special Operator
         match: |-
             (?xi)
-            (?<=^|\s|\() # preceded by space or (
-            (?:unwind-protect|throw|the|tagbody|symbol-macrolet|return-from|quote|progv|progn|multiple-value-prog1|multiple-value-call|
+            (\(\s*) # preceded by (
+            (unwind-protect|throw|the|tagbody|symbol-macrolet|return-from|quote|progv|progn|multiple-value-prog1|multiple-value-call|
             macrolet|locally|load-time-value|let\*|let|labels|if|go|function|flet|eval-when|catch|block)
             (?=(\s|\(|\)))  # followed by space, ( or )
-        name: keyword.control.commonlisp
+        captures:
+            '2':
+                name: keyword.control.commonlisp
 
     declaration:
         # CL-ANSI Declaration
@@ -486,7 +492,7 @@ repository:
                 \*load-pathname\*|\*gensym-counter\*|\*features\*|\*error-output\*|\*default-pathname-defaults\*|\*debugger-hook\*|\*debug-io\*|\*compile-verbose\*|
                 \*compile-print\*|\*compile-file-truename\*|\*compile-file-pathname\*|\*break-on-signals\*)
                 (?=(\s|\(|\)))  # followed by space, ( or )
-            name: constant.other.character-class.regexp.commonlisp
+            name: string.regexp.earmuffsasterisk.commonlisp
 
         # For Lisp REPL
         -   match: |-
@@ -501,6 +507,7 @@ repository:
         patterns:
 
         # CL-ANSI 2.4.3 Single-Quote
+        # Also, CL-ANSI 2.4.6 Backquote
         # Due to regex's limit, code with nested parentheses are not de-highlighted.
         #
         # Notice that the char immediately followed by ' will not be highlighted
@@ -510,15 +517,16 @@ repository:
         -   match: |-
                 (?xi)
                 (?<=^|\s|\(|,@|,\.|,) # preceded by space , ( or `,`|`,@`|`,.`
-                ('+)
+                ('|`)
                 (?=\S)
             name: variable.other.constant.singlequote.commonlisp
 
         # CL-ANSI 22.1.3.3.1 Package Prefixes for Symbols
+        # Colon, Type KEYWORD
         -   match: |-
                 (?xi)
                 (?<=^|\s|\(|,@|,\.|,) # preceded by space , ( or `,`|`,@`|`,.`
-                (?:\:\S+?)
+                (?:\:[#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+?)
                 (?=(\s|\(|\)))       # followed by space, ( or )
             name: entity.name.variable.commonlisp
 
@@ -615,7 +623,7 @@ repository:
                 (?=\S)
             name: variable.other.constant.sharpsign.commonlisp
 
-        # CL-ANSI 2.4.8.2 Sharpsign
+        # CL-ANSI 2.4.8.2 Sharpsign Single-Quote
         # CL-ANSI 2.4.8.6 Sharpsign Dot
         # CL-ANSI 2.4.8.11 Sharpsign C
         # CL-ANSI 2.4.8.13 Sharpsign S
@@ -668,22 +676,24 @@ repository:
     #
     def-name:
         patterns:
+        # Common Lisp the Language, 2nd Edition
+        # 7.1. Constants and Variables https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node77.html
         # keyword name | keyword (setf name) | keyword name (params)?
         -   match: |-
                 (?xi)
                 (?<=^|\s|\()                     # preceded by (
                 (defun|defsetf|defmethod|defmacro|define-symbol-macro|define-setf-expander|
-                define-modify-macro|define-method-combination|define-compiler-macro|defgeneric)  # keywords
+                define-modify-macro|define-method-combination|define-compiler-macro|defgeneric)  #1 keywords
                 \s+
                 (   \(\s*
-                        (\S+)
+                        ([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+) #3
                     \s*
-                        ((,@|,\.|,)?)
-                        (\S+?)      # (something+ name)
+                        ((,@|,\.|,)?) #4
+                        ([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+?)      #6 (<3>something+ <6>name)
                     |
-                        ((,@|,\.|,)?)
-                        (\S+?)      # name
-                )
+                        ((,@|,\.|,)?) #7
+                        ([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+?)      #9 name
+                ) #2
                 (?=(\s|\(|\)))
             captures:
                 '1':
@@ -711,7 +721,7 @@ repository:
                 (?<=^|\s|\()
                 (deftype|defpackage|define-condition|defclass)              # keywords
                 \s+
-                (\S+?)                   # name
+                ([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+?)                   # name
                 (?=(\s|\(|\)))
             captures:
                 '1':
@@ -725,7 +735,7 @@ repository:
                 (?<=^|\s|\()
                 (defconstant)         # keywords
                 \s+
-                (\S+?)                # name
+                ([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+?)                # name
                 (?=(\s|\(|\)))
             captures:
                 '1':
@@ -753,7 +763,7 @@ repository:
                 (?<=^|\s|\()
                 (defstruct)         # keywords
                 \s+\(?\s*
-                (\S+?)              # name
+                ([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+?)              # name
                 (?=(\s|\(|\)))
             captures:
                 '1':
@@ -767,7 +777,7 @@ repository:
                 (?<=^|\s|\()
                 (macrolet|labels|flet)        # keywords
                 \s+\(\s*\(\s*
-                (\S+?)                        # name
+                ([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+?)                        # name
                 (?=(\s|\(|\)))
             captures:
                 '1':
@@ -809,7 +819,7 @@ repository:
                 (?<=\S:|^|\s|\() # preceded by space or (
                 (\*[^\s\*]+\*)
                 (?=(\s|\(|\)))  # followed by space, ( or )
-            name: constant.other.character-class.regexp.commonlisp
+            name: string.regexp.earmuffsasterisk.commonlisp
 
     package:
         # Common Lisp the Language, 2nd Edition
@@ -818,10 +828,16 @@ repository:
         -   match: |-
                 (?xi)
                 (?<=^|\s|\(|,@|,\.|,) # preceded by space , ( or `,`|`,@`|`,.`
-                ([a-zA-Z-]+?)
+                (
+                  ([A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+?)  #2
+                  | 
+                  (\#) #3
+                )
                 (?=\:\:|\:)
             captures:
-                '1':
+                '2':
+                    name: support.type.package.commonlisp
+                '3':
                     name: support.type.package.commonlisp
 
 scopeName: source.commonlisp
