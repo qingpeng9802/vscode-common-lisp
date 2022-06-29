@@ -59,7 +59,8 @@ Semantic highlighting:
 Also, there are some built-in settings of this extension that can customize more **advanced preferences**,
 for example, which language feature provider should be used, which token range should be excluded and how to deal with the backquote part. See [wiki](https://github.com/qingpeng9802/vscode-common-lisp/wiki/Configuration).  
 
-If you need to disable all [Programmatic Language Features](https://code.visualstudio.com/api/language-extensions/programmatic-language-features), you can set `"commonLisp.StaticAnalysis.enabled": false` in this extension's built-in settings (under `Common Lisp` tab).
+> Please note that the static analysis currently implemented is **experimental** and may be incomplete and contain errors, so the result is not compiler-level.  
+  If you need to disable all [Programmatic Language Features](https://code.visualstudio.com/api/language-extensions/programmatic-language-features), that is, only use TextMate-based syntax highlighting, you can set `"commonLisp.StaticAnalysis.enabled": false` in this extension's built-in settings (under `Common Lisp` tab).
 
 ## Design
   

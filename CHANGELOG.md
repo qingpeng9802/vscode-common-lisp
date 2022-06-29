@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.1.4] - 2022-06-29
+### Changed
+- `README.md` update README
+
 ## [1.1.3] - 2022-06-29
 ### Fixed
 - `README.md` fix some typos
