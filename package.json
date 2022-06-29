@@ -6,7 +6,7 @@
         "name": "Qingpeng Li",
         "email": "qingpeng9802@gmail.com"
     },
-    "version": "1.1.2",
+    "version": "1.1.3",
     "publisher": "qingpeng",
     "engines": {
         "vscode": "^1.54.0"
@@ -24,7 +24,8 @@
         "snippet",
         "snippets",
         "autocomplete",
-        "intellisense"
+        "intellisense",
+        "syntax"
     ],
     "activationEvents": [
         "onLanguage:commonlisp"
@@ -165,7 +166,7 @@
                 "commonLisp.Updater.throttleTimeout": {
                     "type": "number",
                     "default": 200,
-                    "markdownDescription": "`> 0`. If you don't fully understand, don't change this. The throttle timeout in ms to avoid duplicate update. Only applies when `#commonLisp.providers.DocumentSemanticTokensProvider.enabled#` and `#commonLisp.providers.DocumentSymbolProvider.enabled#` are set to `true`."
+                    "markdownDescription": "`> 0`. If you don't fully understand, don't change this. The throttle timeout in ms to avoid the duplicate update. Only applies when `#commonLisp.providers.DocumentSemanticTokensProvider.enabled#` and `#commonLisp.providers.DocumentSymbolProvider.enabled#` are set to `true`."
                 },
                 "commonLisp.ReferenceProvider.ExcludedRanges": {
                     "type": "string",
@@ -177,10 +178,10 @@
                         "none"
                     ],
                     "markdownEnumDescriptions": [
-                        "Reference result will exclude the ranges inside comments and strings.",
-                        "Reference result will exclude the ranges inside comments only.",
-                        "Reference result will exclude the ranges inside strings only.",
-                        "Reference result will include all the ranges."
+                        "Reference results will exclude the ranges inside comments and strings.",
+                        "Reference results will exclude the ranges inside comments only.",
+                        "Reference results will exclude the ranges inside strings only.",
+                        "Reference results will include all the ranges."
                     ]
                 },
                 "commonLisp.DefinitionProvider.ExcludedRanges": {
@@ -193,10 +194,10 @@
                         "none"
                     ],
                     "markdownEnumDescriptions": [
-                        "Response to the selected word which is NOT inside comments and strings.",
-                        "Response to the selected word which is NOT inside comments.",
-                        "Response to the selected word which is NOT inside strings.",
-                        "Response to all the selected word."
+                        "Respond to the selected word which is NOT inside comments and strings.",
+                        "Respond to the selected word which is NOT inside comments.",
+                        "Respond to the selected word which is NOT inside strings.",
+                        "Respond to all the selected words."
                     ]
                 },
                 "commonLisp.DocumentSemanticTokensProvider.ExcludedRanges": {
@@ -209,9 +210,9 @@
                         "none"
                     ],
                     "markdownEnumDescriptions": [
-                        "Highlight the tokens which is NOT inside comments and strings.",
-                        "Highlight the tokens which is NOT inside comments.",
-                        "Highlight the tokens which is NOT inside strings.",
+                        "Highlight the tokens which are NOT inside comments and strings.",
+                        "Highlight the tokens which are NOT inside comments.",
+                        "Highlight the tokens which are NOT inside strings.",
                         "Highlight all the tokens."
                     ]
                 },
@@ -227,11 +228,11 @@
                         "none"
                     ],
                     "markdownEnumDescriptions": [
-                        "Highlight normal tokens and the tokens which is in Single Quote.",
-                        "Highlight normal tokens and the tokens which is in Single Quote and BackQuote's comma only.",
-                        "Highlight normal tokens and the tokens which is in Single Quote and BackQuote.",
-                        "Highlight normal tokens and the tokens which is in BackQuote's comma only.",
-                        "Highlight normal tokens and the tokens which is in BackQuote.",
+                        "Highlight normal tokens and the tokens which are in Single Quote.",
+                        "Highlight normal tokens and the tokens which are in Single Quote and BackQuote's comma only.",
+                        "Highlight normal tokens and the tokens which are in Single Quote and BackQuote.",
+                        "Highlight normal tokens and the tokens which are in BackQuote's comma only.",
+                        "Highlight normal tokens and the tokens which are in BackQuote.",
                         "Highlight normal tokens only."
                     ]
                 },
@@ -247,23 +248,23 @@
                         "none"
                     ],
                     "markdownEnumDescriptions": [
-                        "Perform static analysis on normal tokens and the tokens which is NOT in Single Quote.",
-                        "Perform static analysis on normal tokens and the tokens which is NOT in Single Quote and NOT in BackQuote, but comma is saved.",
-                        "Perform static analysis on normal tokens and the tokens which is NOT in Single Quote and NOT in BackQuote.",
-                        "Perform static analysis on normal tokens and the tokens which is NOT in BackQuote, but comma is saved.",
-                        "Perform static analysis on normal tokens and the tokens which is NOT in BackQuote.",
+                        "Perform static analysis on normal tokens and the tokens which are NOT in Single Quote.",
+                        "Perform static analysis on normal tokens and the tokens which are NOT in Single Quote and NOT in BackQuote, but the start-with-comma part is saved.",
+                        "Perform static analysis on normal tokens and the tokens which are NOT in Single Quote and NOT in BackQuote.",
+                        "Perform static analysis on normal tokens and the tokens which are NOT in BackQuote, but the start-with-comma part is saved.",
+                        "Perform static analysis on normal tokens and the tokens which are NOT in BackQuote.",
                         "Perform static analysis on all the tokens, even though they are in Single Quote or BackQuote."
                     ]
                 },
                 "commonLisp.ReferenceProvider.BackQuoteFilter.enabled": {
                     "type": "boolean",
                     "default": true,   
-                    "markdownDescription": "Enable BackQuote Filter to only include symbols with comma in backquote result."
+                    "markdownDescription": "Enable BackQuote Filter to only include symbols with commas in the backquote result."
                 },
                 "commonLisp.DefinitionProvider.BackQuoteFilter.enabled": {
                     "type": "boolean",
                     "default": true,   
-                    "markdownDescription": "Enable BackQuote Filter to only response to the symbols with comma in backquote result."
+                    "markdownDescription": "Enable BackQuote Filter to only respond to the symbols with commas in the backquote result."
                 }
             }
         }

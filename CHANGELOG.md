@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.1.3] - 2022-06-29
+### Fixed
+- `README.md` fix some typos
+
 ## [1.1.2] - 2022-06-28
 ### Added
 - `src/web` become a web extension
