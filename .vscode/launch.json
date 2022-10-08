@@ -12,6 +12,7 @@
             "debugWebWorkerHost": true,
             "request": "launch",
             "args": [
+                // "--profile-temp", // clean environment
                 "--extensionDevelopmentPath=${workspaceFolder}",
                 "--extensionDevelopmentKind=web"
             ],
