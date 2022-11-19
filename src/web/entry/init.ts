@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 
 import { CL_ID, CL_MODE } from '../cl_util';
-import { decideUpdateProcess, updateSymbol } from './listen_update';
+import { decideUpdateProcess, triggerUpdateSymbol, updateSymbol } from './listen_update';
 import { getProvider } from './provider_manager';
 
 import { WorkspaceConfig } from './WorkspaceConfig';
@@ -63,26 +63,6 @@ function debounceTriggerUpdateSymbol(doc: vscode.TextDocument) {
 
   timerId = setTimeout(() => { updateSymbol(doc); }, debounceTimeout);
   return;
-}
-
-
-function triggerUpdateSymbol(doc: vscode.TextDocument) {
-  const throttleTimeout = workspaceConfig.config['commonLisp.Updater.throttleTimeout'] || 200;
-
-  if (updateTimeStamp === undefined) {
-    updateTimeStamp = performance.now();
-    updateSymbol(doc);
-    return;
-  }
-
-  if (performance.now() - updateTimeStamp < throttleTimeout) {
-    //console.log('throttle@@@@@@@@@@@')
-    return;
-  } else {
-    updateTimeStamp = performance.now();
-    updateSymbol(doc);
-    return;
-  }
 }
 
 function disposeAll(disposablesDict: Record<string, vscode.Disposable | undefined>) {

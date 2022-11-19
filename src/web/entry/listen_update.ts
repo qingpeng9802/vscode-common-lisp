@@ -102,6 +102,25 @@ function updateSymbol(doc: vscode.TextDocument) {
   //console.log(`finish: ${performance.now() - t}ms`);
 }
 
+function triggerUpdateSymbol(doc: vscode.TextDocument) {
+  const throttleTimeout = workspaceConfig.config['commonLisp.Updater.throttleTimeout'] || 200;
+
+  if (updateTimeStamp === undefined) {
+    updateTimeStamp = performance.now();
+    updateSymbol(doc);
+    return;
+  }
+
+  if (performance.now() - updateTimeStamp < throttleTimeout) {
+    //console.log('throttle@@@@@@@@@@@')
+    return;
+  } else {
+    updateTimeStamp = performance.now();
+    updateSymbol(doc);
+    return;
+  }
+}
+
 function _sleep(timer: number) {
   return new Promise<void>(resolve => {
     setTimeout(function () { resolve(); }, timer);
@@ -111,5 +130,6 @@ function _sleep(timer: number) {
 export {
   decideUpdateProcess,
   updateSymbol,
+  triggerUpdateSymbol,
 };
 
