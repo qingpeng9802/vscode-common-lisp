@@ -7,7 +7,7 @@ import { DocSymbolInfo } from './DocSymbolInfo';
 import { mergeSortedMXArr, mergeSortedIntervals, excludeRangesFromRanges } from '../algorithm';
 import { SingleQuoteAndBackQuoteExcludedRanges } from '../entry/WorkspaceConfig';
 
-import { workspaceConfig } from '../entry/init';
+import { workspaceConfig } from '../entry/common';
 
 function getDocSymbolInfo(document: vscode.TextDocument) {
 

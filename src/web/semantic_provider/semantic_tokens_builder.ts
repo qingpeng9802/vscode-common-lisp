@@ -7,7 +7,7 @@ import { ParsedToken } from './ParsedToken';
 import { SingleQuoteAndBackQuoteHighlight } from '../entry/WorkspaceConfig';
 
 import { updateInfo } from '../entry/listen_update';
-import { workspaceConfig } from '../entry/init';
+import { workspaceConfig } from '../entry/common';
 
 const tokenTypes = new Map<string, number>();
 const tokenModifiers = new Map<string, number>();

@@ -19,6 +19,17 @@ class UpdateInfo {
   constructor() {
 
   }
+
+  reset() {
+    this.currDocSymbolInfo = undefined;
+    this.currDocumentSymbol = [];
+    this.currUserSymbols = undefined;
+    this.currSemanticTokens = undefined;
+    this.prevSemanticTokens = undefined;
+    this.callHierarchyInfo = undefined;
+    this.needColorDict = {};
+    this.globalOrderedRanges = [];
+  }
 }
 
 export { UpdateInfo };

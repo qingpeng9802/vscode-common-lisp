@@ -5,11 +5,9 @@ import { getDocSymbolInfo } from '../user_symbol/user_symbol_interface';
 import { genUserSymbols } from '../comp_item_provider/comp_item_user_builder';
 import { buildSemanticTokens, genAllPossibleWord } from '../semantic_provider/semantic_tokens_builder';
 import { genAllCallHierarchyItems } from '../call_hierarchy_provider/call_hierarchy_builder';
-import { UpdateInfo } from './UpdateInfo';
-import { UpdateCache } from './UpdateCache';
 
 import { WorkspaceConfig } from './WorkspaceConfig';
-import { needUpdateSet } from './init';
+import { needUpdateSet, updateCache, updateInfo } from './common';
 
 function decideUpdateProcess(workspaceConfig: WorkspaceConfig): Set<string> {
   const need: Set<string> = new Set();
@@ -62,9 +60,6 @@ function decideUpdateProcess(workspaceConfig: WorkspaceConfig): Set<string> {
   return need;
 }
 
-let updateInfo = new UpdateInfo();
-let updateCache = new UpdateCache();
-
 // @sideEffect: UpdateInfo.currDocSymbolInfo: DocSymbolInfo | undefined
 // @sideEffect: UpdateInfo.currDocumentSymbol: vscode.DocumentSymbol[]
 // @sideEffect: UpdateInfo.currUserSymbols: vscode.CompletionItem[]
@@ -73,8 +68,8 @@ let updateCache = new UpdateCache();
 function updateSymbol(doc: vscode.TextDocument) {
   //const t = performance.now();
 
-  updateCache = new UpdateCache();
-  updateInfo = new UpdateInfo();
+  updateCache.reset();
+  updateInfo.reset();
   // order matters here!
 
   if (needUpdateSet.has('getDocSymbolInfo')) {
@@ -116,6 +111,5 @@ function _sleep(timer: number) {
 export {
   decideUpdateProcess,
   updateSymbol,
-  updateInfo,
 };
 

@@ -6,6 +6,10 @@ class UpdateCache {
   constructor() {
 
   }
+
+  reset() {
+    this.cacheDocumentPosition = {};
+  }
 }
 
 export { UpdateCache };

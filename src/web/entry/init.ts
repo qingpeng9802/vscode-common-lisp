@@ -6,13 +6,11 @@ import { getProvider } from './provider_manager';
 
 import { WorkspaceConfig } from './WorkspaceConfig';
 
+import { needUpdateSet, workspaceConfig } from './common';
+
 let activeEditor = vscode.window.activeTextEditor;
 let timerId: NodeJS.Timer | undefined = undefined;
 let updateTimeStamp: number | undefined = undefined;
-
-const workspaceConfig: WorkspaceConfig = new WorkspaceConfig();
-
-let needUpdateSet: Set<string> = new Set();
 
 // in case both 
 // DocumentSemanticTokensProvider and DocumentSymbolProvider are NOT enabled
@@ -101,7 +99,8 @@ function initWithConfig(workspaceConfig: WorkspaceConfig, contextSubcriptions: v
   if (saEnabled) {
     backupTriggerUpdateSymbol(workspaceConfig, contextSubcriptions);
 
-    needUpdateSet = decideUpdateProcess(workspaceConfig);
+    needUpdateSet.clear();
+    decideUpdateProcess(workspaceConfig).forEach(needUpdateSet.add, needUpdateSet);
 
     if (
       workspaceConfig.disposables['documentSemanticTokensProvider'] === undefined &&
@@ -120,7 +119,8 @@ function initWithConfig(workspaceConfig: WorkspaceConfig, contextSubcriptions: v
     }
     backupTriggerUpdateSymbol(workspaceConfig, contextSubcriptions);
 
-    needUpdateSet = decideUpdateProcess(workspaceConfig);
+    needUpdateSet.clear();
+    decideUpdateProcess(workspaceConfig).forEach(needUpdateSet.add, needUpdateSet);
   }, contextSubcriptions);
 }
 
@@ -163,7 +163,8 @@ function updateWorkspaceConfig(
       initWorkspaceConfig(workspaceConfig, contextSubcriptions);
       backupTriggerUpdateSymbol(workspaceConfig, contextSubcriptions);
 
-      needUpdateSet = decideUpdateProcess(workspaceConfig);
+      needUpdateSet.clear();
+      decideUpdateProcess(workspaceConfig).forEach(needUpdateSet.add, needUpdateSet);
 
       if (
         workspaceConfig.disposables['documentSemanticTokensProvider'] === undefined &&
@@ -273,7 +274,5 @@ function updateContextSubcriptions(
 export {
   triggerUpdateSymbol,
   initWithConfig,
-  workspaceConfig,
-  needUpdateSet
 };
 
