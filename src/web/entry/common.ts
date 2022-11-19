@@ -3,9 +3,9 @@ import { UpdateInfo } from './UpdateInfo';
 import { UpdateCache } from './UpdateCache';
 import { WorkspaceConfig } from './WorkspaceConfig';
 
-const needUpdateSet: Set<string> = new Set();
+const needUpdateSet = new Set<string>();
 const updateCache = new UpdateCache();
 const updateInfo = new UpdateInfo();
-const workspaceConfig: WorkspaceConfig = new WorkspaceConfig();
+const workspaceConfig = new WorkspaceConfig();
 
 export { needUpdateSet, updateCache, updateInfo, workspaceConfig };
