@@ -10,7 +10,6 @@ import { needUpdateSet, workspaceConfig } from './common';
 
 let activeEditor = vscode.window.activeTextEditor;
 let timerId: NodeJS.Timer | undefined = undefined;
-let updateTimeStamp: number | undefined = undefined;
 
 // in case both 
 // DocumentSemanticTokensProvider and DocumentSymbolProvider are NOT enabled
@@ -80,7 +79,7 @@ function initWithConfig(workspaceConfig: WorkspaceConfig, contextSubcriptions: v
     backupTriggerUpdateSymbol(workspaceConfig, contextSubcriptions);
 
     needUpdateSet.clear();
-    decideUpdateProcess(workspaceConfig).forEach(needUpdateSet.add, needUpdateSet);
+    decideUpdateProcess().forEach(needUpdateSet.add, needUpdateSet);
 
     if (
       workspaceConfig.disposables['documentSemanticTokensProvider'] === undefined &&
@@ -100,7 +99,7 @@ function initWithConfig(workspaceConfig: WorkspaceConfig, contextSubcriptions: v
     backupTriggerUpdateSymbol(workspaceConfig, contextSubcriptions);
 
     needUpdateSet.clear();
-    decideUpdateProcess(workspaceConfig).forEach(needUpdateSet.add, needUpdateSet);
+    decideUpdateProcess().forEach(needUpdateSet.add, needUpdateSet);
   }, contextSubcriptions);
 }
 
@@ -144,7 +143,7 @@ function updateWorkspaceConfig(
       backupTriggerUpdateSymbol(workspaceConfig, contextSubcriptions);
 
       needUpdateSet.clear();
-      decideUpdateProcess(workspaceConfig).forEach(needUpdateSet.add, needUpdateSet);
+      decideUpdateProcess().forEach(needUpdateSet.add, needUpdateSet);
 
       if (
         workspaceConfig.disposables['documentSemanticTokensProvider'] === undefined &&

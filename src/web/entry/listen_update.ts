@@ -7,9 +7,9 @@ import { buildSemanticTokens, genAllPossibleWord } from '../semantic_provider/se
 import { genAllCallHierarchyItems } from '../call_hierarchy_provider/call_hierarchy_builder';
 
 import { WorkspaceConfig } from './WorkspaceConfig';
-import { needUpdateSet, updateCache, updateInfo } from './common';
+import { needUpdateSet, updateCache, updateInfo, workspaceConfig } from './common';
 
-function decideUpdateProcess(workspaceConfig: WorkspaceConfig): Set<string> {
+function decideUpdateProcess(): Set<string> {
   const need: Set<string> = new Set();
   if (
     workspaceConfig.disposables['userCompletionItemProvider'] !== undefined ||
@@ -102,6 +102,7 @@ function updateSymbol(doc: vscode.TextDocument) {
   //console.log(`finish: ${performance.now() - t}ms`);
 }
 
+let updateTimeStamp: number | undefined = undefined;
 function triggerUpdateSymbol(doc: vscode.TextDocument) {
   const throttleTimeout = workspaceConfig.config['commonLisp.Updater.throttleTimeout'] || 200;
 
