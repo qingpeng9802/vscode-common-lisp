@@ -6,7 +6,7 @@ import { SymbolInfo } from '../user_symbol/SymbolInfo';
 import { bisectRight } from '../algorithm';
 import { CallHrchyInfo } from './CallHrchyInfo';
 
-import { updateInfo } from '../entry/listen_update';
+import { updateInfo } from '../entry/common';
 
 function buildCallHierarchyItem(info: SymbolInfo): vscode.CallHierarchyItem {
   const detail =

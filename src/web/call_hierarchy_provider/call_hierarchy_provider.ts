@@ -4,7 +4,7 @@ import { clValidWithColonSharp, CL_MODE } from '../cl_util';
 import { DocSymbolInfo } from '../user_symbol/DocSymbolInfo';
 import { CallHrchyInfo } from './CallHrchyInfo';
 
-import { updateInfo } from '../entry/listen_update';
+import { updateInfo } from '../entry/common';
 
 function getCallHierarchyCallsByCallHierarchyItem(
   item: vscode.CallHierarchyItem,

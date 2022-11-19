@@ -5,7 +5,7 @@ import { bisectRight } from '../algorithm';
 import { UserSymbols } from './UserSymbols';
 import { genAllOriSymbols } from './comp_item_ori_builder';
 
-import { updateInfo } from '../entry/listen_update';
+import { updateInfo } from '../entry/common';
 
 // default completion item's word range does not include the '-' character, so we need to reset it
 // @sideEffect: compItems:vscode.CompletionItem[]

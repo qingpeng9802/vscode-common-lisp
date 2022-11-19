@@ -3,8 +3,7 @@ import * as vscode from 'vscode';
 import { CL_MODE, clValidWithColonSharp } from '../cl_util';
 import { isIntExcludedRanges, isQuote, isRangeIntExcludedRanges } from '../user_symbol/collect_symbol_util';
 
-import { updateInfo } from '../entry/listen_update';
-import { workspaceConfig } from '../entry/common';
+import { updateInfo, workspaceConfig } from '../entry/common';
 
 function getDefinitionProvider() {
   const definitionProvider = vscode.languages.registerDefinitionProvider(

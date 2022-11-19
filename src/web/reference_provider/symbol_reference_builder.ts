@@ -5,8 +5,7 @@ import { isRangeIntExcludedRanges, isQuote, isShadowed, isIntExcludedRanges } fr
 import { SymbolInfo } from '../user_symbol/SymbolInfo';
 import { bisectRight } from '../algorithm';
 
-import { updateInfo } from '../entry/listen_update';
-import { workspaceConfig } from '../entry/common';
+import { updateInfo, workspaceConfig } from '../entry/common';
 
 // Design options: include? definition, include? comment, include? string
 // See https://github.com/microsoft/vscode/issues/74237

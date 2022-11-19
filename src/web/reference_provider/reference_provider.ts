@@ -4,7 +4,7 @@ import { clValidWithColonSharp, CL_MODE } from '../cl_util';
 import { isQuote } from '../user_symbol/collect_symbol_util';
 import { getReferenceByWord } from './symbol_reference_builder';
 
-import { updateInfo } from '../entry/listen_update';
+import { updateInfo } from '../entry/common';
 
 function getReferenceProvider() {
   const referenceProvider = vscode.languages.registerReferenceProvider(
