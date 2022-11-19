@@ -73,7 +73,7 @@ function disposeAll(disposablesDict: Record<string, vscode.Disposable | undefine
   }
 }
 
-function initWithConfig(workspaceConfig: WorkspaceConfig, contextSubcriptions: vscode.Disposable[]) {
+function initWithConfig(contextSubcriptions: vscode.Disposable[]) {
   const saEnabled = initWorkspaceConfig(workspaceConfig, contextSubcriptions);
   if (saEnabled) {
     backupTriggerUpdateSymbol(workspaceConfig, contextSubcriptions);
@@ -250,9 +250,5 @@ function updateContextSubcriptions(
   }
 }
 
-export {
-  triggerUpdateSymbol,
-  initWithConfig,
-  workspaceConfig,
-};
+export { initWithConfig };
 
