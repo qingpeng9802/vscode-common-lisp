@@ -274,5 +274,6 @@ function updateContextSubcriptions(
 export {
   triggerUpdateSymbol,
   initWithConfig,
+  workspaceConfig,
 };
 

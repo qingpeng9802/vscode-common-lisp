@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 
 import { CL_MODE } from '../cl_util';
 
-import { updateInfo } from '../entry/listen_update';
+import { updateInfo } from '../entry/common';
 import { triggerUpdateSymbol } from '../entry/init';
 
 function getDocumentSymbolProvider() {

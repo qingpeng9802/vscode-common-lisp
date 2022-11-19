@@ -1,7 +1,7 @@
 
 class UpdateCache {
   // {offset: [line, char]}
-  public readonly cacheDocumentPosition: Record<number, [number, number]> = {};
+  public cacheDocumentPosition: Record<number, [number, number]> = {};
 
   constructor() {
 
