@@ -8,7 +8,7 @@
         {
             // If breakpoint is unbound randomly, just open devtools in Chrome
             "name": "Run Web Extension",
-            "type": "pwa-extensionHost",
+            "type": "extensionHost",
             "debugWebWorkerHost": true,
             "request": "launch",
             "args": [
@@ -18,6 +18,10 @@
             ],
             "outFiles": [
                 "${workspaceFolder}/dist/web/**/*.js"
+            ],
+            "resolveSourceMapLocations": [
+                "${workspaceFolder}/**",
+                "!**/node_modules/**"
             ],
             //"preLaunchTask": "npm: watch-web"
         }

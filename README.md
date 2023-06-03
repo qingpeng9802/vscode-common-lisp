@@ -71,7 +71,7 @@ We processed [Common Lisp HyperSpec](http://www.lispworks.com/documentation/Hype
 
 We assign different colors to different kinds of symbols, and the assignment rule can be found in the start comment of `./syntaxes/commonlisp.yaml`. This file includes comments (related info in `CL-ANSI`) for all rules.  
 
-> Please use VS Code 1.69.0 or later for best performance and profile consistency.    
+> Please use VS Code 1.72.0 or later for best performance and profile consistency.  
 
 ### Static Analysis
 Currently, we use a very simple hand-written parser and combine it with regex to parse the code. Thus, the accuracy, precision and performance are not good enough. However, we have no plans to complicate the parser further since it is like rebuilding a new wheel (new parser) using TypeScript.    
@@ -85,7 +85,8 @@ draft proposed American National Standard for Information Systems—Programming 
 [vscode-scheme](https://github.com/sjhuangx/vscode-scheme),
 [Scheme.tmLanguage](https://github.com/egrachev/sublime-scheme/blob/master/Scheme.tmLanguage),
 [Lisp.tmLanguage](https://github.com/bradrobertson/sublime-packages/blob/master/Lisp/Lisp.tmLanguage),
-[regex101](https://regex101.com/)  
+[regex101](https://regex101.com/),
+[structure101](https://structure101.com/)  
 
 ### Image Credits
 The `icon.png` is from [Common-Lisp.net](https://common-lisp.net/) and resized.  

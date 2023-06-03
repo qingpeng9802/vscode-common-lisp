@@ -1,29 +1,14 @@
 import * as vscode from 'vscode';
 
-enum ExcludeRanges {
-  CommentString = "comment and string",
-  Comment = "comment",
-  String = "string",
-  None = "none"
-}
+import { getHoverProvider } from '../provider_interface/hover_provider';
+import { getCompletionItemProviders } from '../provider_interface/comp_item_provider';
+import { getDefinitionProvider } from '../provider_interface/def_provider';
+import { getDocumentSymbolProvider } from '../provider_interface/doc_symbol_provider';
+import { getReferenceProvider } from '../provider_interface/reference_provider';
+import { getSemanticProvider } from '../provider_interface/semantic_tokens_provider';
+import { getCallHierarchyProvider } from '../provider_interface/call_hierarchy_provider';
 
-enum SingleQuoteAndBackQuoteHighlight {
-  SQ = "single quote",
-  SQAndBQC = "single quote and backquote's comma only",
-  SQAndBQAll = "single quote and backquote's all",
-  BQC = "backquote's comma only",
-  BQAll = "backquote's all",
-  None = "none"
-}
-
-enum SingleQuoteAndBackQuoteExcludedRanges {
-  SQ = "single quote",
-  SQBQButComma = "single quote and backquote, but comma is saved",
-  SQAndBQ = "single quote and backquote's all",
-  BQButComma = "backquote, but comma is saved",
-  BQ = "backquote's all",
-  None = "none"
-}
+import { ExcludeRanges, SingleQuoteAndBackQuoteHighlight, SingleQuoteAndBackQuoteExcludedRanges } from '../common/config_enum';
 
 class WorkspaceConfig {
   public readonly cfgMapDisposable: Record<string, string> = {
@@ -48,11 +33,6 @@ class WorkspaceConfig {
     'commonLisp.StaticAnalysis.enabled': true,
 
     'editor.semanticHighlighting.enabled': undefined,
-
-    'commonLisp.backupUpdater.debounceTimeout': 750,
-
-    // should be ~<= 200ms (keyboard repeat-delay)
-    'commonLisp.Updater.throttleTimeout': 200,
 
     'commonLisp.DocumentSemanticTokensProvider.SingleQuoteAndBackQuote.Highlight': SingleQuoteAndBackQuoteHighlight.SQAndBQC,
     'commonLisp.StaticAnalysis.SingleQuoteAndBackQuote.ExcludedRanges': SingleQuoteAndBackQuoteExcludedRanges.BQButComma,
@@ -82,8 +62,8 @@ class WorkspaceConfig {
   };
 
   public readonly disposables: Record<string, vscode.Disposable | undefined> = {
-    'backupTriggerUpdateSymbolonDidChangeTD': undefined,
-    'backupTriggerUpdateSymbolonDidChangeATE': undefined,
+    'eventOnDidChangeTD': undefined,
+    'eventOnDidChangeATE': undefined,
 
     'userCompletionItemProvider': undefined,
     'oriCompletionItemProvider': undefined,
@@ -106,6 +86,93 @@ class WorkspaceConfig {
   constructor() {
 
   }
+
+  public disposeAll() {
+    for (const [k, dis] of Object.entries(this.disposables)) {
+      if (dis !== undefined) {
+        dis.dispose();
+        this.disposables[k] = undefined;
+      }
+    }
+  }
+
+  public disposeProviderByName(disposableName: string) {
+    if (!(disposableName in this.disposables)) {
+      return;
+    }
+
+    if (this.disposables[disposableName] !== undefined) {
+      this.disposables[disposableName]?.dispose();
+      this.disposables[disposableName] = undefined;
+    } else {
+      return;
+    }
+  }
+
+
+  public setProviderByName(disposableName: string, contextSubcriptions: vscode.Disposable[]) {
+    if (!(disposableName in this.disposables)) {
+      return;
+    }
+
+    if (this.disposables[disposableName] !== undefined) {
+      return;
+    }
+    //console.log('setting ' + disposableName);
+    const provider = this.getProviderByName(disposableName);
+
+    if (provider === undefined) {
+      return;
+    }
+    this.disposables[disposableName] = provider;
+    contextSubcriptions.push(provider);
+  }
+
+  private getProviderByName(disposableName: string) {
+    switch (disposableName) {
+      case 'userCompletionItemProvider':
+        return getCompletionItemProviders('userSymbols');
+  
+      case 'oriCompletionItemProvider':
+        return getCompletionItemProviders('oriSymbols');
+  
+      case 'ampersandCompletionItemProvider':
+        return getCompletionItemProviders('ampersand');
+  
+      case 'asteriskCompletionItemProvider':
+        return getCompletionItemProviders('asterisk');
+  
+      case 'colonCompletionItemProvider':
+        return getCompletionItemProviders('colon');
+  
+      case 'tildeCompletionItemProvider':
+        return getCompletionItemProviders('tilde');
+  
+      case 'sharpsignCompletionItemProvider':
+        return getCompletionItemProviders('sharpsign');
+  
+      case 'hoverProvider':
+        return getHoverProvider();
+  
+      case 'definitionProvider':
+        return getDefinitionProvider();
+  
+      case 'documentSymbolProvider':
+        return getDocumentSymbolProvider();
+  
+      case 'referenceProvider':
+        return getReferenceProvider();
+  
+      case 'documentSemanticTokensProvider':
+        return getSemanticProvider();
+  
+      case 'callHierarchyProvider':
+        return getCallHierarchyProvider();
+  
+      default:
+        return undefined;
+    }
+  }
 }
 
-export { WorkspaceConfig, ExcludeRanges, SingleQuoteAndBackQuoteHighlight, SingleQuoteAndBackQuoteExcludedRanges };
+export { WorkspaceConfig };

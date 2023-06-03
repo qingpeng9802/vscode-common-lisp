@@ -4,10 +4,10 @@
         "module": "commonjs",
         "resolveJsonModule": true,
         "esModuleInterop": true,
-        "target": "es2022",
+        "target": "esnext",
         "outDir": "dist",
         "lib": [
-            "es2022",
+            "esnext",
             "WebWorker"
         ],
         "sourceMap": true,
@@ -18,6 +18,9 @@
         // "noFallthroughCasesInSwitch": true, /* Report errors for fallthrough cases in switch statement. */
         // "noUnusedParameters": true,  /* Report errors on unused parameters. */
     },
+    "include": [
+        "src"
+    ],
     "exclude": [
         "node_modules"
     ]
