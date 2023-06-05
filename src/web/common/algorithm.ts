@@ -1,4 +1,4 @@
-import * as vscode from 'vscode';
+import type * as vscode from 'vscode';
 
 function excludeRangesFromRanges(oriRanges: [number, number][], excludeRanges: [number, number][]): [number, number][] {
   const res: [number, number][] = [];

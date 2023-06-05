@@ -1,21 +1,22 @@
-import * as vscode from 'vscode';
+import type * as vscode from 'vscode';
 
-import { ExcludeRanges, SingleQuoteAndBackQuoteHighlight } from '../common/config_enum';
-import { addToDictArr, findInnermost, isRangeIntExcludedRanges } from './user_symbol_util';
-import { SymbolInfo } from './SymbolInfo';
 import { excludeRangesFromRanges, mergeSortedIntervals } from '../common/algorithm';
+import { ExcludeRanges, SingleQuoteAndBackQuoteHighlight } from '../common/config_enum';
+
+import type { SymbolInfo } from './SymbolInfo';
+import { addToDictArr, findInnermost, isRangeIntExcludedRanges } from './user_symbol_util';
 
 interface docObj {
   readonly doc: string;
   readonly docLength: number;
-  readonly commentRange: [number, number][],
-  readonly stringRange: [number, number][],
-  readonly quotedRange: [number, number][],
-  readonly quotedPairRange: [number, number][],
-  readonly backquoteRange: [number, number][],
-  readonly backquotePairRange: [number, number][],
-  readonly commaRange: [number, number][],
-  readonly commaPairRange: [number, number][],
+  readonly commentRange: [number, number][];
+  readonly stringRange: [number, number][];
+  readonly quotedRange: [number, number][];
+  readonly quotedPairRange: [number, number][];
+  readonly backquoteRange: [number, number][];
+  readonly backquotePairRange: [number, number][];
+  readonly commaRange: [number, number][];
+  readonly commaPairRange: [number, number][];
 }
 
 class DocSymbolInfo {
@@ -174,7 +175,9 @@ class DocSymbolInfo {
     }
   }
 
-  public getExcludedRangesWithSQAndBQ(excludedRangesCfg: any, SQAndBQHighlightCfg: any): [number, number][] {
+  public getExcludedRangesWithSQAndBQ(buildingConfig: Record<string, any>): [number, number][] {
+    const excludedRangesCfg = buildingConfig['commonLisp.DocumentSemanticTokensProvider.ExcludedRanges'];
+    const SQAndBQHighlightCfg = buildingConfig['commonLisp.DocumentSemanticTokensProvider.SingleQuoteAndBackQuote.Highlight'];
     let excludedRanges: [number, number][] = this.getExcludedRanges(excludedRangesCfg);
 
     switch (SQAndBQHighlightCfg) {
@@ -187,7 +190,7 @@ class DocSymbolInfo {
         );
         break;
 
-      case SingleQuoteAndBackQuoteHighlight.SQAndBQC:
+      case SingleQuoteAndBackQuoteHighlight.SQAndBQC: {
         const backquotePairAndSymbol = mergeSortedIntervals(
           [...this.docRes.backquotePairRange, ...this.docRes.backquoteRange].sort((a, b) => a[0] - b[0]));
         const commaPairAndSymbol = mergeSortedIntervals(
@@ -197,12 +200,12 @@ class DocSymbolInfo {
         excludedRanges = mergeSortedIntervals(
           [...excludedRanges, ...excludedComma].sort((a, b) => a[0] - b[0]));
         break;
-
+      }
       case SingleQuoteAndBackQuoteHighlight.SQAndBQAll:
         // nothing
         break;
 
-      case SingleQuoteAndBackQuoteHighlight.BQC:
+      case SingleQuoteAndBackQuoteHighlight.BQC: {
         const backquotePairAndSymbol2 = mergeSortedIntervals(
           [...this.docRes.backquotePairRange, ...this.docRes.backquoteRange].sort((a, b) => a[0] - b[0]));
         const commaPairAndSymbol2 = mergeSortedIntervals(
@@ -216,7 +219,7 @@ class DocSymbolInfo {
           ...excludedComma2
         ].sort((a, b) => a[0] - b[0]));
         break;
-
+      }
       case SingleQuoteAndBackQuoteHighlight.BQAll:
         excludedRanges = mergeSortedIntervals([
           ...excludedRanges,

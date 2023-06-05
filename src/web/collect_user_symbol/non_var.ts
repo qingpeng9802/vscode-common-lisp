@@ -1,9 +1,9 @@
 import * as vscode from 'vscode';
 
 import { SymbolInfo } from './SymbolInfo';
+import { processVars } from './lambda_list';
 import { findMatchPairParenthese } from './pair_parser';
 import { addToDictArr, checkDefName, getValidGroup, isRangeIntExcludedRanges } from './user_symbol_util';
-import { processVars } from './lambda_list';
 
 function collectKeyword(regex: RegExp, nameGroup: number[], document: vscode.TextDocument, ExcludedRange: [number, number][]): Record<string, SymbolInfo[]> {
   const uri = document.uri;
@@ -244,7 +244,7 @@ function collectLocalDef(document: vscode.TextDocument, ExcludedRange: [number, 
 
     // get lambda list, start with `(`
     let allowDestructuring = false;
-    if ([r[3] === 'flet', r[3] === 'labels']) {
+    if (r[3] === 'flet' || r[3] === 'labels') {
       allowDestructuring = true;
     } else if (r[3] === 'macrolet') {
       allowDestructuring = false;

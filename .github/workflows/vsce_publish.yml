@@ -5,9 +5,9 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
     inputs:
-          tags:
-            description: 'Tag Name'
-            required: true
+      tags:
+        description: "Tag Name"
+        required: true
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -16,15 +16,15 @@ jobs:
   #    matrix:
   #      os: [macos-latest, ubuntu-latest, windows-latest]
   #  runs-on: ${{ matrix.os }}
-  #  
+  #
   #  steps:
   #    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
   #    - uses: actions/checkout@v2
-  #    
+  #
   #    - uses: actions/setup-node@v2
   #      with:
   #        node-version: 18
-  #        
+  #
   #    - name: Install dependencies
   #      run: npm install
   #
@@ -33,7 +33,7 @@ jobs:
   #
   #    - name: Webpack compile web
   #      run: npm run pretest
-  #    
+  #
   #    # https://snyk.io/blog/vs-code-extension-building-auto-cicd-with-github-actions/
   #    - name: Run headless test
   #      uses: GabrielBB/xvfb-action@v1.0
@@ -49,14 +49,14 @@ jobs:
         with:
           node-version: 18
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build Grammar from yaml to json
         run: npm run bg
 
       - name: Webpack package web
         run: npm run vscode:prepublish
-        
+
       - name: Install vsce
         run: npm i -g vsce
 
@@ -64,7 +64,7 @@ jobs:
         run: npm run publish
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
-      
+
       - name: print tag
         env:
           TAGS: ${{ github.event.inputs.tags }}

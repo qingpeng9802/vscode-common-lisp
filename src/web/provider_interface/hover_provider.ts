@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 
-import { CL_MODE, clValidWithColonSharp } from '../common/cl_util';
 import _kind from '../cl_data/cl_kind.json';
+import { CL_MODE, clValidWithColonSharp } from '../common/cl_util';
 import { getDocByName, getDocByNameNonAlphabetic } from '../doc/get_doc';
 
 function isOriSymbol(symbolName: string): boolean {

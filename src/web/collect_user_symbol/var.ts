@@ -1,9 +1,9 @@
 import * as vscode from 'vscode';
 
 import { SymbolInfo } from './SymbolInfo';
+import { processVars } from './lambda_list';
 import { findMatchPairParenthese } from './pair_parser';
 import { addToDictArr, checkDefName, isRangeIntExcludedRanges } from './user_symbol_util';
-import { processVars } from './lambda_list';
 
 function collectKeywordVars(document: vscode.TextDocument, ExcludedRange: [number, number][]): Record<string, SymbolInfo[]> {
   const uri = document.uri;

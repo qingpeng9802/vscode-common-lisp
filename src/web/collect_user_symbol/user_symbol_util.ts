@@ -1,7 +1,8 @@
-import * as vscode from 'vscode';
+import type * as vscode from 'vscode';
 
 import { bisectRight } from '../common/algorithm';
-import { SymbolInfo } from './SymbolInfo';
+
+import type { SymbolInfo } from './SymbolInfo';
 
 function isShadowed(currRange: [number, number], shadow: SymbolInfo[]): boolean {
   for (const s of shadow) {
@@ -110,7 +111,7 @@ function checkDefName(r: RegExpMatchArray, nameGroup: number[]): string | undefi
 }
 
 function addToDictArr(dict: Record<string, any[]>, k: any, item: any) {
-  if (dict.hasOwnProperty(k)) {
+  if (Object.hasOwn(dict, k)) {
     dict[k].push(item);
   } else {
     dict[k] = [item];

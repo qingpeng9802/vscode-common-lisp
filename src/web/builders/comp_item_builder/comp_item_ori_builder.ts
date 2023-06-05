@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
 
 import _non_alphabetic from '../../cl_data/cl_non_alphabetic.json';
-
-import { clOriSymbolsByKind, ClSymbolKind } from './symbols_by_kind';
 import { getDocByName, getDocByNameNonAlphabetic } from '../../doc/get_doc';
-import { OriSymbolsCompItem } from './OriSymbols';
+
+import { OriSymbolsCompItem } from './OriSymbolsCompItem';
+import { clOriSymbolsByKind, ClSymbolKind } from './symbols_by_kind';
 
 const clKindToVscodeCIKind: Record<ClSymbolKind, vscode.CompletionItemKind> = {
   [ClSymbolKind.Accessor]: vscode.CompletionItemKind.Method,
@@ -13,7 +13,6 @@ const clKindToVscodeCIKind: Record<ClSymbolKind, vscode.CompletionItemKind> = {
   [ClSymbolKind.StandardGenericFunction]: vscode.CompletionItemKind.Function,
   [ClSymbolKind.Class]: vscode.CompletionItemKind.Class,
   [ClSymbolKind.SystemClass]: vscode.CompletionItemKind.Class,
-  [ClSymbolKind.Type]: vscode.CompletionItemKind.Class,
   [ClSymbolKind.ConditionType]: vscode.CompletionItemKind.Class,
   [ClSymbolKind.ConstantVariable]: vscode.CompletionItemKind.Constant,
   [ClSymbolKind.Declaration]: vscode.CompletionItemKind.Keyword,
@@ -37,8 +36,9 @@ function assignKindAndDoc(
   for (const s of symbolsArr) {
     const ci = new vscode.CompletionItem(s, kind);
     const doc = getDocByName(s);
-
-    doc ? ci.documentation = doc : undefined;
+    if (doc !== undefined) {
+      ci.documentation = doc;
+    }
 
     citems.push(ci);
   }
@@ -52,7 +52,7 @@ function genOriSymbols(): vscode.CompletionItem[] {
     citems.push(...assignKindAndDoc(partSymbols, kind));
   }
   if (citems.length !== 978) {
-    console.log(`[Autocompletion] Built incomplete kind list (${citems.length}) of symbols`);
+    console.warn(`[Autocompletion] Built incomplete kind list (${citems.length}) of symbols`);
   }
 
   return citems;

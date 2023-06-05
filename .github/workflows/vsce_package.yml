@@ -4,13 +4,13 @@ name: vsce Package
 on:
   release:
     types: [created]
-  
+
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
     inputs:
-          tags:
-            description: 'Tag Name'
-            required: true
+      tags:
+        description: "Tag Name"
+        required: true
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -22,32 +22,32 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-      
+
       - uses: actions/setup-node@v2
         with:
           node-version: 18
-          
+
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build Grammar from yaml to json
         run: npm run bg
 
       - name: Webpack package web
         run: npm run vscode:prepublish
-      
+
       - name: Install vsce
         run: npm i -g vsce
 
       - name: run vsce package
         run: npm run package
-        
+
       - name: Archive vsix production
         uses: actions/upload-artifact@v3
         with:
           name: vsix production
           path: ./*.vsix
-          if-no-files-found : error
+          if-no-files-found: error
 
       - name: print tag
         env:

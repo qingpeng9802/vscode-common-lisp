@@ -1,20 +1,21 @@
 import * as vscode from 'vscode';
 
-import { clValidWithColonSharp, CL_MODE } from '../common/cl_util';
-import { isQuote, isRangeIntExcludedRanges, isShadowed } from '../collect_user_symbol/user_symbol_util';
 
-import { updateInfo } from './update_info';
-import { DocSymbolInfo } from '../collect_user_symbol/DocSymbolInfo';
-import { SymbolInfo } from '../collect_user_symbol/SymbolInfo';
+import type { DocSymbolInfo } from '../collect_user_symbol/DocSymbolInfo';
+import type { SymbolInfo } from '../collect_user_symbol/SymbolInfo';
+import { isQuote, isRangeIntExcludedRanges, isShadowed } from '../collect_user_symbol/user_symbol_util';
 import { bisectRight } from '../common/algorithm';
+import { clValidWithColonSharp, CL_MODE } from '../common/cl_util';
+
+import { structuredInfo } from './structured_info';
 
 function getReferenceProvider() {
   const referenceProvider = vscode.languages.registerReferenceProvider(
     CL_MODE,
     {
       provideReferences(document, position, context, token) {
-        updateInfo.updateSymbol(document);
-        if (!updateInfo.currDocSymbolInfo) {
+        structuredInfo.produceInfoByDoc(document);
+        if (!structuredInfo.currDocSymbolInfo) {
           return undefined;
         }
 
@@ -23,13 +24,13 @@ function getReferenceProvider() {
           return undefined;
         }
 
-        const excludedRangesCfg = updateInfo.buildingConfig['commonLisp.ReferenceProvider.ExcludedRanges'];
-        const backQuoteCfg = updateInfo.buildingConfig['commonLisp.ReferenceProvider.BackQuoteFilter.enabled'];
+        const excludedRangesCfg = structuredInfo.buildingConfig['commonLisp.ReferenceProvider.ExcludedRanges'];
+        const backQuoteCfg = structuredInfo.buildingConfig['commonLisp.ReferenceProvider.BackQuoteFilter.enabled'];
         if (isQuote(document, position)) {
-          return getReferenceByWord(updateInfo.currDocSymbolInfo, updateInfo.needColorDict, excludedRangesCfg, backQuoteCfg, range, undefined, true);
+          return getReferenceByWord(structuredInfo.currDocSymbolInfo, structuredInfo.needColorDict, excludedRangesCfg, backQuoteCfg, range, undefined, true);
         }
 
-        return getReferenceByWord(updateInfo.currDocSymbolInfo, updateInfo.needColorDict, excludedRangesCfg, backQuoteCfg, range, position, true);
+        return getReferenceByWord(structuredInfo.currDocSymbolInfo, structuredInfo.needColorDict, excludedRangesCfg, backQuoteCfg, range, position, true);
       }
     }
   );

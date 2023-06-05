@@ -1,8 +1,9 @@
 import * as vscode from 'vscode';
 
+import type { DocSymbolInfo } from '../../collect_user_symbol/DocSymbolInfo';
 import { addToDictArr, isRangeIntExcludedRanges } from '../../collect_user_symbol/user_symbol_util';
-import { DocSymbolInfo } from '../../collect_user_symbol/DocSymbolInfo';
 import { bisectRight } from '../../common/algorithm';
+
 import { ParsedToken } from './ParsedToken';
 
 const tokenTypes = new Map<string, number>();
@@ -55,7 +56,7 @@ function getLegend() {
   tokenModifiersLegend.forEach((tokenModifier, index) => tokenModifiers.set(tokenModifier, index));
 
   return new vscode.SemanticTokensLegend(tokenTypesLegend, tokenModifiersLegend);
-};
+}
 
 // https://github.com/microsoft/vscode-extension-samples/blob/main/semantic-tokens-sample/src/extension.ts#L45-L65
 function _encodeTokenType(tokenType: string): number {
@@ -69,8 +70,7 @@ function _encodeTokenType(tokenType: string): number {
 
 function _encodeTokenModifiers(strTokenModifiers: string[]): number {
   let result = 0;
-  for (let i = 0; i < strTokenModifiers.length; i++) {
-    const tokenModifier = strTokenModifiers[i];
+  for (const tokenModifier of strTokenModifiers) {
     if (tokenModifiers.has(tokenModifier)) {
       result = result | (1 << tokenModifiers.get(tokenModifier)!);
     } else if (tokenModifier === 'notInLegend') {
@@ -138,7 +138,7 @@ function genAllPossibleWord(currDocSymbolInfo: DocSymbolInfo):
     if (currDocSymbolInfo.allNames.has(word)) {
       addToDictArr(needColorDict, word, [r.index, r.index + word.length]);
     }
-    if (currDocSymbolInfo.globalDef.hasOwnProperty(word)) {
+    if (Object.hasOwn(currDocSymbolInfo.globalDef, word)) {
       globalOrderedRanges.push([word, [r.index, r.index + word.length]]);
     }
   }
@@ -146,9 +146,9 @@ function genAllPossibleWord(currDocSymbolInfo: DocSymbolInfo):
   return [needColorDict, globalOrderedRanges];
 }
 
-function getTokenDict(currDocSymbolInfo: DocSymbolInfo, needColorDict: Record<string, [number, number][]>, excludedRangesCfg: any, SQAndBQHighlightCfg: any): Record<string, ParsedToken> {
+function getTokenDict(currDocSymbolInfo: DocSymbolInfo, needColorDict: Record<string, [number, number][]>, buildingConfig: Record<string, any>): Record<string, ParsedToken> {
   // config
-  let excludedRanges: [number, number][] = currDocSymbolInfo.getExcludedRangesWithSQAndBQ(excludedRangesCfg, SQAndBQHighlightCfg);
+  const excludedRanges: [number, number][] = currDocSymbolInfo.getExcludedRangesWithSQAndBQ(buildingConfig);
 
   const tokenDictGlobal = updateTokenDict(currDocSymbolInfo, excludedRanges, needColorDict, 'global');
   const tokenDictLocal = updateTokenDict(currDocSymbolInfo, excludedRanges, needColorDict, 'local');
@@ -187,7 +187,7 @@ function updateTokenDict(
 
       const tokenMapRes = vscodeKindToTokenType[item.kind];
 
-      let tokenType: string = '';
+      let tokenType = '';
       let tokenModifiers: string[] = [];
       if (Array.isArray(tokenMapRes)) {
         tokenType = tokenMapRes[0];
@@ -198,7 +198,7 @@ function updateTokenDict(
       }
 
       // color def itself
-      const key: string = `${item.name}|${item.loc.range.start.line},${item.loc.range.start.character},${item.name.length}`;
+      const key = `${item.name}|${item.loc.range.start.line},${item.loc.range.start.character},${item.name.length}`;
 
       const packagePrefixIndSelf = item.name.indexOf(':');
       if (packagePrefixIndSelf !== -1) {
@@ -237,7 +237,7 @@ function updateTokenDict(
 
         const startPos =
           currDocSymbolInfo.document.positionAt(currNeedColor[i][0]);
-        const key: string = `${item.name}|${startPos.line},${startPos.character},${item.name.length}`;
+        const key = `${item.name}|${startPos.line},${startPos.character},${item.name.length}`;
 
         const packagePrefixIndScope = item.name.indexOf(':');
         if (packagePrefixIndScope !== -1) {
@@ -264,10 +264,10 @@ function updateTokenDict(
   return tokenDict;
 }
 
-function buildSemanticTokens(currDocSymbolInfo: DocSymbolInfo, needColorDict: Record<string, [number, number][]>, excludedRangesCfg: any, SQAndBQHighlightCfg: any): vscode.SemanticTokens {
+function buildSemanticTokens(currDocSymbolInfo: DocSymbolInfo, needColorDict: Record<string, [number, number][]>, buildingConfig: Record<string, any>): vscode.SemanticTokens {
   const tokensBuilder = new vscode.SemanticTokensBuilder();
 
-  const tokenDict = getTokenDict(currDocSymbolInfo, needColorDict, excludedRangesCfg, SQAndBQHighlightCfg);
+  const tokenDict = getTokenDict(currDocSymbolInfo, needColorDict, buildingConfig);
   //console.log(tokenDict)
   for (const t of Object.values(tokenDict)) {
     tokensBuilder.push(t.startPos.line, t.startPos.character, t.len, _encodeTokenType(t.tokenType), _encodeTokenModifiers(t.tokenModifiers));

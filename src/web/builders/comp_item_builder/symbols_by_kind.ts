@@ -1,4 +1,4 @@
-// Currently, VS Code does not support sort of autocompletion items. 
+// Currently, VS Code does not support sort of autocompletion items.
 // (https://github.com/microsoft/vscode/issues/80444)
 // Thus, the order of symbol is not matter here.
 
@@ -1020,7 +1020,7 @@ const clVariable: string[] = [
   '+++'
 ];
 
-enum ClSymbolKind {
+const enum ClSymbolKind {
   Accessor = 'Accessor',
   Class = 'Class',
   ConditionType = 'Condition Type',
@@ -1064,13 +1064,13 @@ const clOriSymbolsByKind: Record<ClSymbolKind, string[]> = {
   [ClSymbolKind.Variable]: clVariable
 };
 
-function getOriSymbolsLength(oriSymbols: Record<ClSymbolKind, string[]>): number | Error {
+function getOriSymbolsLength(oriSymbols: Record<ClSymbolKind, string[]>): number {
   const s: Set<string> = new Set();
   let length = 0;
   for (const symbols of Object.values(oriSymbols)) {
     symbols.forEach(item => {
       if (s.has(item)) {
-        return new Error('There should not be any duplicated commonlisp symbol.');
+        throw new Error('There should not be any duplicated commonlisp symbol.');
       }
       s.add(item);
     });
@@ -1079,10 +1079,10 @@ function getOriSymbolsLength(oriSymbols: Record<ClSymbolKind, string[]>): number
   return length;
 }
 
-function getCLOriSymbols(): Record<ClSymbolKind, string[]> | Error {
+function getCLOriSymbols(): Record<ClSymbolKind, string[]> {
   const LEN_CL_ALL_SYMBOLS = 978;
-  if (getOriSymbolsLength(clOriSymbolsByKind) === LEN_CL_ALL_SYMBOLS) {
-    return new Error(`Please make sure all ${LEN_CL_ALL_SYMBOLS} commonlisp symbols have been included.`);
+  if (getOriSymbolsLength(clOriSymbolsByKind) !== LEN_CL_ALL_SYMBOLS) {
+    throw new Error(`Please make sure all ${LEN_CL_ALL_SYMBOLS} commonlisp symbols have been included.`);
   }
   return clOriSymbolsByKind;
 }
@@ -1094,7 +1094,7 @@ function _printSymbolKind() {
       d[s] = k;
     }
   }
-  console.log(JSON.stringify(d));
+  //console.log(JSON.stringify(d));
 }
 
 // printSymbolKind();

@@ -1,17 +1,17 @@
-import * as vscode from 'vscode';
+import type * as vscode from 'vscode';
 
 // to avoid overhead of passing huge string
 interface docObj {
   readonly doc: string;
   readonly docLength: number;
-  readonly commentRange: [number, number][],
-  readonly stringRange: [number, number][],
-  readonly quotedRange: [number, number][],
-  readonly quotedPairRange: [number, number][],
-  readonly backquoteRange: [number, number][],
-  readonly backquotePairRange: [number, number][],
-  readonly commaRange: [number, number][],
-  readonly commaPairRange: [number, number][],
+  readonly commentRange: [number, number][];
+  readonly stringRange: [number, number][];
+  readonly quotedRange: [number, number][];
+  readonly quotedPairRange: [number, number][];
+  readonly backquoteRange: [number, number][];
+  readonly backquotePairRange: [number, number][];
+  readonly commaRange: [number, number][];
+  readonly commaPairRange: [number, number][];
 }
 
 // return result is rightafter `)`, not at `)`
@@ -138,7 +138,7 @@ function eatSingleQuoteOrSingleBackQuote(index: number, docObj: docObj): number 
 }
 
 // start rightafter `'(`, that is, first `(` will not be eaten in this function
-function eatDoc(index: number, docObj: docObj) {
+function eatDoc(index: number, docObj: docObj): -1 | undefined {
   const doc = docObj.doc;
 
   const passSet = new Set([',', '@', '.', '#', '`', '\'']);
@@ -300,14 +300,13 @@ function eatDoc(index: number, docObj: docObj) {
         ++index;
         break;
 
-      /*
-            case '#':
-              // skip macro reader, reset prevc
-              while (/\d/.test(doc[index])) {
-                ++index;
-              }
-              ++index;
-              continue;
+      /*case '#':
+      // skip macro reader, reset prevc
+      while (/\d/.test(doc[index])) {
+        ++index;
+      }
+      ++index;
+      continue;
       */
 
       default:
@@ -317,7 +316,7 @@ function eatDoc(index: number, docObj: docObj) {
 
     prevc = c;
   }
-  return;
+  return undefined;
 }
 
 

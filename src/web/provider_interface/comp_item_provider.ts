@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
 
-import { clValidWithColonSharp, CL_MODE } from '../common/cl_util';
-import { bisectRight } from '../common/algorithm';
-import { UserSymbols } from '../builders/comp_item_builder/UserSymbols';
+import type { UserSymbols } from '../builders/comp_item_builder/UserSymbols';
 import { genAllOriSymbols } from '../builders/comp_item_builder/comp_item_ori_builder';
+import { bisectRight } from '../common/algorithm';
+import { clValidWithColonSharp, CL_MODE } from '../common/cl_util';
 
-import { updateInfo } from './update_info';
+import { structuredInfo } from './structured_info';
 
 // only need once
 const oriSymbolsCompItem = genAllOriSymbols();
@@ -45,80 +45,80 @@ function getCompletionItemProviders(providerName: string): vscode.Disposable | u
     case 'userSymbols':
       return vscode.languages.registerCompletionItemProvider(
         CL_MODE, {
-        provideCompletionItems(document, position, token, context) {
-          updateInfo.updateSymbol(document);
-          if (!updateInfo.currUserSymbols) {
-            return [];
+          provideCompletionItems(document, position, token, context) {
+            structuredInfo.produceInfoByDoc(document);
+            if (!structuredInfo.currUserSymbols) {
+              return [];
+            }
+
+            const numPosition = document.offsetAt(position);
+            const userSymbols = getUserompletionItems(structuredInfo.currUserSymbols, numPosition);
+
+            resetCompItemWordRange(document, position, userSymbols);
+
+            return userSymbols;
           }
-
-          const numPosition = document.offsetAt(position);
-          const userSymbols = getUserompletionItems(updateInfo.currUserSymbols, numPosition);
-
-          resetCompItemWordRange(document, position, userSymbols);
-
-          return userSymbols;
-        }
-      });
+        });
     case 'oriSymbols':
       return vscode.languages.registerCompletionItemProvider(
         CL_MODE, {
-        provideCompletionItems(document, position, token, context) {
+          provideCompletionItems(document, position, token, context) {
 
-          resetCompItemWordRange(document, position, oriSymbolsCompItem.oriSymbols);
+            resetCompItemWordRange(document, position, oriSymbolsCompItem.oriSymbols);
 
-          return oriSymbolsCompItem.oriSymbols;
-        }
-      });
+            return oriSymbolsCompItem.oriSymbols;
+          }
+        });
     case 'ampersand':
       return vscode.languages.registerCompletionItemProvider(
         CL_MODE, {
-        provideCompletionItems(document, position, token, context) {
+          provideCompletionItems(document, position, token, context) {
 
-          resetCompItemWordRange(document, position, oriSymbolsCompItem.afterAmpersand);
+            resetCompItemWordRange(document, position, oriSymbolsCompItem.afterAmpersand);
 
-          return oriSymbolsCompItem.afterAmpersand;
-        }
-      }, '&');
+            return oriSymbolsCompItem.afterAmpersand;
+          }
+        }, '&');
     case 'asterisk':
       return vscode.languages.registerCompletionItemProvider(
         CL_MODE, {
-        provideCompletionItems(document, position, token, context) {
+          provideCompletionItems(document, position, token, context) {
 
-          resetCompItemWordRange(document, position, oriSymbolsCompItem.afterAsterisk);
+            resetCompItemWordRange(document, position, oriSymbolsCompItem.afterAsterisk);
 
-          return oriSymbolsCompItem.afterAsterisk;
-        }
-      }, '*');
+            return oriSymbolsCompItem.afterAsterisk;
+          }
+        }, '*');
     case 'colon':
       return vscode.languages.registerCompletionItemProvider(
         CL_MODE, {
-        provideCompletionItems(document, position, token, context) {
+          provideCompletionItems(document, position, token, context) {
 
-          resetCompItemWordRange(document, position, oriSymbolsCompItem.afterColon);
+            resetCompItemWordRange(document, position, oriSymbolsCompItem.afterColon);
 
-          return oriSymbolsCompItem.afterColon;
-        }
-      }, ':');
+            return oriSymbolsCompItem.afterColon;
+          }
+        }, ':');
     case 'tilde':
       return vscode.languages.registerCompletionItemProvider(
         CL_MODE, {
-        provideCompletionItems(document, position, token, context) {
+          provideCompletionItems(document, position, token, context) {
 
-          resetCompItemWordRange(document, position, oriSymbolsCompItem.afterTilde);
+            resetCompItemWordRange(document, position, oriSymbolsCompItem.afterTilde);
 
-          return oriSymbolsCompItem.afterTilde;
-        }
-      }, '~');
+            return oriSymbolsCompItem.afterTilde;
+          }
+        }, '~');
     case 'sharpsign':
       return vscode.languages.registerCompletionItemProvider(
         CL_MODE, {
-        provideCompletionItems(document, position, token, context) {
+          provideCompletionItems(document, position, token, context) {
 
-          resetCompItemWordRange(document, position, oriSymbolsCompItem.afterSharpsign);
+            resetCompItemWordRange(document, position, oriSymbolsCompItem.afterSharpsign);
 
-          return oriSymbolsCompItem.afterSharpsign;
-        }
-      }, '#');
+            return oriSymbolsCompItem.afterSharpsign;
+          }
+        }, '#');
     default:
       return undefined;
   }

@@ -1,13 +1,13 @@
 import * as vscode from 'vscode';
 
-import { bisectRight } from '../../common/algorithm';
-import { DocSymbolInfo } from '../../collect_user_symbol/DocSymbolInfo';
+import type { DocSymbolInfo } from '../../collect_user_symbol/DocSymbolInfo';
+import type { SymbolInfo } from '../../collect_user_symbol/SymbolInfo';
 import { findMatchPairParenthese } from '../../collect_user_symbol/pair_parser';
-import { SymbolInfo } from '../../collect_user_symbol/SymbolInfo';
+import { bisectRight } from '../../common/algorithm';
 
 function genAnonContainerNameNum(d: Record<string, number>, anonContainerName: string): number {
   // {anonymous container name, count}
-  if (d.hasOwnProperty(anonContainerName)) {
+  if (Object.hasOwn(d, anonContainerName)) {
     d[anonContainerName] += 1;
   } else {
     d[anonContainerName] = 1;

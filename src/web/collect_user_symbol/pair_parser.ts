@@ -219,7 +219,8 @@ function eatParentheseDebug(index: number, docObj: docObj): [true, number] | [fa
           return [false, index];
         }
 
-        const close = needCloseStack.pop();
+        needCloseStack.pop();
+        //const close = needCloseStack.pop();
         //console.log(`closing: [${close}, ${index}]`);
 
         --needClose;

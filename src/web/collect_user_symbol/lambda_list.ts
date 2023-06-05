@@ -1,6 +1,6 @@
 import { clValidSymbolSingleCharColonSharpSet } from '../common/cl_util';
 
-import { findMatchPairParenthese } from "./pair_parser";
+import { findMatchPairParenthese } from './pair_parser';
 
 function processRecList(varsStr: string, baseInd: number, keywordStatus: string, allowDestructuring: boolean):
   Record<string, [number, number]> {

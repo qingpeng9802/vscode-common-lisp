@@ -2,16 +2,16 @@ import * as vscode from 'vscode';
 
 import { CL_MODE } from '../common/cl_util';
 
-import { updateInfo } from './update_info';
+import { structuredInfo } from './structured_info';
 
 function getDocumentSymbolProvider() {
   const documentSymbolProvider = vscode.languages.registerDocumentSymbolProvider(
     CL_MODE,
     {
       provideDocumentSymbols(document, token) {
-        updateInfo.updateSymbol(document);
+        structuredInfo.produceInfoByDoc(document);
 
-        return updateInfo.currDocumentSymbol;
+        return structuredInfo.currDocumentSymbol;
       }
     }
   );

@@ -1,14 +1,13 @@
-import * as vscode from 'vscode';
+import type * as vscode from 'vscode';
 
-import { getHoverProvider } from '../provider_interface/hover_provider';
+import { ExcludeRanges, SingleQuoteAndBackQuoteHighlight, SingleQuoteAndBackQuoteExcludedRanges, ProduceOption } from '../common/config_enum';
+import { getCallHierarchyProvider } from '../provider_interface/call_hierarchy_provider';
 import { getCompletionItemProviders } from '../provider_interface/comp_item_provider';
 import { getDefinitionProvider } from '../provider_interface/def_provider';
 import { getDocumentSymbolProvider } from '../provider_interface/doc_symbol_provider';
+import { getHoverProvider } from '../provider_interface/hover_provider';
 import { getReferenceProvider } from '../provider_interface/reference_provider';
 import { getSemanticProvider } from '../provider_interface/semantic_tokens_provider';
-import { getCallHierarchyProvider } from '../provider_interface/call_hierarchy_provider';
-
-import { ExcludeRanges, SingleQuoteAndBackQuoteHighlight, SingleQuoteAndBackQuoteExcludedRanges } from '../common/config_enum';
 
 class WorkspaceConfig {
   public readonly cfgMapDisposable: Record<string, string> = {
@@ -29,6 +28,7 @@ class WorkspaceConfig {
     'commonLisp.providers.DocumentSemanticTokensProvider.enabled': 'documentSemanticTokensProvider',
     'commonLisp.providers.CallHierarchyProvider.enabled': 'callHierarchyProvider',
   };
+
   public readonly config: Record<string, any> = {
     'commonLisp.StaticAnalysis.enabled': true,
 
@@ -97,7 +97,7 @@ class WorkspaceConfig {
   }
 
   public disposeProviderByName(disposableName: string) {
-    if (!(disposableName in this.disposables)) {
+    if (!Object.hasOwn(this.disposables, disposableName)) {
       return;
     }
 
@@ -111,7 +111,7 @@ class WorkspaceConfig {
 
 
   public setProviderByName(disposableName: string, contextSubcriptions: vscode.Disposable[]) {
-    if (!(disposableName in this.disposables)) {
+    if (!Object.hasOwn(this.disposables, disposableName)) {
       return;
     }
 
@@ -132,46 +132,70 @@ class WorkspaceConfig {
     switch (disposableName) {
       case 'userCompletionItemProvider':
         return getCompletionItemProviders('userSymbols');
-  
+
       case 'oriCompletionItemProvider':
         return getCompletionItemProviders('oriSymbols');
-  
+
       case 'ampersandCompletionItemProvider':
         return getCompletionItemProviders('ampersand');
-  
+
       case 'asteriskCompletionItemProvider':
         return getCompletionItemProviders('asterisk');
-  
+
       case 'colonCompletionItemProvider':
         return getCompletionItemProviders('colon');
-  
+
       case 'tildeCompletionItemProvider':
         return getCompletionItemProviders('tilde');
-  
+
       case 'sharpsignCompletionItemProvider':
         return getCompletionItemProviders('sharpsign');
-  
+
       case 'hoverProvider':
         return getHoverProvider();
-  
+
       case 'definitionProvider':
         return getDefinitionProvider();
-  
+
       case 'documentSymbolProvider':
         return getDocumentSymbolProvider();
-  
+
       case 'referenceProvider':
         return getReferenceProvider();
-  
+
       case 'documentSemanticTokensProvider':
         return getSemanticProvider();
-  
+
       case 'callHierarchyProvider':
         return getCallHierarchyProvider();
-  
+
       default:
         return undefined;
     }
+  }
+
+  public getNeedProduceSetByConfig(): Set<string> {
+    const needProduceSet: Set<string> = new Set();
+    const actionUsedByProviders = {
+      [ProduceOption.getDocSymbolInfo]: [
+        'userCompletionItemProvider', 'definitionProvider', 'documentSymbolProvider',
+        'referenceProvider', 'documentSemanticTokensProvider', 'callHierarchyProvider'
+      ],
+      [ProduceOption.genUserSymbols]: ['userCompletionItemProvider'],
+      [ProduceOption.genDocumentSymbol]: ['userCompletionItemProvider', 'callHierarchyProvider', 'documentSymbolProvider'],
+      [ProduceOption.genAllPossibleWord]: ['referenceProvider', 'documentSemanticTokensProvider', 'callHierarchyProvider'],
+      [ProduceOption.buildSemanticTokens]: ['documentSemanticTokensProvider'],
+      [ProduceOption.genAllCallHierarchyItems]: ['callHierarchyProvider']
+    };
+    for (const [k, v] of Object.entries(actionUsedByProviders)) {
+      const notDefined = (ele: string) => this.disposables[ele] !== undefined;
+
+      if (v.some(notDefined)) {
+        needProduceSet.add(k);
+      }
+    }
+
+    return needProduceSet;
   }
 }
 

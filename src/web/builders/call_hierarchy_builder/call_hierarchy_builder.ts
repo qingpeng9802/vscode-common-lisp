@@ -1,9 +1,10 @@
 import * as vscode from 'vscode';
 
+import type { DocSymbolInfo } from '../../collect_user_symbol/DocSymbolInfo';
+import type { SymbolInfo } from '../../collect_user_symbol/SymbolInfo';
 import { isRangeIntExcludedRanges, isShadowed } from '../../collect_user_symbol/user_symbol_util';
-import { DocSymbolInfo } from '../../collect_user_symbol/DocSymbolInfo';
-import { SymbolInfo } from '../../collect_user_symbol/SymbolInfo';
 import { bisectRight } from '../../common/algorithm';
+
 import { CallHrchyInfo } from './CallHrchyInfo';
 
 function buildCallHierarchyItem(info: SymbolInfo): vscode.CallHierarchyItem {
@@ -103,10 +104,10 @@ function genAllCallHierarchyItems(currDocSymbolInfo: DocSymbolInfo, globalOrdere
       realCaller.loc.range, realCaller.loc.range
     );
 
-    if (!callHierarchyICs.hasOwnProperty(currCallerName)) {
+    if (!Object.hasOwn(callHierarchyICs, currCallerName)) {
       callHierarchyICs[currCallerName] = {};
     }
-    if (!callHierarchyOGs.hasOwnProperty(isCalledName)) {
+    if (!Object.hasOwn(callHierarchyOGs, isCalledName)) {
       callHierarchyOGs[isCalledName] = {};
     }
     buildEdge(callHierarchyICs[currCallerName], realCallerStr, fromItem, callHierarchyOGs[isCalledName], undefined, toItem, [callAppearRange]);
@@ -122,7 +123,7 @@ function genAllCallHierarchyItemsNonOrphan(currDocSymbolInfo: DocSymbolInfo, glo
   const callHrchyItems: Record<string, Record<string, vscode.CallHierarchyItem>> = {};
   const callHierarchyICs: Record<string, Record<string, vscode.CallHierarchyIncomingCall>> = {};
   const callHierarchyOGs: Record<string, Record<string, vscode.CallHierarchyOutgoingCall>> = {};
-  const callHierarchyInfo: CallHrchyInfo = new CallHrchyInfo(callHrchyItems, callHierarchyICs, callHierarchyOGs);
+  const currCallHierarchyInfo: CallHrchyInfo = new CallHrchyInfo(callHrchyItems, callHierarchyICs, callHierarchyOGs);
 
   const infos = Object.values(currDocSymbolInfo.globalDef).flat().sort((a, b) => {
     return a.numRange[0] - b.numRange[0];
@@ -163,18 +164,18 @@ function genAllCallHierarchyItemsNonOrphan(currDocSymbolInfo: DocSymbolInfo, glo
         // from-to relation represents the curr context
         // definition must be the ISCALLED, execution must be the CALLER, curr context is not matter
         // we are creating two directional edges
-        //         
-        //            fromItems                   | 
+        //
+        //            fromItems                   |
         //            \   |   /                   |
         // key:     1. currCaller  2. isCalled    |
         //                             /  |  \    |
         //                             toItems   \|/
-        //         
+        //
         // that is, our dictionary needs the opposite info to build an edge
-        if (!callHierarchyICs.hasOwnProperty(currCallerName)) {
+        if (!Object.hasOwn(callHierarchyICs, currCallerName)) {
           callHierarchyICs[currCallerName] = {};
         }
-        if (!callHierarchyOGs.hasOwnProperty(isCalledName)) {
+        if (!Object.hasOwn(callHierarchyOGs, isCalledName)) {
           callHierarchyOGs[isCalledName] = {};
         }
         buildEdge(callHierarchyICs[currCallerName], realCallerStr, fromItem, callHierarchyOGs[isCalledName], infoStr, toItem, [callAppearRange]);
@@ -184,7 +185,7 @@ function genAllCallHierarchyItemsNonOrphan(currDocSymbolInfo: DocSymbolInfo, glo
     }
   }
 
-  return [callHierarchyInfo, visited];
+  return [currCallHierarchyInfo, visited];
 
 }
 

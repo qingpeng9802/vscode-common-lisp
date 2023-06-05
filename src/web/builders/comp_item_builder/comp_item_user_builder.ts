@@ -1,7 +1,8 @@
 import * as vscode from 'vscode';
 
-import { DocSymbolInfo } from '../../collect_user_symbol/DocSymbolInfo';
-import { SymbolInfo } from '../../collect_user_symbol/SymbolInfo';
+import type { DocSymbolInfo } from '../../collect_user_symbol/DocSymbolInfo';
+import type { SymbolInfo } from '../../collect_user_symbol/SymbolInfo';
+
 import { UserSymbols } from './UserSymbols';
 
 const vscodeCIKindToVscodeCIKind: Record<vscode.SymbolKind, vscode.CompletionItemKind> = {
