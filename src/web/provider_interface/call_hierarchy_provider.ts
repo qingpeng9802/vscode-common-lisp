@@ -3,7 +3,9 @@ import * as vscode from 'vscode';
 import type { CallHrchyInfo } from '../builders/call_hierarchy_builder/CallHrchyInfo';
 import type { DocSymbolInfo } from '../collect_user_symbol/DocSymbolInfo';
 import { clValidWithColonSharp, CL_MODE } from '../common/cl_util';
+import { TriggerProvider } from '../common/enum';
 
+import { TriggerEvent } from './TriggerEvent';
 import { structuredInfo } from './structured_info';
 
 function getCallHierarchyCallsByCallHierarchyItem(
@@ -41,7 +43,7 @@ function getCallHrchyItems(
   return res ? res : [];
 }
 
-function getCallHierarchyProvider() {
+function registerCallHierarchyProvider() {
 
   const callHierarchyProvider = vscode.languages.registerCallHierarchyProvider(
     CL_MODE,
@@ -52,13 +54,12 @@ function getCallHierarchyProvider() {
           return undefined;
         }
 
-        structuredInfo.produceInfoByDoc(document);
+        structuredInfo.produceInfoByDoc(document, new TriggerEvent(TriggerProvider.prepareCallHierarchy));
         if (!structuredInfo.currDocSymbolInfo || !structuredInfo.currCallHierarchyInfo) {
           return undefined;
         }
 
         const res = getCallHrchyItems(structuredInfo.currDocSymbolInfo, range, structuredInfo.currCallHierarchyInfo);
-
         return res;
       },
 
@@ -84,4 +85,4 @@ function getCallHierarchyProvider() {
   return callHierarchyProvider;
 }
 
-export { getCallHierarchyProvider };
+export { registerCallHierarchyProvider };

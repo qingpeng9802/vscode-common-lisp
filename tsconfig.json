@@ -1,29 +1,37 @@
 {
     "compilerOptions": {
-        // "allowJs": true,
-        "module": "commonjs",
-        "resolveJsonModule": true,
-        "esModuleInterop": true,
-        "declaration": true, // extra type check
-        "declarationMap": true,
-        "target": "esnext",
+        "rootDir": "src",
         "outDir": "dist",
+        
+        "pretty": true,
         "lib": [
             "esnext",
             "WebWorker"
         ],
+        "target": "esnext",
+        "module": "commonjs",
+        //"moduleResolution": "bundler",
+        "isolatedModules": true,
+        //"verbatimModuleSyntax": true,
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+
+        "declaration": true, // extra type check
+        "declarationMap": true,
         "sourceMap": true,
-        "rootDir": "src",
-        "strict": true, /* enable all strict type-checking options */
-        /* Additional Checks */
+        
+        "strict": true,
         "noImplicitReturns": true, /* Report error when not all code paths in function return a value. */
         "noFallthroughCasesInSwitch": true, /* Report errors for fallthrough cases in switch statement. */
         // "noUnusedParameters": true,  /* Report errors on unused parameters. */
         "noImplicitOverride": true,
         "noPropertyAccessFromIndexSignature": true,
-        "pretty": true,
+        
         "allowUnreachableCode": false,
         "allowUnusedLabels": false,
+        "newLine": "lf",
+
+        // "allowJs": true,
     },
     "include": [
         "src"

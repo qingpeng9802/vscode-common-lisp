@@ -8,26 +8,23 @@ import { genDocumentSymbol } from '../builders/doc_symbol_builder/doc_symbol_bui
 import { buildSemanticTokens, genAllPossibleWord } from '../builders/semantic_tokens_builder/semantic_tokens_builder';
 import type { DocSymbolInfo } from '../collect_user_symbol/DocSymbolInfo';
 import { getDocSymbolInfo } from '../collect_user_symbol/collect_user_symbol_info';
-import { ExcludeRanges, SingleQuoteAndBackQuoteExcludedRanges, SingleQuoteAndBackQuoteHighlight, ProduceOption } from '../common/config_enum';
+import { TriggerProvider, ExcludeRanges, SingleQuoteAndBackQuoteExcludedRanges, SingleQuoteAndBackQuoteHighlight, ProduceOption } from '../common/enum';
+
+import type { TriggerEvent } from './TriggerEvent';
 
 class StructuredInfo {
   public currDocSymbolInfo: DocSymbolInfo | undefined = undefined;
-  public currDocumentSymbol: vscode.DocumentSymbol[] = [];
+  public currDocumentSymbol: vscode.DocumentSymbol[] | undefined = undefined;
   public currUserSymbols: UserSymbols | undefined = undefined;
   public currSemanticTokens: vscode.SemanticTokens | undefined = undefined;
   public currCallHierarchyInfo: CallHrchyInfo | undefined = undefined;
 
   // optimization: use [number, number] to avoid `positionAt` overhead
-  public needColorDict: Record<string, [number, number][]> = {};
-  public globalOrderedRanges: [string, [number, number]][] = [];
+  public needColorDict: Record<string, [number, number][]> | undefined = undefined;
+  public globalOrderedRanges: [string, [number, number]][] | undefined = undefined;
 
-  // dirty flag indicates that the document has been changed,
-  // and curr info needs to be updated.
-  public dirty = true;
-
-  // building process config
-  public needProduceSet: Set<string> = new Set();
-  public buildingConfig: Record<string, any> = {
+  // building process config passed down from workspace config
+  public readonly buildingConfig: Record<string, any> = {
     'commonLisp.DocumentSemanticTokensProvider.SingleQuoteAndBackQuote.Highlight': SingleQuoteAndBackQuoteHighlight.SQAndBQC,
     'commonLisp.StaticAnalysis.SingleQuoteAndBackQuote.ExcludedRanges': SingleQuoteAndBackQuoteExcludedRanges.BQButComma,
     'commonLisp.ReferenceProvider.BackQuoteFilter.enabled': true,
@@ -38,69 +35,101 @@ class StructuredInfo {
     'commonLisp.DocumentSemanticTokensProvider.ExcludedRanges': ExcludeRanges.CommentString,
   };
 
+  // dirty flag indicates that the document has been changed,
+  // and curr info needs to be updated.
+  private readonly dirty: Record<ProduceOption, boolean> = {
+    [ProduceOption.getDocSymbolInfo]: true,
+    [ProduceOption.genUserSymbols]: true,
+    [ProduceOption.genDocumentSymbol]: true,
+    [ProduceOption.genAllPossibleWord]: true,
+    [ProduceOption.buildSemanticTokens]: true,
+    [ProduceOption.genAllCallHierarchyItems]: true,
+  };
+
+  private static readonly actionUsedByProviders = {
+    [ProduceOption.getDocSymbolInfo]: new Set([
+      TriggerProvider.provideCompletionItems, TriggerProvider.prepareCallHierarchy, TriggerProvider.provideDefinition,
+      TriggerProvider.provideDocumentSymbols, TriggerProvider.provideReferences, TriggerProvider.provideDocumentSemanticTokens,
+    ]),
+    [ProduceOption.genUserSymbols]: new Set([TriggerProvider.provideCompletionItems]),
+    [ProduceOption.genDocumentSymbol]: new Set([TriggerProvider.provideCompletionItems, TriggerProvider.prepareCallHierarchy, TriggerProvider.provideDocumentSymbols]),
+    [ProduceOption.genAllPossibleWord]: new Set([TriggerProvider.provideReferences, TriggerProvider.provideDocumentSemanticTokens, TriggerProvider.prepareCallHierarchy]),
+    [ProduceOption.buildSemanticTokens]: new Set([TriggerProvider.provideDocumentSemanticTokens]),
+    [ProduceOption.genAllCallHierarchyItems]: new Set([TriggerProvider.prepareCallHierarchy])
+  };
+
   constructor() {
 
   }
 
-  private resetResult() {
-    this.currDocSymbolInfo = undefined;
-    this.currDocumentSymbol = [];
-    this.currUserSymbols = undefined;
-    this.currSemanticTokens = undefined;
-    this.currCallHierarchyInfo = undefined;
-    this.needColorDict = {};
-    this.globalOrderedRanges = [];
+  public setDirtyTrue() {
+    Object.keys(this.dirty).forEach((k) => { this.dirty[k as ProduceOption] = true; });
   }
 
-  public produceInfoByDoc(doc: vscode.TextDocument) {
-    if (!this.dirty) {
-      //console.log(this.needUpdateSet);
-      //console.log('dirty===false, no update');
-      return;
+  private getNeedProduceSetByTriggerProvider(triggerProvider: TriggerProvider): Set<ProduceOption> {
+    const needProduceSet: Set<ProduceOption> = new Set<ProduceOption>();
+    for (const [k, v] of Object.entries(StructuredInfo.actionUsedByProviders)) {
+      if (v.has(triggerProvider)) {
+        needProduceSet.add(k as ProduceOption);
+      }
     }
-    //const t = performance.now();
+    return needProduceSet;
+  }
 
-    this.resetResult();
+  public produceInfoByDoc(doc: vscode.TextDocument, triggerEvent: TriggerEvent) {
+    //const t = performance.now();
+    const triggerProvider: TriggerProvider = triggerEvent.triggerProvider;
+    const needProduceSet = this.getNeedProduceSetByTriggerProvider(triggerProvider);
+
+    const needProduceSetCheckDirty = new Set(
+      [...needProduceSet].filter(ele => this.dirty[ele])
+    );
 
     // order matters here!
-    if (this.needProduceSet.has(ProduceOption.getDocSymbolInfo)) {
+    if (needProduceSetCheckDirty.has(ProduceOption.getDocSymbolInfo)) {
       this.currDocSymbolInfo = getDocSymbolInfo(doc, this.buildingConfig);
+      this.dirty[ProduceOption.getDocSymbolInfo] = false;
     }
 
     if (this.currDocSymbolInfo !== undefined) {
-      if (this.needProduceSet.has(ProduceOption.genUserSymbols)) {
+      if (needProduceSetCheckDirty.has(ProduceOption.genUserSymbols)) {
         this.currUserSymbols = genUserSymbols(this.currDocSymbolInfo);
+        this.dirty[ProduceOption.genUserSymbols] = false;
       }
 
-      if (this.needProduceSet.has(ProduceOption.genDocumentSymbol)) {
+      if (needProduceSetCheckDirty.has(ProduceOption.genDocumentSymbol)) {
         this.currDocumentSymbol = genDocumentSymbol(this.currDocSymbolInfo);
+        this.dirty[ProduceOption.genDocumentSymbol] = false;
       }
 
-      if (this.needProduceSet.has(ProduceOption.genAllPossibleWord)) {
-        const res = genAllPossibleWord(this.currDocSymbolInfo);
-        this.needColorDict = res[0];
-        this.globalOrderedRanges = res[1];
+      if (needProduceSetCheckDirty.has(ProduceOption.genAllPossibleWord)) {
+        [this.needColorDict, this.globalOrderedRanges] = genAllPossibleWord(this.currDocSymbolInfo);
+        this.dirty[ProduceOption.genAllPossibleWord] = false;
       }
 
-      if (this.needProduceSet.has(ProduceOption.buildSemanticTokens) && this.needColorDict) {
-        this.currSemanticTokens = buildSemanticTokens(this.currDocSymbolInfo, this.needColorDict, this.buildingConfig);
-      } else {
-        console.warn(`[StructuredInfo.produceResultByDoc] this.needColorDict===undefined`);
+      if (needProduceSetCheckDirty.has(ProduceOption.buildSemanticTokens)) {
+        if (this.needColorDict === undefined) {
+          console.warn(`[StructuredInfo.produceResultByDoc] this.needColorDict===undefined`);
+        } else {
+          this.currSemanticTokens = buildSemanticTokens(this.currDocSymbolInfo, this.needColorDict, this.buildingConfig);
+          this.dirty[ProduceOption.buildSemanticTokens] = false;
+        }
       }
 
-      if (this.needProduceSet.has(ProduceOption.genAllCallHierarchyItems) && this.globalOrderedRanges) {
-        this.currCallHierarchyInfo = genAllCallHierarchyItems(this.currDocSymbolInfo, this.globalOrderedRanges);
-      } else {
-        console.warn(`[StructuredInfo.produceResultByDoc] this.globalOrderedRanges===undefined`);
+      if (needProduceSetCheckDirty.has(ProduceOption.genAllCallHierarchyItems) && this.globalOrderedRanges) {
+        if (this.globalOrderedRanges === undefined) {
+          console.warn(`[StructuredInfo.produceResultByDoc] this.globalOrderedRanges===undefined`);
+        } else {
+          this.currCallHierarchyInfo = genAllCallHierarchyItems(this.currDocSymbolInfo, this.globalOrderedRanges);
+          this.dirty[ProduceOption.genAllCallHierarchyItems] = false;
+        }
       }
 
     } else {
       console.warn(`[StructuredInfo.produceResultByDoc] this.currDocSymbolInfo===undefined`);
     }
-    //console.log(`finish: ${performance.now() - t}ms`);
+    //console.log(`finish: ${performance.now() - t}ms`, needProduceSetCheckDirty);
 
-    this.dirty = false;
-    //console.log('make_dirty_false');
   }
 }
 

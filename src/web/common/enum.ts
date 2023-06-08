@@ -32,9 +32,19 @@ const enum ProduceOption {
   genAllCallHierarchyItems = 'genAllCallHierarchyItems',
 }
 
+const enum TriggerProvider {
+  provideCompletionItems = 'provideCompletionItems',
+  prepareCallHierarchy = 'prepareCallHierarchy',
+  provideDefinition = 'provideDefinition',
+  provideDocumentSymbols = 'provideDocumentSymbols',
+  provideReferences = 'provideReferences',
+  provideDocumentSemanticTokens = 'provideDocumentSemanticTokens',
+}
+
 export {
   ExcludeRanges,
   SingleQuoteAndBackQuoteHighlight,
   SingleQuoteAndBackQuoteExcludedRanges,
-  ProduceOption
+  ProduceOption,
+  TriggerProvider
 };

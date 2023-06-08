@@ -4,7 +4,9 @@ import type { UserSymbols } from '../builders/comp_item_builder/UserSymbols';
 import { genAllOriSymbols } from '../builders/comp_item_builder/comp_item_ori_builder';
 import { bisectRight } from '../common/algorithm';
 import { clValidWithColonSharp, CL_MODE } from '../common/cl_util';
+import { TriggerProvider } from '../common/enum';
 
+import { TriggerEvent } from './TriggerEvent';
 import { structuredInfo } from './structured_info';
 
 // only need once
@@ -12,19 +14,14 @@ const oriSymbolsCompItem = genAllOriSymbols();
 
 // default completion item's word range does not include the '-' character, so we need to reset it
 // @sideEffect: compItems:vscode.CompletionItem[]
-function resetCompItemWordRange(document: vscode.TextDocument, position: vscode.Position, compItems: vscode.CompletionItem[]) {
-  const range = document.getWordRangeAtPosition(position, clValidWithColonSharp);
-  if (!range) {
-    return;
-  }
+function resetCompItemWordRange(range: vscode.Range, compItems: vscode.CompletionItem[]) {
   for (const compItem of compItems) {
     compItem.range = range;
   }
 }
 
 function getUserompletionItems(currUserSymbols: UserSymbols, position: number): vscode.CompletionItem[] {
-  const res: vscode.CompletionItem[] = [];
-  res.push(...currUserSymbols.globalCItems);
+  const res: vscode.CompletionItem[] = currUserSymbols.globalCItems;
 
   const idx = bisectRight(currUserSymbols.localScopeCItems, position, item => item[1][0]);
   for (let i = idx - 1; i >= 0; i--) {
@@ -40,21 +37,26 @@ function getUserompletionItems(currUserSymbols: UserSymbols, position: number): 
   return res;
 }
 
-function getCompletionItemProviders(providerName: string): vscode.Disposable | undefined {
+function registerCompletionItemProviders(providerName: string): vscode.Disposable | undefined {
   switch (providerName) {
     case 'userSymbols':
       return vscode.languages.registerCompletionItemProvider(
         CL_MODE, {
           provideCompletionItems(document, position, token, context) {
-            structuredInfo.produceInfoByDoc(document);
+            const range = document.getWordRangeAtPosition(position, clValidWithColonSharp);
+            if (!range) {
+              return undefined;
+            }
+
+            structuredInfo.produceInfoByDoc(document, new TriggerEvent(TriggerProvider.provideCompletionItems));
             if (!structuredInfo.currUserSymbols) {
-              return [];
+              return undefined;
             }
 
             const numPosition = document.offsetAt(position);
             const userSymbols = getUserompletionItems(structuredInfo.currUserSymbols, numPosition);
 
-            resetCompItemWordRange(document, position, userSymbols);
+            resetCompItemWordRange(range, userSymbols);
 
             return userSymbols;
           }
@@ -63,8 +65,11 @@ function getCompletionItemProviders(providerName: string): vscode.Disposable | u
       return vscode.languages.registerCompletionItemProvider(
         CL_MODE, {
           provideCompletionItems(document, position, token, context) {
-
-            resetCompItemWordRange(document, position, oriSymbolsCompItem.oriSymbols);
+            const range = document.getWordRangeAtPosition(position, clValidWithColonSharp);
+            if (!range) {
+              return undefined;
+            }
+            resetCompItemWordRange(range, oriSymbolsCompItem.oriSymbols);
 
             return oriSymbolsCompItem.oriSymbols;
           }
@@ -73,8 +78,11 @@ function getCompletionItemProviders(providerName: string): vscode.Disposable | u
       return vscode.languages.registerCompletionItemProvider(
         CL_MODE, {
           provideCompletionItems(document, position, token, context) {
-
-            resetCompItemWordRange(document, position, oriSymbolsCompItem.afterAmpersand);
+            const range = document.getWordRangeAtPosition(position, clValidWithColonSharp);
+            if (!range) {
+              return undefined;
+            }
+            resetCompItemWordRange(range, oriSymbolsCompItem.afterAmpersand);
 
             return oriSymbolsCompItem.afterAmpersand;
           }
@@ -83,8 +91,11 @@ function getCompletionItemProviders(providerName: string): vscode.Disposable | u
       return vscode.languages.registerCompletionItemProvider(
         CL_MODE, {
           provideCompletionItems(document, position, token, context) {
-
-            resetCompItemWordRange(document, position, oriSymbolsCompItem.afterAsterisk);
+            const range = document.getWordRangeAtPosition(position, clValidWithColonSharp);
+            if (!range) {
+              return undefined;
+            }
+            resetCompItemWordRange(range, oriSymbolsCompItem.afterAsterisk);
 
             return oriSymbolsCompItem.afterAsterisk;
           }
@@ -93,8 +104,11 @@ function getCompletionItemProviders(providerName: string): vscode.Disposable | u
       return vscode.languages.registerCompletionItemProvider(
         CL_MODE, {
           provideCompletionItems(document, position, token, context) {
-
-            resetCompItemWordRange(document, position, oriSymbolsCompItem.afterColon);
+            const range = document.getWordRangeAtPosition(position, clValidWithColonSharp);
+            if (!range) {
+              return undefined;
+            }
+            resetCompItemWordRange(range, oriSymbolsCompItem.afterColon);
 
             return oriSymbolsCompItem.afterColon;
           }
@@ -103,8 +117,11 @@ function getCompletionItemProviders(providerName: string): vscode.Disposable | u
       return vscode.languages.registerCompletionItemProvider(
         CL_MODE, {
           provideCompletionItems(document, position, token, context) {
-
-            resetCompItemWordRange(document, position, oriSymbolsCompItem.afterTilde);
+            const range = document.getWordRangeAtPosition(position, clValidWithColonSharp);
+            if (!range) {
+              return undefined;
+            }
+            resetCompItemWordRange(range, oriSymbolsCompItem.afterTilde);
 
             return oriSymbolsCompItem.afterTilde;
           }
@@ -113,8 +130,11 @@ function getCompletionItemProviders(providerName: string): vscode.Disposable | u
       return vscode.languages.registerCompletionItemProvider(
         CL_MODE, {
           provideCompletionItems(document, position, token, context) {
-
-            resetCompItemWordRange(document, position, oriSymbolsCompItem.afterSharpsign);
+            const range = document.getWordRangeAtPosition(position, clValidWithColonSharp);
+            if (!range) {
+              return undefined;
+            }
+            resetCompItemWordRange(range, oriSymbolsCompItem.afterSharpsign);
 
             return oriSymbolsCompItem.afterSharpsign;
           }
@@ -125,5 +145,5 @@ function getCompletionItemProviders(providerName: string): vscode.Disposable | u
 }
 
 export {
-  getCompletionItemProviders
+  registerCompletionItemProviders
 };

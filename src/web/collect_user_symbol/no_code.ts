@@ -1,53 +1,32 @@
 import type * as vscode from 'vscode';
 
+import { ScanDocRes } from './ScanDocRes';
+
 // to avoid overhead of passing huge string
 interface docObj {
   readonly doc: string;
   readonly docLength: number;
-  readonly commentRange: [number, number][];
-  readonly stringRange: [number, number][];
-  readonly quotedRange: [number, number][];
-  readonly quotedPairRange: [number, number][];
-  readonly backquoteRange: [number, number][];
-  readonly backquotePairRange: [number, number][];
-  readonly commaRange: [number, number][];
-  readonly commaPairRange: [number, number][];
 }
 
 // return result is rightafter `)`, not at `)`
-function scanDoc(document: vscode.TextDocument): docObj {
+function scanDoc(document: vscode.TextDocument): ScanDocRes {
   const doc = document.getText();
-  const commentRange: [number, number][] = [];
-  const stringRange: [number, number][] = [];
-  const quotedRange: [number, number][] = [];
-  const quotedPairRange: [number, number][] = [];
-  const backquoteRange: [number, number][] = [];
-  const backquotePairRange: [number, number][] = [];
-  const commaRange: [number, number][] = [];
-  const commaPairRange: [number, number][] = [];
-
-  // to avoid overhead of passing huge string
+  const docLength = doc.length;
   const docObj = {
     doc: doc,
-    docLength: doc.length,
-    commentRange: commentRange,
-    stringRange: stringRange,
-    quotedRange: quotedRange,
-    quotedPairRange: quotedPairRange,
-    backquoteRange: backquoteRange,
-    backquotePairRange: backquotePairRange,
-    commaRange: commaRange,
-    commaPairRange: commaPairRange,
+    docLength: docLength,
   };
 
-  eatDoc(0, docObj);
-  // console.log(docObj)
+  const scanDocRes = new ScanDocRes();
 
-  return docObj;
+  eatDoc(0, docObj, scanDocRes);
+  // console.log(scanDocRes)
+
+  return scanDocRes;
 }
 
 // not eat `;` here, rightafter `;`
-function eatLineComment(index: number, docObj: docObj): number {
+function eatLineComment(index: number, docObj: docObj, scanDocRes: ScanDocRes): number {
   const doc = docObj.doc;
 
   const startLineComment = index - 1;
@@ -55,12 +34,12 @@ function eatLineComment(index: number, docObj: docObj): number {
     //console.log(`LC| ${index}: ${doc[index]}`);
     ++index;
   }
-  docObj.commentRange.push([startLineComment, index + 1]);
+  scanDocRes.commentRange.push([startLineComment, index + 1]);
   return index === docObj.docLength ? -1 : index + 1;
 }
 
 // not eat `#|` here, rightafter `#|`
-function eatBlockComment(index: number, docObj: docObj): number {
+function eatBlockComment(index: number, docObj: docObj, scanDocRes: ScanDocRes): number {
   const doc = docObj.doc;
 
   const startBlockComment = index - 2;
@@ -73,12 +52,12 @@ function eatBlockComment(index: number, docObj: docObj): number {
     prevc = doc[index];
     ++index;
   }
-  docObj.commentRange.push([startBlockComment, index + 1]);
+  scanDocRes.commentRange.push([startBlockComment, index + 1]);
   return index === docObj.docLength ? -1 : index + 1;
 }
 
 // not eat `"` here, rightafter `"`
-function eatDoubleQuote(index: number, docObj: docObj): number {
+function eatDoubleQuote(index: number, docObj: docObj, scanDocRes: ScanDocRes): number {
   const doc = docObj.doc;
 
   const startString = index - 1;
@@ -91,7 +70,7 @@ function eatDoubleQuote(index: number, docObj: docObj): number {
         break;
 
       case '"':
-        docObj.stringRange.push([startString, index + 1]);
+        scanDocRes.stringRange.push([startString, index + 1]);
         return index + 1;
 
       default:
@@ -138,7 +117,7 @@ function eatSingleQuoteOrSingleBackQuote(index: number, docObj: docObj): number 
 }
 
 // start rightafter `'(`, that is, first `(` will not be eaten in this function
-function eatDoc(index: number, docObj: docObj): -1 | undefined {
+function eatDoc(index: number, docObj: docObj, scanDocRes: ScanDocRes): -1 | undefined {
   const doc = docObj.doc;
 
   const passSet = new Set([',', '@', '.', '#', '`', '\'']);
@@ -170,15 +149,15 @@ function eatDoc(index: number, docObj: docObj): -1 | undefined {
         //console.log(`closing: [${close}, ${index}]`);
         --needClose;
         if (quotedPairStartNeedClose && needClose === quotedPairStartNeedClose[1]) {
-          docObj.quotedPairRange.push([quotedPairStartNeedClose[0], index + 1]);
+          scanDocRes.quotedPairRange.push([quotedPairStartNeedClose[0], index + 1]);
           quotedPairStartNeedClose = undefined;
         }
         if (backquotePairStartNeedClose && needClose === backquotePairStartNeedClose[1]) {
-          docObj.backquotePairRange.push([backquotePairStartNeedClose[0], index + 1]);
+          scanDocRes.backquotePairRange.push([backquotePairStartNeedClose[0], index + 1]);
           backquotePairStartNeedClose = undefined;
         }
         if (commaPairStartNeedClose && needClose === commaPairStartNeedClose[1]) {
-          docObj.commaPairRange.push([commaPairStartNeedClose[0], index + 1]);
+          scanDocRes.commaPairRange.push([commaPairStartNeedClose[0], index + 1]);
           commaPairStartNeedClose = undefined;
         }
 
@@ -187,7 +166,7 @@ function eatDoc(index: number, docObj: docObj): -1 | undefined {
 
       case '"':
         // skip string
-        index = eatDoubleQuote(index + 1, docObj);
+        index = eatDoubleQuote(index + 1, docObj, scanDocRes);
         if (index === -1) {
           return -1;
         } else {
@@ -196,7 +175,7 @@ function eatDoc(index: number, docObj: docObj): -1 | undefined {
 
       case ';':
         // skip line comment
-        index = eatLineComment(index + 1, docObj);
+        index = eatLineComment(index + 1, docObj, scanDocRes);
         if (index === -1) {
           return -1;
         } else {
@@ -206,7 +185,7 @@ function eatDoc(index: number, docObj: docObj): -1 | undefined {
       case '|':
         // skip comment
         if (prevc === '#') {
-          index = eatBlockComment(index + 1, docObj);
+          index = eatBlockComment(index + 1, docObj, scanDocRes);
           if (index === -1) {
             return -1;
           } else {
@@ -245,7 +224,7 @@ function eatDoc(index: number, docObj: docObj): -1 | undefined {
               while (tempInd < docObj.docLength && !/\s/.test(doc[tempInd]) && doc[tempInd] !== ')') {
                 ++tempInd;
               }
-              docObj.quotedRange.push([index + 1, tempInd]);
+              scanDocRes.quotedRange.push([index + 1, tempInd]);
             }
           }
         }
@@ -272,7 +251,7 @@ function eatDoc(index: number, docObj: docObj): -1 | undefined {
             while (tempInd < docObj.docLength && !/\s/.test(doc[tempInd]) && doc[tempInd] !== ')') {
               ++tempInd;
             }
-            docObj.backquoteRange.push([index + 1, tempInd]);
+            scanDocRes.backquoteRange.push([index + 1, tempInd]);
           }
 
         }
@@ -292,7 +271,7 @@ function eatDoc(index: number, docObj: docObj): -1 | undefined {
             while (tempInd < docObj.docLength && !/\s/.test(doc[tempInd]) && doc[tempInd] !== ')') {
               ++tempInd;
             }
-            docObj.commaRange.push([index + 1, tempInd]);
+            scanDocRes.commaRange.push([index + 1, tempInd]);
           }
 
         }

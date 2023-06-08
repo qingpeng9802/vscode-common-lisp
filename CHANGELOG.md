@@ -3,7 +3,7 @@
 ## [1.2.1] - 2023-06-02
 ### Fixed
 - `comp_item_provider.ts` fix duplicated autocomplete items
-- fix some minor bugs
+- fix some minor bugs, no major feature changes
   
 ### Changed  
 - `package.json` vscode compatibility is upgraded to 1.63 for pre-release feature

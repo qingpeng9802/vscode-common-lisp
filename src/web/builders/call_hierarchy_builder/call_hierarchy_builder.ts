@@ -61,7 +61,7 @@ function processglobalOrderedRange(
   if (shadow && shadow.length !== 0 && isShadowed(globalOrderedRange[1], shadow)) {
     return undefined;
   }
-  if (isRangeIntExcludedRanges(globalOrderedRange[1], currDocSymbolInfo.commentAndStringRange)) {
+  if (isRangeIntExcludedRanges(globalOrderedRange[1], currDocSymbolInfo.docRes.commentAndStringRange)) {
     return undefined;
   }
 

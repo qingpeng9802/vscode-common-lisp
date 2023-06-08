@@ -1,7 +1,7 @@
 import type * as vscode from 'vscode';
 
-import { mergeSortedMXArr, mergeSortedIntervals, excludeRangesFromRanges } from '../common/algorithm';
-import { SingleQuoteAndBackQuoteExcludedRanges } from '../common/config_enum';
+import { mergeSortedIntervals, excludeRangesFromRanges } from '../common/algorithm';
+import { SingleQuoteAndBackQuoteExcludedRanges } from '../common/enum';
 
 import { DocSymbolInfo } from './DocSymbolInfo';
 import { scanDoc } from './no_code';
@@ -9,11 +9,8 @@ import { collectGlobalDef, collectLocalDef } from './non_var';
 import { collectKeywordSingleVar, collectKeywordVars } from './var';
 
 function getDocSymbolInfo(document: vscode.TextDocument, buildingConfig: Record<string, any>) {
-  const docRes = scanDoc(document);
-  const commentRange = docRes.commentRange;
-  const stringRange = docRes.stringRange;
-
-  const commentAndStringRange = mergeSortedMXArr(commentRange, stringRange);
+  const scanDocRes = scanDoc(document);
+  const commentAndStringRange = scanDocRes.commentAndStringRange;
 
   let excludedRanges: [number, number][] = commentAndStringRange;
 
@@ -22,17 +19,17 @@ function getDocSymbolInfo(document: vscode.TextDocument, buildingConfig: Record<
     case SingleQuoteAndBackQuoteExcludedRanges.BQ:
       excludedRanges = mergeSortedIntervals([
         ...commentAndStringRange,
-        ...docRes.backquotePairRange,
-        ...docRes.backquoteRange,
+        ...scanDocRes.backquotePairRange,
+        ...scanDocRes.backquoteRange,
       ].sort((a, b) => a[0] - b[0])
       );
       break;
 
     case SingleQuoteAndBackQuoteExcludedRanges.BQButComma: {
       const backquotePairAndSymbol = mergeSortedIntervals(
-        [...docRes.backquotePairRange, ...docRes.backquoteRange].sort((a, b) => a[0] - b[0]));
+        [...scanDocRes.backquotePairRange, ...scanDocRes.backquoteRange].sort((a, b) => a[0] - b[0]));
       const commaPairAndSymbol = mergeSortedIntervals(
-        [...docRes.commaPairRange, ...docRes.commaRange].sort((a, b) => a[0] - b[0]));
+        [...scanDocRes.commaPairRange, ...scanDocRes.commaRange].sort((a, b) => a[0] - b[0]));
       const excludedComma = excludeRangesFromRanges(backquotePairAndSymbol, commaPairAndSymbol);
 
       excludedRanges = mergeSortedIntervals(
@@ -43,23 +40,23 @@ function getDocSymbolInfo(document: vscode.TextDocument, buildingConfig: Record<
       excludedRanges =
         mergeSortedIntervals([
           ...commentAndStringRange,
-          ...docRes.quotedPairRange,
-          ...docRes.quotedRange
+          ...scanDocRes.quotedPairRange,
+          ...scanDocRes.quotedRange
         ].sort((a, b) => a[0] - b[0])
         );
       break;
 
     case SingleQuoteAndBackQuoteExcludedRanges.SQBQButComma: {
       const backquotePairAndSymbol2 = mergeSortedIntervals(
-        [...docRes.backquotePairRange, ...docRes.backquoteRange].sort((a, b) => a[0] - b[0]));
+        [...scanDocRes.backquotePairRange, ...scanDocRes.backquoteRange].sort((a, b) => a[0] - b[0]));
       const commaPairAndSymbol2 = mergeSortedIntervals(
-        [...docRes.commaPairRange, ...docRes.commaRange].sort((a, b) => a[0] - b[0]));
+        [...scanDocRes.commaPairRange, ...scanDocRes.commaRange].sort((a, b) => a[0] - b[0]));
       const excludedComma2 = excludeRangesFromRanges(backquotePairAndSymbol2, commaPairAndSymbol2);
 
       excludedRanges = mergeSortedIntervals([
         ...commentAndStringRange,
-        ...docRes.quotedPairRange,
-        ...docRes.quotedRange,
+        ...scanDocRes.quotedPairRange,
+        ...scanDocRes.quotedRange,
         ...excludedComma2
       ].sort((a, b) => a[0] - b[0]));
       break;
@@ -67,10 +64,10 @@ function getDocSymbolInfo(document: vscode.TextDocument, buildingConfig: Record<
     case SingleQuoteAndBackQuoteExcludedRanges.SQAndBQ:
       excludedRanges = mergeSortedIntervals([
         ...commentAndStringRange,
-        ...docRes.backquotePairRange,
-        ...docRes.backquoteRange,
-        ...docRes.quotedPairRange,
-        ...docRes.quotedRange,
+        ...scanDocRes.backquotePairRange,
+        ...scanDocRes.backquoteRange,
+        ...scanDocRes.quotedPairRange,
+        ...scanDocRes.quotedRange,
       ].sort((a, b) => a[0] - b[0])
       );
       break;
@@ -89,7 +86,11 @@ function getDocSymbolInfo(document: vscode.TextDocument, buildingConfig: Record<
   const localAnonLambda = collectKeywordVars(document, excludedRanges);
   const localAnonSingle = collectKeywordSingleVar(document, excludedRanges);
 
-  return new DocSymbolInfo(document, docRes, commentRange, stringRange, commentAndStringRange, globalDef, globalNamedLambda, localDef, localNamedLambda, localAnonLambda, localAnonSingle);
+  return new DocSymbolInfo(
+    document, scanDocRes,
+    globalDef, globalNamedLambda,
+    localDef, localNamedLambda,
+    localAnonLambda, localAnonSingle);
 }
 
 export { getDocSymbolInfo };

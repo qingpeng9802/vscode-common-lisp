@@ -148,7 +148,7 @@ function genAllPossibleWord(currDocSymbolInfo: DocSymbolInfo):
 
 function getTokenDict(currDocSymbolInfo: DocSymbolInfo, needColorDict: Record<string, [number, number][]>, buildingConfig: Record<string, any>): Record<string, ParsedToken> {
   // config
-  const excludedRanges: [number, number][] = currDocSymbolInfo.getExcludedRangesWithSQAndBQ(buildingConfig);
+  const excludedRanges: [number, number][] = currDocSymbolInfo.docRes.getExcludedRangesWithSQAndBQ(buildingConfig);
 
   const tokenDictGlobal = updateTokenDict(currDocSymbolInfo, excludedRanges, needColorDict, 'global');
   const tokenDictLocal = updateTokenDict(currDocSymbolInfo, excludedRanges, needColorDict, 'local');

@@ -1,60 +1,35 @@
 import * as vscode from 'vscode';
 
+import type { DocSymbolInfo } from '../collect_user_symbol/DocSymbolInfo';
 import { isQuote, isRangeIntExcludedRanges } from '../collect_user_symbol/user_symbol_util';
 import { CL_MODE, clValidWithColonSharp } from '../common/cl_util';
+import { TriggerProvider } from '../common/enum';
 
+import { TriggerEvent } from './TriggerEvent';
 import { structuredInfo } from './structured_info';
 
-function getDefinitionProvider() {
+function registerDefinitionProvider() {
   const definitionProvider = vscode.languages.registerDefinitionProvider(
     CL_MODE,
     {
       provideDefinition(document, position, token) {
-        structuredInfo.produceInfoByDoc(document);
-        if (!structuredInfo.currDocSymbolInfo) {
-          return undefined;
-        }
-
         const range = document.getWordRangeAtPosition(position, clValidWithColonSharp);
         if (!range) {
           return undefined;
         }
 
-
-        // config
-        const doc = structuredInfo.currDocSymbolInfo.document;
-        const excludedRangesCfg = structuredInfo.buildingConfig['commonLisp.DefinitionProvider.ExcludedRanges'];
-        const backQuoteCfg = structuredInfo.buildingConfig['commonLisp.DefinitionProvider.BackQuoteFilter.enabled'];
-        const [intRes, excludedRanges] = structuredInfo.currDocSymbolInfo.isIntExcludedRanges(range, excludedRangesCfg, backQuoteCfg);
-        if (!intRes) {
-          return [];
-        }
-
-        if (isRangeIntExcludedRanges([doc.offsetAt(range.start), doc.offsetAt(range.end)], excludedRanges)
-        ) {
+        structuredInfo.produceInfoByDoc(document, new TriggerEvent(TriggerProvider.provideDefinition));
+        if (!structuredInfo.currDocSymbolInfo) {
           return undefined;
         }
 
-        if (isRangeIntExcludedRanges(
-          [
-            structuredInfo.currDocSymbolInfo.document.offsetAt(range.start),
-            structuredInfo.currDocSymbolInfo.document.offsetAt(range.end)
-          ], excludedRanges)
-        ) {
-          return undefined;
-        }
-
-        const word = document.getText(range);
-        if (!word) {
-          return undefined;
-        }
-
-        if (isQuote(document, position)) {
-          return structuredInfo.currDocSymbolInfo.getSymbolLocByRange(range, word.toLowerCase(), undefined);
-        }
-
-        return structuredInfo.currDocSymbolInfo.getSymbolLocByRange(range, word.toLowerCase(), position);
-
+        const positionFlag = isQuote(document, position) ? undefined : position;
+        return getSymbolLocByRange(
+          structuredInfo.currDocSymbolInfo,
+          range,
+          positionFlag,
+          structuredInfo.buildingConfig
+        );
       }
     }
   );
@@ -63,4 +38,29 @@ function getDefinitionProvider() {
 
 }
 
-export { getDefinitionProvider };
+// Common Lisp the Language, 2nd Edition
+// 5.2.1. Named Functions https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node63.html#SECTION00921000000000000000
+// set `position` to `undefined`, will only process global definition
+function getSymbolLocByRange(
+  currDocSymbolInfo: DocSymbolInfo,
+  range: vscode.Range,
+  positionFlag: vscode.Position | undefined,
+  buildingConfig: Record<string, any>):
+  vscode.Location | undefined {
+
+  // config
+  const excludedRanges = currDocSymbolInfo.docRes.getExcludedRangesWithBackQuote(buildingConfig);
+  const doc = currDocSymbolInfo.document;
+  const numRange: [number, number] = [doc.offsetAt(range.start), doc.offsetAt(range.end)];
+  if (isRangeIntExcludedRanges(numRange, excludedRanges)) {
+    return undefined;
+  }
+  const word = doc.getText(range).toLowerCase();
+  if (!word) {
+    return undefined;
+  }
+  const [symbolSelected, shadow] = currDocSymbolInfo.getSymbolWithShadowByRange(range, word, positionFlag);
+  return symbolSelected?.loc;
+}
+
+export { registerDefinitionProvider };
