@@ -31,6 +31,25 @@ class TraceableDisposables {
     'callHierarchyProvider': undefined,
   };
 
+  private static readonly cfgMapDisposable: Record<string, string> = {
+    'commonLisp.providers.CompletionItemProviders.user.enabled': 'userCompletionItemProvider',
+    'commonLisp.providers.CompletionItemProviders.original.enabled': 'oriCompletionItemProvider',
+  
+    'commonLisp.providers.CompletionItemProviders.ampersand.enabled': 'ampersandCompletionItemProvider',
+    'commonLisp.providers.CompletionItemProviders.asterisk.enabled': 'asteriskCompletionItemProvider',
+    'commonLisp.providers.CompletionItemProviders.colon.enabled': 'colonCompletionItemProvider',
+  
+    'commonLisp.providers.CompletionItemProviders.tilde.enabled': 'tildeCompletionItemProvider',
+    'commonLisp.providers.CompletionItemProviders.sharpsign.enabled': 'sharpsignCompletionItemProvider',
+  
+    'commonLisp.providers.HoverProvider.enabled': 'hoverProvider',
+    'commonLisp.providers.DefinitionProvider.enabled': 'definitionProvider',
+    'commonLisp.providers.DocumentSymbolProvider.enabled': 'documentSymbolProvider',
+    'commonLisp.providers.ReferenceProvider.enabled': 'referenceProvider',
+    'commonLisp.providers.DocumentSemanticTokensProvider.enabled': 'documentSemanticTokensProvider',
+    'commonLisp.providers.CallHierarchyProvider.enabled': 'callHierarchyProvider',
+  };
+
   constructor() {
 
   }
@@ -44,7 +63,7 @@ class TraceableDisposables {
     }
   }
 
-  public disposeProviderByName(disposableName: string) {
+  private disposeProviderByName(disposableName: string) {
     if (!Object.hasOwn(this.disposables, disposableName)) {
       return;
     }
@@ -58,7 +77,7 @@ class TraceableDisposables {
   }
 
 
-  public setProviderByName(disposableName: string, contextSubcriptions: vscode.Disposable[]) {
+  private setProviderByName(disposableName: string, contextSubcriptions: vscode.Disposable[]) {
     if (!Object.hasOwn(this.disposables, disposableName)) {
       return;
     }
@@ -119,6 +138,38 @@ class TraceableDisposables {
 
       default:
         return undefined;
+    }
+  }
+
+  public updateDisposables(contextSubcriptions: vscode.Disposable[], workspaceConfigKey: string, newTraceableDisposablesVal: any) {
+    let disposableName = '';
+    if (workspaceConfigKey === 'editor.semanticHighlighting.enabled') {
+      disposableName = 'documentSemanticTokensProvider';
+    } else if ([
+      'commonLisp.providers.CompletionItemProviders.user.enabled',
+      'commonLisp.providers.CompletionItemProviders.original.enabled',
+  
+      'commonLisp.providers.CompletionItemProviders.ampersand.enabled',
+      'commonLisp.providers.CompletionItemProviders.asterisk.enabled',
+      'commonLisp.providers.CompletionItemProviders.colon.enabled',
+  
+      'commonLisp.providers.CompletionItemProviders.tilde.enabled',
+      'commonLisp.providers.CompletionItemProviders.sharpsign.enabled',
+  
+      'commonLisp.providers.HoverProvider.enabled',
+      'commonLisp.providers.DefinitionProvider.enabled',
+      'commonLisp.providers.DocumentSymbolProvider.enabled',
+      'commonLisp.providers.ReferenceProvider.enabled',
+      'commonLisp.providers.DocumentSemanticTokensProvider.enabled',
+      'commonLisp.providers.CallHierarchyProvider.enabled',
+    ].includes(workspaceConfigKey)) {
+      disposableName = TraceableDisposables.cfgMapDisposable[workspaceConfigKey];
+    }
+  
+    if (newTraceableDisposablesVal === false) {
+      this.disposeProviderByName(disposableName);
+    } else {
+      this.setProviderByName(disposableName, contextSubcriptions);
     }
   }
 }

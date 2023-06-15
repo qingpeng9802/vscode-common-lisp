@@ -10,11 +10,19 @@ Let us first take a brief look at the design of this project.
 The version number is in the format MAJOR.MINOR.PATCH. We do not comply *Semantic Versioning* strictly. We save x.x.0 for the phase of *alpha version* and x.x.1 for the phase of *beta version*. x.x.>=3 is used for the phase of *general availability*.  
 
 ## Environment & Testing
+Transition to `esbuild`, but be careful use `tsc` for TypeScript type checking separately.  
+although `Parcel` is using `swc`, it shows worse performance than `webpack`.  
+Maybe we will try `swcpack` in the future.  
+```json
+"parcel-compile": "parcel build ./src/web/extension.ts --dist-dir ./dist/web --no-optimize",
+"parcel-watch": "parcel watch ./src/web/extension.ts --dist-dir ./dist/web --no-optimize",
+"parcel-package": "parcel build ./src/web/extension.ts --dist-dir ./dist/web --no-source-maps",
+```
 `npm install`
 
 fast pace, breaking change, more time on feature
 
-### Package 
+### Package vsix
 Run `npm i -g vsce` to install `vsce` globally since `vsce` is not in the `package.json`.  
 
 Run `vsce package`.  

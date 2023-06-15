@@ -23,5 +23,7 @@ webpack.config.js
 # dev
 assets/**
 scripts/**
+.parcel-cache
 
 # prod
+

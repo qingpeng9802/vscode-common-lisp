@@ -20,13 +20,11 @@ jobs:
   #  steps:
   #    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
   #    - uses: actions/checkout@v2
-  #
   #    - uses: actions/setup-node@v2
   #      with:
   #        node-version: 18
-  #
   #    - name: Install dependencies
-  #      run: npm install
+  #      run: npm ci
   #
   #    - name: Build Grammar from yaml to json
   #      run: npm run bg
@@ -34,9 +32,8 @@ jobs:
   #    - name: Webpack compile web
   #      run: npm run pretest
   #
-  #    # https://snyk.io/blog/vs-code-extension-building-auto-cicd-with-github-actions/
   #    - name: Run headless test
-  #      uses: GabrielBB/xvfb-action@v1.0
+  #      uses: coactions/setup-xvfb@v1
   #      with:
   #        run: npm test
 
@@ -51,10 +48,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build Grammar from yaml to json
-        run: npm run bg
+      #- name: Build Grammar from yaml to json
+      #  run: npm run bg
 
-      - name: Webpack package web
+      - name: Package web extension
         run: npm run vscode:prepublish
 
       - name: Install vsce

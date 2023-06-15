@@ -23,7 +23,8 @@ const webExtensionConfig = {
 		filename: '[name].js',
 		path: path.join(__dirname, './dist/web'),
 		libraryTarget: 'commonjs2',
-		devtoolModuleFilenameTemplate: '../../[resource-path]'
+		devtoolModuleFilenameTemplate: '../../[resource-path]',
+    clean: true,
 	},
 	resolve: {
 		mainFields: ['browser', 'module', 'main'], // look for `browser` entry point in imported node modules

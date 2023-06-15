@@ -16,8 +16,8 @@
         "resolveJsonModule": true,
         "esModuleInterop": true,
 
-        "declaration": true, // extra type check
-        "declarationMap": true,
+        //"declaration": true, // extra type check
+        //"declarationMap": true,
         "sourceMap": true,
         
         "strict": true,

@@ -1,7 +1,11 @@
+import * as vscode from 'vscode';
+
 import { ExcludeRanges, SingleQuoteAndBackQuoteHighlight, SingleQuoteAndBackQuoteExcludedRanges } from '../common/enum';
 
 class WorkspaceConfig {
-  public readonly config: Record<string, any> = {
+  private static readonly CL_ID = 'commonlisp';
+
+  private readonly config: Record<string, any> = {
     'commonLisp.StaticAnalysis.enabled': true,
 
     'editor.semanticHighlighting.enabled': undefined,
@@ -32,6 +36,54 @@ class WorkspaceConfig {
     'commonLisp.providers.DocumentSemanticTokensProvider.enabled': true,
     'commonLisp.providers.CallHierarchyProvider.enabled': true,
   };
+
+  public initConfig(contextSubcriptions: vscode.Disposable[], traceableDisposables: TraceableDisposables) {
+    const config = vscode.workspace.getConfiguration();
+    for (const k of Object.keys(this.config)) {
+      const langEntry: any = config.get(`[${WorkspaceConfig.CL_ID}]`);
+      let newConfigVal = undefined;
+  
+      const newVal = config.get(k);
+      newConfigVal = newVal !== undefined ? newVal : newConfigVal;
+      newConfigVal = langEntry && (langEntry[k] !== undefined) ? langEntry[k] : newConfigVal;
+  
+      this.config[k] = newConfigVal;
+      traceableDisposables.updateDisposables(contextSubcriptions, k, newConfigVal);
+    }
+    //console.log(workspaceConfig);
+  }
+
+  public updateConfig(contextSubcriptions: vscode.Disposable[], traceableDisposables: TraceableDisposables, e: vscode.ConfigurationChangeEvent) {
+    const config = vscode.workspace.getConfiguration();
+    for (const k of Object.keys(this.config)) {
+      let dirty = false;
+      let newConfigVal = undefined;
+  
+      if (e.affectsConfiguration(k)) {
+        const newVal = config.get(k);
+        if (newVal !== undefined) {
+          newConfigVal = newVal;
+          dirty = true;
+        }
+      }
+  
+      const langEntry: any = config.get(`[${WorkspaceConfig.CL_ID}]`);
+      if (e.affectsConfiguration(k, { languageId: WorkspaceConfig.CL_ID }) && langEntry) {
+        const newVal = langEntry[k];
+        if (newVal !== undefined) {
+          newConfigVal = newVal;
+          dirty = true;
+        }
+      }
+  
+      if (dirty) {
+        //console.log(`update workspace config: ${k} = ${newConfig}`);
+        this.config[k] = newConfigVal;
+        traceableDisposables.updateDisposables(contextSubcriptions, k, newConfigVal);
+      }
+  
+    }
+  }
 }
 
 export { WorkspaceConfig };
