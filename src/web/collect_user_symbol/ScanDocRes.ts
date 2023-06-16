@@ -1,7 +1,8 @@
 import { excludeRangesFromRanges, mergeSortedIntervals, mergeSortedMXArr } from '../common/algorithm';
-import { ExcludeRanges, SingleQuoteAndBackQuoteHighlight } from '../common/enum';
+import { ExcludeRanges, SingleQuoteAndBackQuoteExcludedRanges, SingleQuoteAndBackQuoteHighlight } from '../common/enum';
 
 class ScanDocRes {
+  public readonly text: string;
   public readonly commentRange: [number, number][] = [];
   public readonly stringRange: [number, number][] = [];
   public readonly quotedRange: [number, number][] = [];
@@ -14,8 +15,8 @@ class ScanDocRes {
   // cache for later use
   private _commentAndStringRange: [number, number][] | undefined = undefined;
 
-  constructor() {
-
+  constructor(text: string) {
+    this.text = text;
   }
 
   get commentAndStringRange() {
@@ -40,7 +41,78 @@ class ScanDocRes {
     }
   }
 
-  public getExcludedRangesWithSQAndBQ(buildingConfig: Record<string, any>): [number, number][] {
+  public getExcludedRangesForStaticAnalysis(buildingConfig: Record<string, any>) {
+    let excludedRanges: [number, number][] = this.commentAndStringRange;
+    const saSQAndBQExcludedRangesCfg = buildingConfig['commonLisp.StaticAnalysis.SingleQuoteAndBackQuote.ExcludedRanges'];
+
+    switch (saSQAndBQExcludedRangesCfg) {
+      case SingleQuoteAndBackQuoteExcludedRanges.BQ:
+        excludedRanges = mergeSortedIntervals([
+          ...this.commentAndStringRange,
+          ...this.backquotePairRange,
+          ...this.backquoteRange,
+        ].sort((a, b) => a[0] - b[0])
+        );
+        break;
+
+      case SingleQuoteAndBackQuoteExcludedRanges.BQButComma: {
+        const backquotePairAndSymbol = mergeSortedIntervals(
+          [...this.backquotePairRange, ...this.backquoteRange].sort((a, b) => a[0] - b[0]));
+        const commaPairAndSymbol = mergeSortedIntervals(
+          [...this.commaPairRange, ...this.commaRange].sort((a, b) => a[0] - b[0]));
+        const excludedComma = excludeRangesFromRanges(backquotePairAndSymbol, commaPairAndSymbol);
+
+        excludedRanges = mergeSortedIntervals(
+          [...this.commentAndStringRange, ...excludedComma].sort((a, b) => a[0] - b[0]));
+        break;
+      }
+      case SingleQuoteAndBackQuoteExcludedRanges.SQ:
+        excludedRanges =
+          mergeSortedIntervals([
+            ...this.commentAndStringRange,
+            ...this.quotedPairRange,
+            ...this.quotedRange
+          ].sort((a, b) => a[0] - b[0])
+          );
+        break;
+
+      case SingleQuoteAndBackQuoteExcludedRanges.SQBQButComma: {
+        const backquotePairAndSymbol2 = mergeSortedIntervals(
+          [...this.backquotePairRange, ...this.backquoteRange].sort((a, b) => a[0] - b[0]));
+        const commaPairAndSymbol2 = mergeSortedIntervals(
+          [...this.commaPairRange, ...this.commaRange].sort((a, b) => a[0] - b[0]));
+        const excludedComma2 = excludeRangesFromRanges(backquotePairAndSymbol2, commaPairAndSymbol2);
+
+        excludedRanges = mergeSortedIntervals([
+          ...this.commentAndStringRange,
+          ...this.quotedPairRange,
+          ...this.quotedRange,
+          ...excludedComma2
+        ].sort((a, b) => a[0] - b[0]));
+        break;
+      }
+      case SingleQuoteAndBackQuoteExcludedRanges.SQAndBQ:
+        excludedRanges = mergeSortedIntervals([
+          ...this.commentAndStringRange,
+          ...this.backquotePairRange,
+          ...this.backquoteRange,
+          ...this.quotedPairRange,
+          ...this.quotedRange,
+        ].sort((a, b) => a[0] - b[0])
+        );
+        break;
+
+      case SingleQuoteAndBackQuoteExcludedRanges.None:
+        // nothing
+        break;
+
+      default:
+        break;
+    }
+    return excludedRanges;
+  }
+
+  public getExcludedRangesForDocumentSemanticTokensProvider(buildingConfig: Record<string, any>): [number, number][] {
     const excludedRangesCfg = buildingConfig['commonLisp.DocumentSemanticTokensProvider.ExcludedRanges'];
     const SQAndBQHighlightCfg = buildingConfig['commonLisp.DocumentSemanticTokensProvider.SingleQuoteAndBackQuote.Highlight'];
     let excludedRanges: [number, number][] = this.getExcludedRanges(excludedRangesCfg);
@@ -112,9 +184,9 @@ class ScanDocRes {
     return excludedRanges;
   }
 
-  public getExcludedRangesWithBackQuote(buildingConfig: Record<string, any>): [number, number][] {
-    const excludedRangesCfg = buildingConfig['commonLisp.ReferenceProvider.ExcludedRanges'];
-    const backQuoteCfg = buildingConfig['commonLisp.ReferenceProvider.BackQuoteFilter.enabled'];
+  public getExcludedRangesForDefReferenceProvider(buildingConfig: Record<string, any>, provider: string): [number, number][] {
+    const excludedRangesCfg = buildingConfig[`commonLisp.${provider}.ExcludedRanges`];
+    const backQuoteCfg = buildingConfig[`commonLisp.${provider}.BackQuoteFilter.enabled`];
     let excludedRanges: [number, number][] = this.getExcludedRanges(excludedRangesCfg);
 
     if (backQuoteCfg) {

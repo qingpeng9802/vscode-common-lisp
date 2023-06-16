@@ -3,11 +3,10 @@ import * as vscode from 'vscode';
 import { SymbolInfo } from './SymbolInfo';
 import { processVars } from './lambda_list';
 import { findMatchPairParenthese } from './pair_parser';
-import { addToDictArr, checkDefName, getValidGroup, isRangeIntExcludedRanges } from './user_symbol_util';
+import { addToDictArr, checkDefName, getValidGroupInd, isRangeIntExcludedRanges } from './user_symbol_util';
 
-function collectKeyword(regex: RegExp, nameGroup: number[], document: vscode.TextDocument, ExcludedRange: [number, number][]): Record<string, SymbolInfo[]> {
+function collectKeyword(regex: RegExp, nameGroup: number[], document: vscode.TextDocument, text: string, excludedRange: [number, number][]): Record<string, SymbolInfo[]> {
   const uri = document.uri;
-  const text = document.getText();
 
   const defNames: Record<string, SymbolInfo[]> = {};
 
@@ -20,12 +19,12 @@ function collectKeyword(regex: RegExp, nameGroup: number[], document: vscode.Tex
 
     // add function name
     const defName = checkDefName(r, nameGroup);
-    const nameRangeInd = getValidGroup(r.indices, nameGroup);
-    if (!defName || !nameRangeInd) {
+    const nameRangeInd = getValidGroupInd(r.indices, nameGroup);
+    if (defName === undefined || nameRangeInd === undefined) {
       continue;
     }
 
-    if (isRangeIntExcludedRanges(nameRangeInd, ExcludedRange)) {
+    if (isRangeIntExcludedRanges(nameRangeInd, excludedRange)) {
       continue;
     }
 
@@ -54,11 +53,10 @@ function collectKeyword(regex: RegExp, nameGroup: number[], document: vscode.Tex
   return defNames;
 }
 
-function collectKeywordLambda(regex: RegExp, nameGroup: number[], document: vscode.TextDocument, ExcludedRange: [number, number][]):
+function collectKeywordLambda(regex: RegExp, nameGroup: number[], document: vscode.TextDocument, text: string, excludedRange: [number, number][]):
   [Record<string, SymbolInfo[]>, Record<string, SymbolInfo[]>] {
 
   const uri = document.uri;
-  const text = document.getText();
 
   const defNames: Record<string, SymbolInfo[]> = {};
   const lambdaNames: Record<string, SymbolInfo[]> = {};
@@ -72,12 +70,12 @@ function collectKeywordLambda(regex: RegExp, nameGroup: number[], document: vsco
 
     // add function name
     const defName = checkDefName(r, nameGroup);
-    const nameRangeInd = getValidGroup(r.indices, nameGroup);
-    if (!defName || !nameRangeInd) {
+    const nameRangeInd = getValidGroupInd(r.indices, nameGroup);
+    if (defName === undefined || nameRangeInd === undefined) {
       continue;
     }
 
-    if (isRangeIntExcludedRanges(nameRangeInd, ExcludedRange)) {
+    if (isRangeIntExcludedRanges(nameRangeInd, excludedRange)) {
       continue;
     }
 
@@ -112,16 +110,16 @@ function collectKeywordLambda(regex: RegExp, nameGroup: number[], document: vsco
       allowDestructuring = false;
     } else if (['defmacro', 'define-compiler-macro', 'define-setf-expander'].includes(r[3])) {
       allowDestructuring = true;
-    } else {
-    }
+    } else { }
+
     const varsRes = processVars(leftPInd, openParentheseInd, currText, true, allowDestructuring);
-    if (!varsRes) {
+    if (varsRes === undefined) {
       continue;
     }
     const [vars, varsStrEnd] = varsRes;
 
     for (const [nn, rang] of Object.entries(vars)) {
-      if (isRangeIntExcludedRanges(rang, ExcludedRange)) {
+      if (isRangeIntExcludedRanges(rang, excludedRange)) {
         continue;
       }
       const lexicalScope: [number, number] = [varsStrEnd, closedParentheseInd];
@@ -146,7 +144,7 @@ function collectKeywordLambda(regex: RegExp, nameGroup: number[], document: vsco
 }
 
 
-function collectGlobalDef(document: vscode.TextDocument, ExcludedRange: [number, number][]):
+function collectGlobalDef(document: vscode.TextDocument, text: string, excludedRange: [number, number][]):
   [Record<string, SymbolInfo[]>, Record<string, SymbolInfo[]>] {
 
   // commonlisp.yaml def-name
@@ -155,8 +153,8 @@ function collectGlobalDef(document: vscode.TextDocument, ExcludedRange: [number,
   // Note `defsetf` short form is matched below, long form is matched above, dup def-name is okay
   const keyword1 = /(?<=#'|\s|^)(\()(\s*)(defsetf|define-symbol-macro|deftype|defpackage|defconstant|defstruct|defvar|defparameter|define-condition|defclass)\s+\(?\s*([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+?)(?=(\s|\(|\)))/igmd;
 
-  const [defNames0, lambdaNames] = collectKeywordLambda(keywordLambdaList, [6, 7], document, ExcludedRange);
-  const defNames1 = collectKeyword(keyword1, [4], document, ExcludedRange);
+  const [defNames0, lambdaNames] = collectKeywordLambda(keywordLambdaList, [6, 7], document, text, excludedRange);
+  const defNames1 = collectKeyword(keyword1, [4], document, text, excludedRange);
 
   const defNames: Record<string, SymbolInfo[]> = {};
   const dicts = [defNames0, defNames1];
@@ -171,10 +169,9 @@ function collectGlobalDef(document: vscode.TextDocument, ExcludedRange: [number,
   return [defNames, lambdaNames];
 }
 
-function collectLocalDef(document: vscode.TextDocument, ExcludedRange: [number, number][]):
+function collectLocalDef(document: vscode.TextDocument, text: string, excludedRange: [number, number][]):
   [Record<string, SymbolInfo[]>, Record<string, SymbolInfo[]>] {
   const uri = document.uri;
-  const text = document.getText();
 
   const defLocalNames: Record<string, SymbolInfo[]> = {};
   const localLambdaNames: Record<string, SymbolInfo[]> = {};
@@ -188,12 +185,12 @@ function collectLocalDef(document: vscode.TextDocument, ExcludedRange: [number, 
     }
 
     const defLocalName = checkDefName(r, [6]);
-    if (!defLocalName) {
+    if (defLocalName === undefined) {
       continue;
     }
 
     const nameRangeInd = r.indices[6];
-    if (isRangeIntExcludedRanges(nameRangeInd, ExcludedRange)) {
+    if (isRangeIntExcludedRanges(nameRangeInd, excludedRange)) {
       continue;
     }
 
@@ -221,7 +218,7 @@ function collectLocalDef(document: vscode.TextDocument, ExcludedRange: [number, 
       lexicalScope = [r.indices[7][1], closedParentheseInd];
 
     } else { }
-    if (!lexicalScope) {
+    if (lexicalScope === undefined) {
       continue;
     }
 
@@ -251,7 +248,7 @@ function collectLocalDef(document: vscode.TextDocument, ExcludedRange: [number, 
     } else {
     }
     const varsRes = processVars(secondLeftPInd, openParentheseInd, currText, true, allowDestructuring);
-    if (!varsRes) {
+    if (varsRes === undefined) {
       continue;
     }
     const [vars, varsStrEnd] = varsRes;
@@ -260,7 +257,7 @@ function collectLocalDef(document: vscode.TextDocument, ExcludedRange: [number, 
 
 
     for (const [nn, rang] of Object.entries(vars)) {
-      if (isRangeIntExcludedRanges(rang, ExcludedRange)) {
+      if (isRangeIntExcludedRanges(rang, excludedRange)) {
         continue;
       }
       const secondLexicalScope: [number, number] = [varsStrEnd, closedParentheseInd];
@@ -280,7 +277,7 @@ function collectLocalDef(document: vscode.TextDocument, ExcludedRange: [number, 
   }
 
   /* sort by lexical scope start, we do not need it since we have `findInnermost`
-  for (const [defLocalName, arrScope] of Object.entries(defLocalNames)) {
+  for (const arrScope of Object.values(defLocalNames)) {
     arrScope.sort((a, b) => {
       return a[0].start.isBefore(b[0].start) ? -1 : 1;
     });

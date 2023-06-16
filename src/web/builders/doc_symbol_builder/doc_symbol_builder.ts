@@ -36,7 +36,7 @@ function noValidContainerToSymbolInfosDict(defs: Record<string, SymbolInfo[]>, a
 
   for (const [defName, info] of Object.entries(defs)) {
     for (const item of info) {
-      const containerName = item.containerName ?
+      const containerName = (item.containerName !== undefined) ?
         `${item.containerName}<${genAnonContainerNameNum(anonContainerNameDict, item.containerName)}>` :
         '';
       item.numberedContainerName = containerName;
@@ -54,7 +54,7 @@ function noValidContainerToSymbolInfos(defs: Record<string, SymbolInfo[]>, anonC
 
   for (const [defName, info] of Object.entries(defs)) {
     for (const item of info) {
-      const containerName = item.containerName ?
+      const containerName = (item.containerName !== undefined) ?
         `${item.containerName}<${genAnonContainerNameNum(anonContainerNameDict, item.containerName)}>` :
         '';
       item.numberedContainerName = containerName;
@@ -67,19 +67,12 @@ function noValidContainerToSymbolInfos(defs: Record<string, SymbolInfo[]>, anonC
 }
 
 // @sideEffect: SymbolInfo.globalDefRange
-function getTopLevelScope(document: vscode.TextDocument, symbol: SymbolInfo) {
-  const endInd = findMatchPairParenthese(symbol.numRange[0], document.getText());
-  symbol.globalDefRange = [symbol.numRange[0], endInd];
-  return;
-}
-
-function genTopLevelScopes(document: vscode.TextDocument, symbols: SymbolInfo[]): [string, [number, number]][] {
+function genSortedTopLevelScopes(text: string, symbols: SymbolInfo[]): [string, [number, number]][] {
   const res: [string, [number, number]][] = [];
-  for (const s of symbols) {
-    getTopLevelScope(document, s);
-    if (s.globalDefRange) {
-      res.push([s.name, s.globalDefRange]);
-    }
+  for (const symbol of symbols) {
+    const endInd = findMatchPairParenthese(symbol.numRange[0], text);
+    symbol.globalDefRange = [symbol.numRange[0], endInd];
+    res.push([symbol.name, symbol.globalDefRange]);
   }
 
   res.sort((a, b) => a[1][0] - b[1][0]);
@@ -88,31 +81,36 @@ function genTopLevelScopes(document: vscode.TextDocument, symbols: SymbolInfo[])
 
 function genDocumentSymbol(currDocSymbolInfo: DocSymbolInfo): vscode.DocumentSymbol[] {
   // for anonymous container name
-  const anonContainerNameDict = {};
+  const anonContainerNameDict: Record<string, number> = {};
 
   // start assgin
-  const globalContainerName = (currDocSymbolInfo.document.uri.path.split('/').pop() || 'Untitled');
+  const fileName = currDocSymbolInfo.document.uri.path.split('/').pop();
+  const globalContainerName = (fileName !== undefined) ? fileName : 'Untitled';
   const globalDefSIDict = globalContainerToSymbolInfosDict(currDocSymbolInfo.globalDef, globalContainerName);
   for (const sInfos of Object.values(currDocSymbolInfo.globalNamedLambda)) {
     for (const sInfo of sInfos) {
-      if (!sInfo.containerName) {
+      if (sInfo.containerName === undefined) {
         continue;
       }
-      globalDefSIDict[sInfo.containerName].children.push(new vscode.DocumentSymbol(
-        sInfo.name, sInfo.containerName, vscode.SymbolKind.Variable, sInfo.loc.range, sInfo.loc.range
-      ));
+      globalDefSIDict[sInfo.containerName].children.push(
+        new vscode.DocumentSymbol(
+          sInfo.name, sInfo.containerName, vscode.SymbolKind.Variable, sInfo.loc.range, sInfo.loc.range
+        )
+      );
     }
   }
 
   const localDefSIDict = noValidContainerToSymbolInfosDict(currDocSymbolInfo.localDef, anonContainerNameDict);
   for (const sInfos of Object.values(currDocSymbolInfo.localNamedLambda)) {
     for (const sInfo of sInfos) {
-      if (!sInfo.containerName) {
+      if (sInfo.containerName === undefined) {
         continue;
       }
-      localDefSIDict[sInfo.containerName].children.push(new vscode.DocumentSymbol(
-        sInfo.name, sInfo.containerName, vscode.SymbolKind.Variable, sInfo.loc.range, sInfo.loc.range
-      ));
+      localDefSIDict[sInfo.containerName].children.push(
+        new vscode.DocumentSymbol(
+          sInfo.name, sInfo.containerName, vscode.SymbolKind.Variable, sInfo.loc.range, sInfo.loc.range
+        )
+      );
     }
   }
 
@@ -125,7 +123,7 @@ function genDocumentSymbol(currDocSymbolInfo: DocSymbolInfo): vscode.DocumentSym
   let restVars: vscode.DocumentSymbol[] = [];
 
   const topLevelLocalDefs = Object.values(currDocSymbolInfo.localDef).flat();
-  const topLevelLocalScopes = genTopLevelScopes(currDocSymbolInfo.document, topLevelLocalDefs);
+  const topLevelLocalScopes = genSortedTopLevelScopes(currDocSymbolInfo.docRes.text, topLevelLocalDefs);
 
   for (const si of headVars) {
     const siStart = currDocSymbolInfo.document.offsetAt(si.range.start);
@@ -153,7 +151,7 @@ function genDocumentSymbol(currDocSymbolInfo: DocSymbolInfo): vscode.DocumentSym
   restVars = [];
 
   const topLevelDefs = Object.values(currDocSymbolInfo.globalDef).flat();
-  const topLevelScopes = genTopLevelScopes(currDocSymbolInfo.document, topLevelDefs);
+  const topLevelScopes = genSortedTopLevelScopes(currDocSymbolInfo.docRes.text, topLevelDefs);
   for (const si of headVars) {
     const siStart = currDocSymbolInfo.document.offsetAt(si.range.start);
     const siEnd = currDocSymbolInfo.document.offsetAt(si.range.end);

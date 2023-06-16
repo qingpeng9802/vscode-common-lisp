@@ -34,14 +34,14 @@ class TraceableDisposables {
   private static readonly cfgMapDisposable: Record<string, string> = {
     'commonLisp.providers.CompletionItemProviders.user.enabled': 'userCompletionItemProvider',
     'commonLisp.providers.CompletionItemProviders.original.enabled': 'oriCompletionItemProvider',
-  
+
     'commonLisp.providers.CompletionItemProviders.ampersand.enabled': 'ampersandCompletionItemProvider',
     'commonLisp.providers.CompletionItemProviders.asterisk.enabled': 'asteriskCompletionItemProvider',
     'commonLisp.providers.CompletionItemProviders.colon.enabled': 'colonCompletionItemProvider',
-  
+
     'commonLisp.providers.CompletionItemProviders.tilde.enabled': 'tildeCompletionItemProvider',
     'commonLisp.providers.CompletionItemProviders.sharpsign.enabled': 'sharpsignCompletionItemProvider',
-  
+
     'commonLisp.providers.HoverProvider.enabled': 'hoverProvider',
     'commonLisp.providers.DefinitionProvider.enabled': 'definitionProvider',
     'commonLisp.providers.DocumentSymbolProvider.enabled': 'documentSymbolProvider',
@@ -148,14 +148,14 @@ class TraceableDisposables {
     } else if ([
       'commonLisp.providers.CompletionItemProviders.user.enabled',
       'commonLisp.providers.CompletionItemProviders.original.enabled',
-  
+
       'commonLisp.providers.CompletionItemProviders.ampersand.enabled',
       'commonLisp.providers.CompletionItemProviders.asterisk.enabled',
       'commonLisp.providers.CompletionItemProviders.colon.enabled',
-  
+
       'commonLisp.providers.CompletionItemProviders.tilde.enabled',
       'commonLisp.providers.CompletionItemProviders.sharpsign.enabled',
-  
+
       'commonLisp.providers.HoverProvider.enabled',
       'commonLisp.providers.DefinitionProvider.enabled',
       'commonLisp.providers.DocumentSymbolProvider.enabled',
@@ -165,7 +165,7 @@ class TraceableDisposables {
     ].includes(workspaceConfigKey)) {
       disposableName = TraceableDisposables.cfgMapDisposable[workspaceConfigKey];
     }
-  
+
     if (newTraceableDisposablesVal === false) {
       this.disposeProviderByName(disposableName);
     } else {

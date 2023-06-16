@@ -91,7 +91,7 @@ class DocSymbolInfo {
     }
 
     // make sure the semantic color in order (innermost last)
-    for (const [k, info] of Object.entries(allLocal)) {
+    for (const info of Object.values(allLocal)) {
       info.sort((a, b) => {
         return a.loc.range.start.isBeforeOrEqual(b.loc.range.start) ? -1 : 1;
       });
@@ -103,33 +103,35 @@ class DocSymbolInfo {
   // return [selected symbol, shadowed symbols]
   // if global is selected, return shadowed symbols (position===undefined)
   // if local is selected, return empty shadowed symbols (position!==undefined)
-  public getSymbolWithShadowByRange(range: [number, number] | vscode.Range, word: string, positionFlag: vscode.Position | undefined): [SymbolInfo | undefined, SymbolInfo[]] {
+  public getSymbolWithShadowByRange(word: string, range: [number, number] | vscode.Range, positionFlag: vscode.Position | undefined): [SymbolInfo | undefined, SymbolInfo[]] {
     if (!Array.isArray(range)) {
       range = [this.document.offsetAt(range.start), this.document.offsetAt(range.end)];
     }
 
-    const shadow = this.allLocal[word] ? this.allLocal[word] : [];
+    const shadow = (this.allLocal[word] !== undefined) ? this.allLocal[word] : [];
 
-    if (!positionFlag) {
+    if (positionFlag === undefined) {
       // only global definition
       const res = this.globalDef[word];
-      return (res && res.length !== 0) ? [res.at(-1), shadow] : [undefined, shadow];
+      return (res !== undefined && res.length !== 0) ? [res.at(-1), shadow] : [undefined, shadow];
 
     } else {
       // local definition first, then global definition
-      if (!shadow || shadow.length === 0) {
+      if (shadow === undefined || shadow.length === 0) {
         const res = this.globalDef[word];
-        return (res && res.length !== 0) ? [res.at(-1), []] : [undefined, []];
+        return (res !== undefined && res.length !== 0) ? [res.at(-1), []] : [undefined, []];
+
       } else {
         const numPosition = this.document.offsetAt(positionFlag);
         const innermost = findInnermost(shadow, range, numPosition);
 
         if (innermost === undefined) {
           const res = this.globalDef[word];
-          return (res && res.length !== 0) ? [res.at(-1), shadow] : [undefined, shadow];
+          return (res !== undefined && res.length !== 0) ? [res.at(-1), shadow] : [undefined, shadow];
         } else {
           return [innermost, []];
         }
+
       }
 
     }

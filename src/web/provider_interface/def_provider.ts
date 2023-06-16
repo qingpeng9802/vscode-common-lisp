@@ -14,16 +14,16 @@ function registerDefinitionProvider() {
     {
       provideDefinition(document, position, token) {
         const range = document.getWordRangeAtPosition(position, clValidWithColonSharp);
-        if (!range) {
+        if (range === undefined) {
           return undefined;
         }
 
         structuredInfo.produceInfoByDoc(document, new TriggerEvent(TriggerProvider.provideDefinition));
-        if (!structuredInfo.currDocSymbolInfo) {
+        if (structuredInfo.currDocSymbolInfo === undefined) {
           return undefined;
         }
 
-        const positionFlag = isQuote(document, position) ? undefined : position;
+        const positionFlag = (isQuote(document, position) !== undefined) ? undefined : position;
         return getSymbolLocByRange(
           structuredInfo.currDocSymbolInfo,
           range,
@@ -49,7 +49,7 @@ function getSymbolLocByRange(
   vscode.Location | undefined {
 
   // config
-  const excludedRanges = currDocSymbolInfo.docRes.getExcludedRangesWithBackQuote(buildingConfig);
+  const excludedRanges = currDocSymbolInfo.docRes.getExcludedRangesForDefReferenceProvider(buildingConfig, 'DefinitionProvider');
   const doc = currDocSymbolInfo.document;
   const numRange: [number, number] = [doc.offsetAt(range.start), doc.offsetAt(range.end)];
   if (isRangeIntExcludedRanges(numRange, excludedRanges)) {
@@ -59,7 +59,7 @@ function getSymbolLocByRange(
   if (!word) {
     return undefined;
   }
-  const [symbolSelected, shadow] = currDocSymbolInfo.getSymbolWithShadowByRange(range, word, positionFlag);
+  const [symbolSelected, shadow] = currDocSymbolInfo.getSymbolWithShadowByRange(word, range, positionFlag);
   return symbolSelected?.loc;
 }
 

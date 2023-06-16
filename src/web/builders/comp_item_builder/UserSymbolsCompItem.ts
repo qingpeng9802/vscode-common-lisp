@@ -1,6 +1,6 @@
 import type * as vscode from 'vscode';
 
-class UserSymbols {
+class UserSymbolsCompItem {
   public readonly globalCItems: vscode.CompletionItem[];
   public readonly localScopeCItems: [vscode.CompletionItem, [number, number]][];
 
@@ -15,4 +15,4 @@ class UserSymbols {
 
 }
 
-export { UserSymbols };
+export { UserSymbolsCompItem };

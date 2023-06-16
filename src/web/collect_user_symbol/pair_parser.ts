@@ -1,18 +1,6 @@
-// to avoid overhead of passing huge string
-interface docObj {
-  readonly doc: string;
-  readonly docLength: number;
-}
-
 // return result is rightafter `)`, not at `)`
-function findMatchPairParentheseDebug(index: number, doc: string): number {
-  // to avoid overhead of passing huge string
-  const docObj = {
-    doc: doc,
-    docLength: doc.length
-  };
-
-  const [success, res] = eatParentheseDebug(index, docObj);
+function findMatchPairParentheseDebug(index: number, text: string): number {
+  const [success, res] = eatParentheseDebug(index, text, text.length);
 
   if (!success) {
     // console.log(`start: ${index}, needclose: ${res}`);
@@ -23,52 +11,40 @@ function findMatchPairParentheseDebug(index: number, doc: string): number {
 }
 
 // return result is rightafter `)`, not at `)`
-function findMatchPairParenthese(index: number, doc: string): number {
-  // to avoid overhead of passing huge string
-  const docObj = {
-    doc: doc,
-    docLength: doc.length
-  };
-
-  const res = eatParenthese(index, docObj);
+function findMatchPairParenthese(index: number, text: string): number {
+  const res = eatParenthese(index, text, text.length);
 
   return res;
 }
 
 // not eat `;` here, rightafter `;`
-function eatLineComment(index: number, docObj: docObj): number {
-  const doc = docObj.doc;
-
-  while (index < docObj.docLength && doc[index] !== '\n') {
+function eatLineComment(index: number, text: string, textLength: number): number {
+  while (index < textLength && text[index] !== '\n') {
     //console.log(`LC| ${index}: ${doc[index]}`);
     ++index;
   }
-  return index === docObj.docLength ? -1 : index + 1;
+  return (index === textLength) ? -1 : index + 1;
 }
 
 // not eat `#|` here, rightafter `#|`
-function eatBlockComment(index: number, docObj: docObj): number {
-  const doc = docObj.doc;
-
-  let prevc = doc[index - 1];
+function eatBlockComment(index: number, text: string, textLength: number): number {
+  let prevc = text[index - 1];
   while (
-    index < docObj.docLength &&
-    (doc[index] !== '#' || prevc !== '|')
+    index < textLength &&
+    (text[index] !== '#' || prevc !== '|')
   ) {
     //console.log(`BC| ${index}: ${doc[index]}`);
-    prevc = doc[index];
+    prevc = text[index];
     ++index;
   }
-  return index === docObj.docLength ? -1 : index + 1;
+  return (index === textLength) ? -1 : index + 1;
 }
 
 // not eat `"` here, rightafter `"`
-function eatDoubleQuote(index: number, docObj: docObj): number {
-  const doc = docObj.doc;
-
-  while (index < docObj.docLength) {
+function eatDoubleQuote(index: number, text: string, textLength: number): number {
+  while (index < textLength) {
     //console.log(`DQ| ${index}: ${doc[index]}`);
-    switch (doc[index]) {
+    switch (text[index]) {
       case '\\':
         ++index;
         ++index;
@@ -88,12 +64,10 @@ function eatDoubleQuote(index: number, docObj: docObj): number {
 // # CL-ANSI 2.4.8.1 Sharpsign Backslash
 // start rightafter `#\`
 // may include `)`, not add 1 for `index` when return
-function eatSharpsignBackslash(index: number, docObj: docObj): number {
-  const doc = docObj.doc;
-
+function eatSharpsignBackslash(index: number, text: string, textLength: number): number {
   // do not use `g` flag in loop https://stackoverflow.com/questions/43827851/bug-with-regexp-test-javascript
-  while (index < docObj.docLength) {
-    const c = doc[index];
+  while (index < textLength) {
+    const c = text[index];
     if (!/\s/.test(c) && c !== ')' && c !== '(') {
       //console.log(`SB| ${index}: ${doc[index]}`);
       ++index;
@@ -101,20 +75,19 @@ function eatSharpsignBackslash(index: number, docObj: docObj): number {
       break;
     }
   }
-  return index === docObj.docLength ? -1 : index;
+  return (index === textLength) ? -1 : index;
 }
 
 // start rightafter `'(`, that is, first `(` will not be eaten in this function
-function eatParenthese(index: number, docObj: docObj): number {
-  const doc = docObj.doc;
+function eatParenthese(index: number, text: string, textLength: number): number {
 
   let needClose = 1;
 
-  let prevc = doc[index - 1];
+  let prevc = text[index - 1];
   // NOTE: since we start rightafter `(`, so we do not check index-1>0
-  while (needClose !== 0 && index < docObj.docLength) {
+  while (needClose !== 0 && index < textLength) {
     //console.log(`QP| ${index}: ${doc[index]}`);
-    const c = doc[index];
+    const c = text[index];
 
     switch (c) {
       case '(':
@@ -136,7 +109,7 @@ function eatParenthese(index: number, docObj: docObj): number {
 
       case '"':
         // skip string
-        index = eatDoubleQuote(index + 1, docObj);
+        index = eatDoubleQuote(index + 1, text, textLength);
         if (index === -1) {
           return -1;
         } else {
@@ -145,7 +118,7 @@ function eatParenthese(index: number, docObj: docObj): number {
 
       case ';':
         // skip line comment
-        index = eatLineComment(index + 1, docObj);
+        index = eatLineComment(index + 1, text, textLength);
         if (index === -1) {
           return -1;
         } else {
@@ -155,7 +128,7 @@ function eatParenthese(index: number, docObj: docObj): number {
       case '|':
         // skip comment
         if (prevc === '#') {
-          index = eatBlockComment(index + 1, docObj);
+          index = eatBlockComment(index + 1, text, textLength);
           if (index === -1) {
             return -1;
           } else {
@@ -168,7 +141,7 @@ function eatParenthese(index: number, docObj: docObj): number {
 
       case '\\':
         if (prevc === '#') {
-          index = eatSharpsignBackslash(index + 1, docObj);
+          index = eatSharpsignBackslash(index + 1, text, textLength);
           if (index === -1) {
             return -1;
           } else {
@@ -186,24 +159,23 @@ function eatParenthese(index: number, docObj: docObj): number {
         break;
     }
 
-    prevc = doc[index - 1];
+    prevc = text[index - 1];
   }
-  return needClose ? -1 : index + 1;
+  return (needClose !== 0) ? -1 : index + 1;
 }
 
 // start rightafter `'(`, that is, first `(` will not be eaten in this function
-function eatParentheseDebug(index: number, docObj: docObj): [true, number] | [false, number | undefined] {
-  const doc = docObj.doc;
+function eatParentheseDebug(index: number, text: string, textLength: number): [true, number] | [false, number | undefined] {
 
   const needCloseStack = [index];
 
   let needClose = 1;
 
-  let prevc = doc[index - 1];
+  let prevc = text[index - 1];
   // NOTE: since we start rightafter `(`, so we do not check index-1>0
-  while (needClose !== 0 && index < docObj.docLength) {
+  while (needClose !== 0 && index < textLength) {
 
-    const c = doc[index];
+    const c = text[index];
 
     switch (c) {
       case '(':
@@ -230,7 +202,7 @@ function eatParentheseDebug(index: number, docObj: docObj): [true, number] | [fa
 
       case '"':
         // skip string
-        index = eatDoubleQuote(index + 1, docObj);
+        index = eatDoubleQuote(index + 1, text, textLength);
         if (index === -1) {
           return [false, needCloseStack.at(-1)];
         } else {
@@ -239,7 +211,7 @@ function eatParentheseDebug(index: number, docObj: docObj): [true, number] | [fa
 
       case ';':
         // skip line comment
-        index = eatLineComment(index + 1, docObj);
+        index = eatLineComment(index + 1, text, textLength);
         if (index === -1) {
           return [false, needCloseStack.at(-1)];
         } else {
@@ -249,7 +221,7 @@ function eatParentheseDebug(index: number, docObj: docObj): [true, number] | [fa
       case '|':
         // skip comment
         if (prevc === '#') {
-          index = eatBlockComment(index + 1, docObj);
+          index = eatBlockComment(index + 1, text, textLength);
           if (index === -1) {
             return [false, needCloseStack.at(-1)];
           } else {
@@ -262,7 +234,7 @@ function eatParentheseDebug(index: number, docObj: docObj): [true, number] | [fa
 
       case '\\':
         if (prevc === '#') {
-          index = eatSharpsignBackslash(index + 1, docObj);
+          index = eatSharpsignBackslash(index + 1, text, textLength);
           if (index === -1) {
             return [false, needCloseStack.at(-1)];
           } else {
@@ -280,10 +252,10 @@ function eatParentheseDebug(index: number, docObj: docObj): [true, number] | [fa
         break;
     }
 
-    prevc = doc[index - 1];
+    prevc = text[index - 1];
 
   }
-  return needClose ? [false, needCloseStack.at(-1)] : [true, index + 1];
+  return (needClose !== 0) ? [false, needCloseStack.at(-1)] : [true, index + 1];
 }
 
 export { findMatchPairParenthese };

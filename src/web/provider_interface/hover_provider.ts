@@ -11,7 +11,7 @@ function registerHoverProvider() {
     {
       provideHover(document, position, token) {
         const range = document.getWordRangeAtPosition(position, clValidWithColonSharp);
-        if (!range) {
+        if (range === undefined) {
           return undefined;
         }
 
@@ -22,7 +22,7 @@ function registerHoverProvider() {
         }
 
         const tooltip = getDoc(word.toLowerCase());
-        return tooltip ? new vscode.Hover(tooltip) : undefined;
+        return (tooltip !== undefined) ? new vscode.Hover(tooltip) : undefined;
       },
     }
   );

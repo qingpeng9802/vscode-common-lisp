@@ -9,9 +9,9 @@ import { CallHrchyInfo } from './CallHrchyInfo';
 
 function buildCallHierarchyItem(info: SymbolInfo): vscode.CallHierarchyItem {
   const detail =
-    info.numberedContainerName ?
+    (info.numberedContainerName !== undefined) ?
       info.numberedContainerName :
-      (info.containerName ? info.containerName : '');
+      ((info.containerName !== undefined) ? info.containerName : '');
   const item = new vscode.CallHierarchyItem(
     info.kind,
     info.name,
@@ -30,53 +30,37 @@ function buildEdge(
   ogD: Record<string, vscode.CallHierarchyOutgoingCall>, stringifyIsCalledKey: string | undefined, toItem: vscode.CallHierarchyItem | undefined,
   callAppearRange: vscode.Range[]
 ) {
-  if (fromItem && stringifyCallerKey) {
+  if (fromItem !== undefined && stringifyCallerKey !== undefined) {
     icD[stringifyCallerKey] = new vscode.CallHierarchyIncomingCall(fromItem, callAppearRange);
   }
-  if (toItem && stringifyIsCalledKey) {
+  if (toItem !== undefined && stringifyIsCalledKey !== undefined) {
     ogD[stringifyIsCalledKey] = new vscode.CallHierarchyOutgoingCall(toItem, callAppearRange);
   }
   return;
 }
 
-function getCallAppearRange(currDocSymbolInfo: DocSymbolInfo, range: [number, number]): vscode.Range {
-  const callAppearRange = new vscode.Range(
-    currDocSymbolInfo.document.positionAt(range[0]),
-    currDocSymbolInfo.document.positionAt(range[1]),
-  );
-  return callAppearRange;
-}
-
-function processglobalOrderedRange(
+function getRealCaller(
   globalOrderedRange: [string, [number, number]],
-  callHrchyItems: Record<string, Record<string, vscode.CallHierarchyItem>>,
   currDocSymbolInfo: DocSymbolInfo,
-): [string, SymbolInfo, string, vscode.CallHierarchyItem, vscode.Range] | undefined {
+): [string, vscode.Range, SymbolInfo] | undefined {
 
-  const currCallerName = globalOrderedRange[0];
-  const [realCaller, shadow] = currDocSymbolInfo.getSymbolWithShadowByRange(globalOrderedRange[1], currCallerName, undefined);
-  if (!realCaller) {
+  const [currCallerName, currCallerRange] = globalOrderedRange;
+  const [realCaller, shadow] = currDocSymbolInfo.getSymbolWithShadowByRange(currCallerName, currCallerRange, undefined);
+  if (realCaller === undefined) {
     return undefined;
   }
-  if (shadow && shadow.length !== 0 && isShadowed(globalOrderedRange[1], shadow)) {
+  if (shadow !== undefined && shadow.length !== 0 && isShadowed(currCallerRange, shadow)) {
     return undefined;
   }
-  if (isRangeIntExcludedRanges(globalOrderedRange[1], currDocSymbolInfo.docRes.commentAndStringRange)) {
+  if (isRangeIntExcludedRanges(currCallerRange, currDocSymbolInfo.docRes.commentAndStringRange)) {
     return undefined;
   }
 
-  const callAppearRange = getCallAppearRange(currDocSymbolInfo, globalOrderedRange[1]);
-
-  const realCallerStr = realCaller.stringify();
-  if (!callHrchyItems[currCallerName]) {
-    callHrchyItems[currCallerName] = {};
-    callHrchyItems[currCallerName][realCallerStr] = buildCallHierarchyItem(realCaller);
-  }
-  const toItem = callHrchyItems[currCallerName][realCallerStr];
-  if (!toItem) {
-    return undefined;
-  }
-  return [currCallerName, realCaller, realCallerStr, toItem, callAppearRange];
+  const callAppearRange = new vscode.Range(
+    currDocSymbolInfo.document.positionAt(currCallerRange[0]),
+    currDocSymbolInfo.document.positionAt(currCallerRange[1]),
+  );
+  return [currCallerName, callAppearRange, realCaller];
 }
 
 function genAllCallHierarchyItems(currDocSymbolInfo: DocSymbolInfo, globalOrderedRanges: [string, [number, number]][]): CallHrchyInfo {
@@ -85,19 +69,25 @@ function genAllCallHierarchyItems(currDocSymbolInfo: DocSymbolInfo, globalOrdere
   const callHrchyItems = callHrchyInfo.callHrchyItems;
   const callHierarchyICs = callHrchyInfo.incomingCall;
   const callHierarchyOGs = callHrchyInfo.outgoingCall;
-  for (let i = 0; i < globalOrderedRanges.length; i++) {
+  for (let i = 0; i < globalOrderedRanges.length; ++i) {
     if (visited.has(i)) {
       continue;
     }
 
-    const rangeProcessedRes = processglobalOrderedRange(globalOrderedRanges[i], callHrchyItems, currDocSymbolInfo);
-    if (!rangeProcessedRes) {
+    const realCallerRes = getRealCaller(globalOrderedRanges[i], currDocSymbolInfo);
+    if (realCallerRes === undefined) {
       continue;
     }
-    const [currCallerName, realCaller, realCallerStr, toItem, callAppearRange] = rangeProcessedRes;
+    const [currCallerName, callAppearRange, realCaller] = realCallerRes;
+    const realCallerStr = realCaller.stringify();
+    if (callHrchyItems[currCallerName] === undefined) {
+      callHrchyItems[currCallerName] = { realCallerStr: buildCallHierarchyItem(realCaller) };
+    }
+    const toItem = callHrchyItems[currCallerName][realCallerStr];
 
     // fileItem
-    const isCalledName = (currDocSymbolInfo.document.uri.path.split('/').pop() || 'Untitled');
+    const fileName = currDocSymbolInfo.document.uri.path.split('/').pop();
+    const isCalledName = (fileName !== undefined) ? fileName : 'Untitled';
     // make the range circle back
     const fromItem = new vscode.CallHierarchyItem(
       vscode.SymbolKind.Namespace, isCalledName, currDocSymbolInfo.document.uri.path, currDocSymbolInfo.document.uri,
@@ -110,7 +100,10 @@ function genAllCallHierarchyItems(currDocSymbolInfo: DocSymbolInfo, globalOrdere
     if (!Object.hasOwn(callHierarchyOGs, isCalledName)) {
       callHierarchyOGs[isCalledName] = {};
     }
-    buildEdge(callHierarchyICs[currCallerName], realCallerStr, fromItem, callHierarchyOGs[isCalledName], undefined, toItem, [callAppearRange]);
+    buildEdge(
+      callHierarchyICs[currCallerName], realCallerStr, fromItem,
+      callHierarchyOGs[isCalledName], undefined, toItem, [callAppearRange]
+    );
 
   }
   return callHrchyInfo;
@@ -132,55 +125,58 @@ function genAllCallHierarchyItemsNonOrphan(currDocSymbolInfo: DocSymbolInfo, glo
   for (const info of infos) {
     const isCalledName = info.name;
     const infoStr = info.stringify();
-    if (!callHrchyItems[isCalledName]) {
-      callHrchyItems[isCalledName] = {};
-      callHrchyItems[isCalledName][infoStr] = buildCallHierarchyItem(info);
+    if (callHrchyItems[isCalledName] === undefined) {
+      callHrchyItems[isCalledName] = { infoStr: buildCallHierarchyItem(info) };
     }
     const fromItem = callHrchyItems[isCalledName][infoStr];
-    if (!fromItem) {
+    if (fromItem === undefined) {
       continue;
     }
 
     // caller's range
     const callerRange = info.globalDefRange;
-    if (!callerRange) {
+    if (callerRange === undefined) {
       continue;
     }
 
-    if (callerRange[0]) {
+    const idxStart = bisectRight(globalOrderedRanges, callerRange[0], item => item[1][0]);
+    const idxEnd = bisectRight(globalOrderedRanges, callerRange[1], item => item[1][0]);
+    for (let i = idxStart; i < idxEnd; ++i) {
+      visited.add(i);
 
-      const idxStart = bisectRight(globalOrderedRanges, callerRange[0], item => item[1][0]);
-      const idxEnd = bisectRight(globalOrderedRanges, callerRange[1], item => item[1][0]);
-      for (let i = idxStart; i < idxEnd; i++) {
-        visited.add(i);
-
-        const rangeProcessedRes = processglobalOrderedRange(globalOrderedRanges[i], callHrchyItems, currDocSymbolInfo);
-        if (!rangeProcessedRes) {
-          continue;
-        }
-        const [currCallerName, realCaller, realCallerStr, toItem, callAppearRange] = rangeProcessedRes;
-
-        // this is kind of twisted,
-        // from-to relation represents the curr context
-        // definition must be the ISCALLED, execution must be the CALLER, curr context is not matter
-        // we are creating two directional edges
-        //
-        //            fromItems                   |
-        //            \   |   /                   |
-        // key:     1. currCaller  2. isCalled    |
-        //                             /  |  \    |
-        //                             toItems   \|/
-        //
-        // that is, our dictionary needs the opposite info to build an edge
-        if (!Object.hasOwn(callHierarchyICs, currCallerName)) {
-          callHierarchyICs[currCallerName] = {};
-        }
-        if (!Object.hasOwn(callHierarchyOGs, isCalledName)) {
-          callHierarchyOGs[isCalledName] = {};
-        }
-        buildEdge(callHierarchyICs[currCallerName], realCallerStr, fromItem, callHierarchyOGs[isCalledName], infoStr, toItem, [callAppearRange]);
-
+      const realCallerRes = getRealCaller(globalOrderedRanges[i], currDocSymbolInfo);
+      if (realCallerRes === undefined) {
+        continue;
       }
+      const [currCallerName, callAppearRange, realCaller] = realCallerRes;
+      const realCallerStr = realCaller.stringify();
+      if (callHrchyItems[currCallerName] === undefined) {
+        callHrchyItems[currCallerName] = { realCallerStr: buildCallHierarchyItem(realCaller) };
+      }
+      const toItem = callHrchyItems[currCallerName][realCallerStr];
+
+      // this is kind of twisted,
+      // from-to relation represents the curr context
+      // definition must be the ISCALLED, execution must be the CALLER, curr context is not matter
+      // we are creating two directional edges
+      //
+      //            fromItems                   |
+      //            \   |   /                   |
+      // key:     1. currCaller  2. isCalled    |
+      //                             /  |  \    |
+      //                             toItems   \|/
+      //
+      // that is, our dictionary needs the opposite info to build an edge
+      if (!Object.hasOwn(callHierarchyICs, currCallerName)) {
+        callHierarchyICs[currCallerName] = {};
+      }
+      if (!Object.hasOwn(callHierarchyOGs, isCalledName)) {
+        callHierarchyOGs[isCalledName] = {};
+      }
+      buildEdge(
+        callHierarchyICs[currCallerName], realCallerStr, fromItem,
+        callHierarchyOGs[isCalledName], infoStr, toItem, [callAppearRange]
+      );
 
     }
   }

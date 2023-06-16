@@ -2,8 +2,8 @@ import type * as vscode from 'vscode';
 
 import type { CallHrchyInfo } from '../builders/call_hierarchy_builder/CallHrchyInfo';
 import { genAllCallHierarchyItems } from '../builders/call_hierarchy_builder/call_hierarchy_builder';
-import type { UserSymbols } from '../builders/comp_item_builder/UserSymbols';
-import { genUserSymbols } from '../builders/comp_item_builder/comp_item_user_builder';
+import type { UserSymbolsCompItem } from '../builders/comp_item_builder/UserSymbolsCompItem';
+import { genUserSymbolsCompItem } from '../builders/comp_item_builder/comp_item_user_builder';
 import { genDocumentSymbol } from '../builders/doc_symbol_builder/doc_symbol_builder';
 import { buildSemanticTokens, genAllPossibleWord } from '../builders/semantic_tokens_builder/semantic_tokens_builder';
 import type { DocSymbolInfo } from '../collect_user_symbol/DocSymbolInfo';
@@ -15,7 +15,7 @@ import type { TriggerEvent } from './TriggerEvent';
 class StructuredInfo {
   public currDocSymbolInfo: DocSymbolInfo | undefined = undefined;
   public currDocumentSymbol: vscode.DocumentSymbol[] | undefined = undefined;
-  public currUserSymbols: UserSymbols | undefined = undefined;
+  public currUserSymbolsCompItem: UserSymbolsCompItem | undefined = undefined;
   public currSemanticTokens: vscode.SemanticTokens | undefined = undefined;
   public currCallHierarchyInfo: CallHrchyInfo | undefined = undefined;
 
@@ -39,7 +39,7 @@ class StructuredInfo {
   // and curr info needs to be updated.
   private readonly dirty: Record<ProduceOption, boolean> = {
     [ProduceOption.getDocSymbolInfo]: true,
-    [ProduceOption.genUserSymbols]: true,
+    [ProduceOption.genUserSymbolsCompItem]: true,
     [ProduceOption.genDocumentSymbol]: true,
     [ProduceOption.genAllPossibleWord]: true,
     [ProduceOption.buildSemanticTokens]: true,
@@ -51,7 +51,7 @@ class StructuredInfo {
       TriggerProvider.provideCompletionItems, TriggerProvider.prepareCallHierarchy, TriggerProvider.provideDefinition,
       TriggerProvider.provideDocumentSymbols, TriggerProvider.provideReferences, TriggerProvider.provideDocumentSemanticTokens,
     ]),
-    [ProduceOption.genUserSymbols]: new Set([TriggerProvider.provideCompletionItems]),
+    [ProduceOption.genUserSymbolsCompItem]: new Set([TriggerProvider.provideCompletionItems]),
     [ProduceOption.genDocumentSymbol]: new Set([TriggerProvider.provideCompletionItems, TriggerProvider.prepareCallHierarchy, TriggerProvider.provideDocumentSymbols]),
     [ProduceOption.genAllPossibleWord]: new Set([TriggerProvider.provideReferences, TriggerProvider.provideDocumentSemanticTokens, TriggerProvider.prepareCallHierarchy]),
     [ProduceOption.buildSemanticTokens]: new Set([TriggerProvider.provideDocumentSemanticTokens]),
@@ -63,7 +63,9 @@ class StructuredInfo {
   }
 
   public setDirtyTrue() {
-    Object.keys(this.dirty).forEach((k) => { this.dirty[k as ProduceOption] = true; });
+    Object.keys(this.dirty).forEach((k) => {
+      this.dirty[k as ProduceOption] = true;
+    });
   }
 
   private getNeedProduceSetByTriggerProvider(triggerProvider: TriggerProvider): Set<ProduceOption> {
@@ -77,13 +79,14 @@ class StructuredInfo {
   }
 
   public produceInfoByDoc(doc: vscode.TextDocument, triggerEvent: TriggerEvent) {
-    //const t = performance.now();
+    const t = performance.now();
     const triggerProvider: TriggerProvider = triggerEvent.triggerProvider;
-    const needProduceSet = this.getNeedProduceSetByTriggerProvider(triggerProvider);
+    const needProduceSetCheckDirty = this.getNeedProduceSetByTriggerProvider(triggerProvider);
 
-    const needProduceSetCheckDirty = new Set(
-      [...needProduceSet].filter(ele => this.dirty[ele])
-    );
+    // comment this part for profile
+    //const needProduceSetCheckDirty = new Set(
+    //  [...needProduceSet].filter(ele => this.dirty[ele])
+    //);
 
     // order matters here!
     if (needProduceSetCheckDirty.has(ProduceOption.getDocSymbolInfo)) {
@@ -92,9 +95,9 @@ class StructuredInfo {
     }
 
     if (this.currDocSymbolInfo !== undefined) {
-      if (needProduceSetCheckDirty.has(ProduceOption.genUserSymbols)) {
-        this.currUserSymbols = genUserSymbols(this.currDocSymbolInfo);
-        this.dirty[ProduceOption.genUserSymbols] = false;
+      if (needProduceSetCheckDirty.has(ProduceOption.genUserSymbolsCompItem)) {
+        this.currUserSymbolsCompItem = genUserSymbolsCompItem(this.currDocSymbolInfo);
+        this.dirty[ProduceOption.genUserSymbolsCompItem] = false;
       }
 
       if (needProduceSetCheckDirty.has(ProduceOption.genDocumentSymbol)) {
@@ -116,7 +119,7 @@ class StructuredInfo {
         }
       }
 
-      if (needProduceSetCheckDirty.has(ProduceOption.genAllCallHierarchyItems) && this.globalOrderedRanges) {
+      if (needProduceSetCheckDirty.has(ProduceOption.genAllCallHierarchyItems)) {
         if (this.globalOrderedRanges === undefined) {
           console.warn(`[StructuredInfo.produceResultByDoc] this.globalOrderedRanges===undefined`);
         } else {
@@ -128,7 +131,7 @@ class StructuredInfo {
     } else {
       console.warn(`[StructuredInfo.produceResultByDoc] this.currDocSymbolInfo===undefined`);
     }
-    //console.log(`finish: ${performance.now() - t}ms`, needProduceSetCheckDirty);
+    console.log(`finish: ${performance.now() - t}ms`, needProduceSetCheckDirty);
 
   }
 }

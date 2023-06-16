@@ -15,16 +15,16 @@ function registerReferenceProvider() {
     {
       provideReferences(document, position, context, token) {
         const range = document.getWordRangeAtPosition(position, clValidWithColonSharp);
-        if (!range) {
+        if (range === undefined) {
           return undefined;
         }
 
         structuredInfo.produceInfoByDoc(document, new TriggerEvent(TriggerProvider.provideReferences));
-        if (!structuredInfo.currDocSymbolInfo) {
+        if (structuredInfo.currDocSymbolInfo === undefined) {
           return undefined;
         }
 
-        const positionFlag = isQuote(document, position) ? undefined : position;
+        const positionFlag = (isQuote(document, position) !== undefined) ? undefined : position;
         return getReferenceByWord(
           structuredInfo.currDocSymbolInfo,
           range,
@@ -52,7 +52,7 @@ function getReferenceByWord(
   vscode.Location[] {
 
   // config
-  const excludedRanges = currDocSymbolInfo.docRes.getExcludedRangesWithBackQuote(buildingConfig);
+  const excludedRanges = currDocSymbolInfo.docRes.getExcludedRangesForDefReferenceProvider(buildingConfig, 'ReferenceProvider');
   const doc = currDocSymbolInfo.document;
   const numRange: [number, number] = [doc.offsetAt(range.start), doc.offsetAt(range.end)];
   if (isRangeIntExcludedRanges(numRange, excludedRanges)) {
@@ -62,8 +62,8 @@ function getReferenceByWord(
   if (!word) {
     return [];
   }
-  const [symbolSelected, shadow] = currDocSymbolInfo.getSymbolWithShadowByRange(range, word, positionFlag);
-  if (!symbolSelected) {
+  const [symbolSelected, shadow] = currDocSymbolInfo.getSymbolWithShadowByRange(word, range, positionFlag);
+  if (symbolSelected === undefined) {
     return [];
   }
 
@@ -76,7 +76,7 @@ function getReferenceByWord(
   if (sameNameWords === undefined) {
     return [];
   }
-  if (symbolSelected.scope) {
+  if (symbolSelected.scope !== undefined) {
     const idxStart = bisectRight(sameNameWords, symbolSelected.scope[0], item => item[0]);
     const idxEnd = bisectRight(sameNameWords, symbolSelected.scope[1], item => item[0]);
     sameNameWords = sameNameWords.slice(idxStart, idxEnd);
@@ -96,15 +96,17 @@ function getReferenceByWord(
       continue;
     }
 
-    if (positionFlag) {
+    if (positionFlag !== undefined) {
       // lexcial scope is enabled, exclude global vars (with quote) from lexical scope
-      if (selectedWord.length > 1 && isQuote(doc, doc.positionAt(wordRange[0]))) {
+      if (
+        (selectedWord.length > 1) &&
+        (isQuote(doc, doc.positionAt(wordRange[0])) !== undefined)) {
         continue;
       }
     }
 
     // shadowing is enabled, exclude local vars from global scope
-    if (shadow && shadow.length !== 0 && isShadowed(wordRange, shadow)) {
+    if (shadow !== undefined && shadow.length !== 0 && isShadowed(wordRange, shadow)) {
       continue;
     }
 

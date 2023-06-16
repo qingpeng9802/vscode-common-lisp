@@ -166,6 +166,18 @@
         "@typescript-eslint/no-non-null-asserted-nullish-coalescing": "error",
 
         // typescript-eslint only warn
+        "@typescript-eslint/strict-boolean-expressions": [ "warn", {
+                "allowString": true,
+                "allowNumber": false,
+                "allowNullableObject": false,
+                "allowNullableBoolean": false,
+                "allowNullableString": false,
+                "allowNullableNumber": false,
+                "allowNullableEnum": false,
+                "allowAny": true,
+                "allowRuleToRunWithoutStrictNullChecksIKnowWhatIAmDoing": false
+            }
+        ],
         "@typescript-eslint/ban-types": [ "error", {
                 "extendDefaults": false,
                 "types": {
@@ -229,8 +241,8 @@
         "@typescript-eslint/prefer-for-of": "warn",
         "@typescript-eslint/prefer-namespace-keyword": "warn",
         "@typescript-eslint/prefer-includes": "warn",
-		"@typescript-eslint/prefer-literal-enum-member": ["warn", { "allowBitwiseExpressions": true }],
-		"@typescript-eslint/prefer-reduce-type-parameter": "warn",
+        "@typescript-eslint/prefer-literal-enum-member": [ "warn", { "allowBitwiseExpressions": true } ],
+        "@typescript-eslint/prefer-reduce-type-parameter": "warn",
 
         // typescript-eslint off
         "@typescript-eslint/no-non-null-assertion": "off", // make sure checked by `if`

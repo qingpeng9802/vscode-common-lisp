@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 
 import _non_alphabetic from '../../cl_data/cl_non_alphabetic.json';
-import { getDocByName, getDocByNameNonAlphabetic } from '../../doc/get_doc';
+import { getDocByName, getDocByNameNonAlphabetic, non_alphabetic_index_str } from '../../doc/get_doc';
 
 import { OriSymbolsCompItem } from './OriSymbolsCompItem';
 import { clOriSymbolsByKind, ClSymbolKind } from './symbols_by_kind';
@@ -59,9 +59,8 @@ function genOriSymbols(): vscode.CompletionItem[] {
 }
 
 // Index - Non-Alphabetic
-// http://www.lispworks.com/documentation/lw50/CLHS/Front/X_Mast_9.htm
 function assignKindAndDocNonAlphabetic(
-  symbolsArr: string[], prefix: string, kind: vscode.CompletionItemKind
+  prefix: string, symbolsArr: string[], kind: vscode.CompletionItemKind
 ): vscode.CompletionItem[] {
   const citems: vscode.CompletionItem[] = [];
   for (const s of symbolsArr) {
@@ -69,17 +68,17 @@ function assignKindAndDocNonAlphabetic(
 
     if (prefix === '#' || prefix === '~') {
       // we do not get doc for `#` and `~`
-      ci.documentation = new vscode.MarkdownString(`\n\n[[Docs]](http://www.lispworks.com/documentation/lw50/CLHS/Front/X_Mast_9.htm)`);
+      ci.documentation = new vscode.MarkdownString(non_alphabetic_index_str);
       ci.documentation.isTrusted = true;
       ci.documentation.supportHtml = true;
 
     } else if (prefix === '&' || prefix === '*') {
       const doc = getDocByName(prefix + s);
-      ci.documentation = doc ? doc : undefined;
+      ci.documentation = doc;
 
     } else if (prefix === ':') {
       const doc = getDocByNameNonAlphabetic(s);
-      ci.documentation = doc ? doc : undefined;
+      ci.documentation = doc;
 
     } else { }
 
@@ -94,13 +93,13 @@ function genNonAlphabeticDict(): Record<string, vscode.CompletionItem[]> {
 
   for (const [k, v] of Object.entries(non_alphabetic)) {
     if (k === '#' || k === '&' || k === '~') {
-      d[k] = assignKindAndDocNonAlphabetic(v, k, vscode.CompletionItemKind.Keyword);
+      d[k] = assignKindAndDocNonAlphabetic(k, v, vscode.CompletionItemKind.Keyword);
 
     } else if (k === '*') {
-      d[k] = assignKindAndDocNonAlphabetic(v, k, vscode.CompletionItemKind.Variable);
+      d[k] = assignKindAndDocNonAlphabetic(k, v, vscode.CompletionItemKind.Variable);
 
     } else if (k === ':') {
-      d[k] = assignKindAndDocNonAlphabetic(v, k, vscode.CompletionItemKind.Property);
+      d[k] = assignKindAndDocNonAlphabetic(k, v, vscode.CompletionItemKind.Property);
     } else {
       console.warn(`[Autocompletion] Unknown non-alphabetic key: ${k}`);
     }

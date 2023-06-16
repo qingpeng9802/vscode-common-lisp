@@ -120,7 +120,7 @@ const vscodeKindToTokenType: Record<vscode.SymbolKind, string | [string, string[
 
 function genAllPossibleWord(currDocSymbolInfo: DocSymbolInfo):
   [Record<string, [number, number][]>, [string, [number, number]][]] {
-  const text = currDocSymbolInfo.document.getText();
+  const text = currDocSymbolInfo.docRes.text;
 
   // not start with colon
   const reg = /(?<=[^A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.])([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+)(?=[^A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.])/igm;
@@ -148,7 +148,7 @@ function genAllPossibleWord(currDocSymbolInfo: DocSymbolInfo):
 
 function getTokenDict(currDocSymbolInfo: DocSymbolInfo, needColorDict: Record<string, [number, number][]>, buildingConfig: Record<string, any>): Record<string, ParsedToken> {
   // config
-  const excludedRanges: [number, number][] = currDocSymbolInfo.docRes.getExcludedRangesWithSQAndBQ(buildingConfig);
+  const excludedRanges: [number, number][] = currDocSymbolInfo.docRes.getExcludedRangesForDocumentSemanticTokensProvider(buildingConfig);
 
   const tokenDictGlobal = updateTokenDict(currDocSymbolInfo, excludedRanges, needColorDict, 'global');
   const tokenDictLocal = updateTokenDict(currDocSymbolInfo, excludedRanges, needColorDict, 'local');
@@ -222,21 +222,20 @@ function updateTokenDict(
 
       // color its scope
       const currNeedColor = needColorDict[item.name];
-      if (!currNeedColor || currNeedColor.length === 0) {
+      if (currNeedColor === undefined || currNeedColor.length === 0) {
         continue;
       }
 
-      const idxStart = item.scope ? bisectRight(currNeedColor, item.scope[0], item => item[0]) : 0;
-      const idxEnd = item.scope ? bisectRight(currNeedColor, item.scope[1], item => item[0]) : currNeedColor.length;
+      const idxStart = (item.scope !== undefined) ? bisectRight(currNeedColor, item.scope[0], item => item[0]) : 0;
+      const idxEnd = (item.scope !== undefined) ? bisectRight(currNeedColor, item.scope[1], item => item[0]) : currNeedColor.length;
 
-      for (let i = idxStart; i < idxEnd; i++) {
+      for (let i = idxStart; i < idxEnd; ++i) {
         if (isRangeIntExcludedRanges(currNeedColor[i], excludedRanges)
         ) {
           continue;
         }
 
-        const startPos =
-          currDocSymbolInfo.document.positionAt(currNeedColor[i][0]);
+        const startPos = currDocSymbolInfo.document.positionAt(currNeedColor[i][0]);
         const key = `${item.name}|${startPos.line},${startPos.character},${item.name.length}`;
 
         const packagePrefixIndScope = item.name.indexOf(':');

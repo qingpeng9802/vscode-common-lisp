@@ -5,9 +5,8 @@ import { processVars } from './lambda_list';
 import { findMatchPairParenthese } from './pair_parser';
 import { addToDictArr, checkDefName, isRangeIntExcludedRanges } from './user_symbol_util';
 
-function collectKeywordVars(document: vscode.TextDocument, ExcludedRange: [number, number][]): Record<string, SymbolInfo[]> {
+function collectKeywordVars(document: vscode.TextDocument, text: string, ExcludedRange: [number, number][]): Record<string, SymbolInfo[]> {
   const uri = document.uri;
-  const text = document.getText();
 
   const defLocalNames: Record<string, SymbolInfo[]> = {};
 
@@ -40,7 +39,7 @@ function collectKeywordVars(document: vscode.TextDocument, ExcludedRange: [numbe
     } else { }
 
     const varsRes = processVars(leftPInd, openParentheseInd, currText, isLambdaList, allowDestructuring);
-    if (!varsRes) {
+    if (varsRes === undefined) {
       continue;
     }
     const [vars, varsStrEnd] = varsRes;
@@ -102,9 +101,8 @@ function collectKeywordVars(document: vscode.TextDocument, ExcludedRange: [numbe
   return defLocalNames;
 }
 
-function collectKeywordSingleVar(document: vscode.TextDocument, ExcludedRange: [number, number][]): Record<string, SymbolInfo[]> {
+function collectKeywordSingleVar(document: vscode.TextDocument, text: string, ExcludedRange: [number, number][]): Record<string, SymbolInfo[]> {
   const uri = document.uri;
-  const text = document.getText();
 
   const defLocalNames: Record<string, SymbolInfo[]> = {};
 
@@ -117,7 +115,7 @@ function collectKeywordSingleVar(document: vscode.TextDocument, ExcludedRange: [
     }
 
     const defLocalName = checkDefName(r, [5]);
-    if (!defLocalName) {
+    if (defLocalName === undefined) {
       continue;
     }
 

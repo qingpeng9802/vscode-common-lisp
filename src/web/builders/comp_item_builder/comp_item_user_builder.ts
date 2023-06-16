@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 import type { DocSymbolInfo } from '../../collect_user_symbol/DocSymbolInfo';
 import type { SymbolInfo } from '../../collect_user_symbol/SymbolInfo';
 
-import { UserSymbols } from './UserSymbols';
+import { UserSymbolsCompItem } from './UserSymbolsCompItem';
 
 const vscodeCIKindToVscodeCIKind: Record<vscode.SymbolKind, vscode.CompletionItemKind> = {
   [vscode.SymbolKind.File]: vscode.CompletionItemKind.File,
@@ -48,20 +48,18 @@ function symbolInfoToCompletionItem(symbolInfo: SymbolInfo): vscode.CompletionIt
   const citemLabel: vscode.CompletionItemLabel = {
     label: symbolInfo.name,
     // in doc_symbol_builder.ts, numberedContainerName will not be assigned if no need
-    description: symbolInfo.numberedContainerName || symbolInfo.containerName,
+    description: (symbolInfo.numberedContainerName !== undefined) ?
+      symbolInfo.numberedContainerName : symbolInfo.containerName,
   };
 
-  const item = new vscode.CompletionItem(citemLabel);
-
-  item.kind = vscodeCIKindToVscodeCIKind[symbolInfo.kind];
-
+  const item = new vscode.CompletionItem(citemLabel, vscodeCIKindToVscodeCIKind[symbolInfo.kind]);
   return item;
 }
 
-function genUserSymbols(currDocSymbolInfo: DocSymbolInfo): UserSymbols {
+function genUserSymbolsCompItem(currDocSymbolInfo: DocSymbolInfo): UserSymbolsCompItem {
   const globalCItems: vscode.CompletionItem[] = [];
   for (const SIs of Object.values(currDocSymbolInfo.globalDef)) {
-    if (SIs && SIs.length !== 0) {
+    if (SIs !== undefined && SIs.length !== 0) {
       globalCItems.push(symbolInfoToCompletionItem(SIs[0]));
     }
   }
@@ -69,7 +67,7 @@ function genUserSymbols(currDocSymbolInfo: DocSymbolInfo): UserSymbols {
   const localScopeCItems: [vscode.CompletionItem, [number, number]][] = [];
   for (const SIs of Object.values(currDocSymbolInfo.allLocal)) {
     for (const SI of SIs) {
-      if (!SI.scope) {
+      if (SI.scope === undefined) {
         continue;
       }
       localScopeCItems.push([symbolInfoToCompletionItem(SI), SI.scope]);
@@ -77,7 +75,7 @@ function genUserSymbols(currDocSymbolInfo: DocSymbolInfo): UserSymbols {
   }
 
   localScopeCItems.sort((a, b) => a[1][0] - b[1][0]);
-  return new UserSymbols(globalCItems, localScopeCItems);
+  return new UserSymbolsCompItem(globalCItems, localScopeCItems);
 }
 
-export { genUserSymbols };
+export { genUserSymbolsCompItem };

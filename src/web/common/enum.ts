@@ -25,7 +25,7 @@ const enum SingleQuoteAndBackQuoteExcludedRanges {
 
 const enum ProduceOption {
   getDocSymbolInfo = 'getDocSymbolInfo',
-  genUserSymbols = 'genUserSymbols',
+  genUserSymbolsCompItem = 'genUserSymbolsCompItem',
   genDocumentSymbol = 'genDocumentSymbol',
   genAllPossibleWord = 'genAllPossibleWord',
   buildSemanticTokens = 'buildSemanticTokens',

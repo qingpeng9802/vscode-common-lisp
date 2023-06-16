@@ -21,11 +21,11 @@ function getCallHierarchyCallsByCallHierarchyItem(
 
   const callHierarchyItemStr = `${item.name}|${item.uri.path}|${item.range.start.line},${item.range.start.character},${item.range.end.line},${item.range.end.character}`;
   const callHierarchyCallDict = callHierarchyCallsDict[item.name];
-  if (!callHierarchyCallDict) {
+  if (callHierarchyCallDict === undefined) {
     return [];
   }
   const res = callHierarchyCallDict[callHierarchyItemStr];
-  return res ? [res] : [];
+  return (res !== undefined) ? [res] : [];
 }
 
 function getCallHrchyItems(
@@ -36,11 +36,11 @@ function getCallHrchyItems(
   const queryStr = `${word}|${currDocSymbolInfo.document.uri.path}|${range.start.line},${range.start.character},${range.end.line},${range.end.character}`;
 
   const itemD = currCallHierarchyInfo.callHrchyItems[word];
-  if (!itemD) {
+  if (itemD === undefined) {
     return [];
   }
   const res = itemD[queryStr];
-  return res ? res : [];
+  return (res !== undefined) ? res : [];
 }
 
 function registerCallHierarchyProvider() {
@@ -50,12 +50,12 @@ function registerCallHierarchyProvider() {
     {
       prepareCallHierarchy(document, position, token) {
         const range = document.getWordRangeAtPosition(position, clValidWithColonSharp);
-        if (!range) {
+        if (range === undefined) {
           return undefined;
         }
 
         structuredInfo.produceInfoByDoc(document, new TriggerEvent(TriggerProvider.prepareCallHierarchy));
-        if (!structuredInfo.currDocSymbolInfo || !structuredInfo.currCallHierarchyInfo) {
+        if (structuredInfo.currDocSymbolInfo === undefined || structuredInfo.currCallHierarchyInfo === undefined) {
           return undefined;
         }
 
@@ -64,7 +64,7 @@ function registerCallHierarchyProvider() {
       },
 
       provideCallHierarchyIncomingCalls(item, token) {
-        if (!structuredInfo.currCallHierarchyInfo) {
+        if (structuredInfo.currCallHierarchyInfo === undefined) {
           return undefined;
         }
 
@@ -72,7 +72,7 @@ function registerCallHierarchyProvider() {
         return res;
       },
       provideCallHierarchyOutgoingCalls(item, token) {
-        if (!structuredInfo.currCallHierarchyInfo) {
+        if (structuredInfo.currCallHierarchyInfo === undefined) {
           return undefined;
         }
 

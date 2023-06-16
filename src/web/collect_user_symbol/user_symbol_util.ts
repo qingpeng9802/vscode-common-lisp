@@ -8,7 +8,7 @@ function isShadowed(currRange: [number, number], shadow: SymbolInfo[]): boolean 
   for (const s of shadow) {
     if (
       // s.scope contains currRange
-      (s.scope && s.scope[0] <= currRange[0] && currRange[1] <= s.scope[1]) ||
+      (s.scope !== undefined && s.scope[0] <= currRange[0] && currRange[1] <= s.scope[1]) ||
       // intersects with definition
       (s.numRange[0] <= currRange[1] && currRange[0] <= s.numRange[1])
     ) {
@@ -34,10 +34,14 @@ function isRangeIntExcludedRanges(r: [number, number], excludedRange: [number, n
   return false;
 }
 
-function isRangeIntExcludedRange(r: vscode.Range, ExcludedRange: vscode.Range[]): boolean {
+function isRangeIntExcludedRange(r: vscode.Range, excludedRange: vscode.Range[]): boolean {
+  if (excludedRange.length === 0) {
+    return false;
+  }
+
   const rStart: vscode.Position = r.start;
-  const idx = bisectRight(ExcludedRange, rStart, item => item.start);
-  if (idx > 0 && ExcludedRange[idx - 1].contains(rStart)) {
+  const idx = bisectRight(excludedRange, rStart, item => item.start);
+  if (idx > 0 && excludedRange[idx - 1].contains(rStart)) {
     return true;
   }
   return false;
@@ -46,19 +50,19 @@ function isRangeIntExcludedRange(r: vscode.Range, ExcludedRange: vscode.Range[])
 function findInnermost(symbols: SymbolInfo[], range: [number, number], position: number): SymbolInfo | undefined {
   let farthest: SymbolInfo | undefined = undefined;
 
-  for (const s of symbols) {
-    if (!s.scope) {
+  for (const symbol of symbols) {
+    if (symbol.scope === undefined) {
       continue;
     }
 
     // if the finding range is the symbol itself, return it
-    if (s.numRange[0] === range[0] && s.numRange[1] === range[1]) {
-      return s;
+    if (symbol.numRange[0] === range[0] && symbol.numRange[1] === range[1]) {
+      return symbol;
     }
 
-    if (s.scope[0] <= position && position <= s.scope[1]) {
-      if (!farthest || (farthest.scope && s.scope[0] > farthest.scope[0])) {
-        farthest = s;
+    if (symbol.scope[0] <= position && position <= symbol.scope[1]) {
+      if (farthest === undefined || (farthest.scope !== undefined && symbol.scope[0] > farthest.scope[0])) {
+        farthest = symbol;
       }
     }
 
@@ -72,57 +76,53 @@ function findInnermost(symbols: SymbolInfo[], range: [number, number], position:
 function isQuote(document: vscode.TextDocument, position: vscode.Position): vscode.Range | undefined {
   const parentheseRange = document.getWordRangeAtPosition(position, /(?<=^|\s|\(|,@|,\.|,)\s*?quote\s*?[A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+?\s*?(?=(\s|\(|\)))/igm);
   const quoteSymbolRange = document.getWordRangeAtPosition(position, /(?<=^|\s|\(|,@|,\.|,)'[A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+?(?=(\s|\(|\)))/igm);
-  return parentheseRange || quoteSymbolRange;
+  return (parentheseRange !== undefined) ? parentheseRange : quoteSymbolRange;
 }
 
-function getValidGroup(indices: [number, number][], nameGroup: number[]) {
-  let groupIndex: [number, number] | undefined = undefined;
+function getValidGroupInd(indices: [number, number][], nameGroup: number[]): [number, number] | undefined {
   for (const g of nameGroup) {
-    if (indices[g]) {
-      groupIndex = indices[g];
-      return groupIndex;
+    if (indices[g] !== undefined) {
+      return indices[g];
     }
   }
-  return groupIndex;
-
+  return undefined;
 }
 
 function checkDefName(r: RegExpMatchArray, nameGroup: number[]): string | undefined {
   let defName: string | undefined = undefined;
 
   for (const g of nameGroup) {
-    if (r[g]) {
+    if (r[g] !== undefined) {
       defName = r[g];
       break;
     }
   }
 
   // exclude KEYWORD package symbols
-  if (!defName) {
+  if (defName === undefined) {
     return undefined;
   }
 
   /*
-  if (!isStringClValidSymbol(defName)) {
+  if (isStringClValidSymbol(defName) === undefined) {
     return undefined;
   }
   */
   return defName;
 }
 
-function addToDictArr(dict: Record<string, any[]>, k: any, item: any) {
+function addToDictArr(dict: Record<string, any[]>, k: string, item: any) {
   if (Object.hasOwn(dict, k)) {
     dict[k].push(item);
   } else {
     dict[k] = [item];
   }
-
 }
 
 export {
   findInnermost,
   isQuote,
-  checkDefName, getValidGroup,
+  checkDefName, getValidGroupInd,
   isRangeIntExcludedRanges,
   addToDictArr,
   isShadowed

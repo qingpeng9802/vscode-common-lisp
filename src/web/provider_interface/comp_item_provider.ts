@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-import type { UserSymbols } from '../builders/comp_item_builder/UserSymbols';
+import type { UserSymbolsCompItem } from '../builders/comp_item_builder/UserSymbolsCompItem';
 import { genAllOriSymbols } from '../builders/comp_item_builder/comp_item_ori_builder';
 import { bisectRight } from '../common/algorithm';
 import { clValidWithColonSharp, CL_MODE } from '../common/cl_util';
@@ -20,17 +20,17 @@ function resetCompItemWordRange(range: vscode.Range, compItems: vscode.Completio
   }
 }
 
-function getUserompletionItems(currUserSymbols: UserSymbols, position: number): vscode.CompletionItem[] {
-  const res: vscode.CompletionItem[] = currUserSymbols.globalCItems;
+function getUserompletionItems(currUserSymbolsCompItem: UserSymbolsCompItem, position: number): vscode.CompletionItem[] {
+  const res: vscode.CompletionItem[] = currUserSymbolsCompItem.globalCItems;
 
-  const idx = bisectRight(currUserSymbols.localScopeCItems, position, item => item[1][0]);
+  const idx = bisectRight(currUserSymbolsCompItem.localScopeCItems, position, item => item[1][0]);
   for (let i = idx - 1; i >= 0; i--) {
     if (
       // contains position
-      currUserSymbols.localScopeCItems[i][1][0] <= position &&
-      position <= currUserSymbols.localScopeCItems[i][1][1]
+      currUserSymbolsCompItem.localScopeCItems[i][1][0] <= position &&
+      position <= currUserSymbolsCompItem.localScopeCItems[i][1][1]
     ) {
-      res.push(currUserSymbols.localScopeCItems[i][0]);
+      res.push(currUserSymbolsCompItem.localScopeCItems[i][0]);
     }
   }
 
@@ -41,20 +41,21 @@ function registerCompletionItemProviders(providerName: string): vscode.Disposabl
   switch (providerName) {
     case 'userSymbols':
       return vscode.languages.registerCompletionItemProvider(
-        CL_MODE, {
+        CL_MODE,
+        {
           provideCompletionItems(document, position, token, context) {
             const range = document.getWordRangeAtPosition(position, clValidWithColonSharp);
-            if (!range) {
+            if (range === undefined) {
               return undefined;
             }
 
             structuredInfo.produceInfoByDoc(document, new TriggerEvent(TriggerProvider.provideCompletionItems));
-            if (!structuredInfo.currUserSymbols) {
+            if (structuredInfo.currUserSymbolsCompItem === undefined) {
               return undefined;
             }
 
             const numPosition = document.offsetAt(position);
-            const userSymbols = getUserompletionItems(structuredInfo.currUserSymbols, numPosition);
+            const userSymbols = getUserompletionItems(structuredInfo.currUserSymbolsCompItem, numPosition);
 
             resetCompItemWordRange(range, userSymbols);
 
@@ -63,10 +64,11 @@ function registerCompletionItemProviders(providerName: string): vscode.Disposabl
         });
     case 'oriSymbols':
       return vscode.languages.registerCompletionItemProvider(
-        CL_MODE, {
+        CL_MODE,
+        {
           provideCompletionItems(document, position, token, context) {
             const range = document.getWordRangeAtPosition(position, clValidWithColonSharp);
-            if (!range) {
+            if (range === undefined) {
               return undefined;
             }
             resetCompItemWordRange(range, oriSymbolsCompItem.oriSymbols);
@@ -76,10 +78,11 @@ function registerCompletionItemProviders(providerName: string): vscode.Disposabl
         });
     case 'ampersand':
       return vscode.languages.registerCompletionItemProvider(
-        CL_MODE, {
+        CL_MODE,
+        {
           provideCompletionItems(document, position, token, context) {
             const range = document.getWordRangeAtPosition(position, clValidWithColonSharp);
-            if (!range) {
+            if (range === undefined) {
               return undefined;
             }
             resetCompItemWordRange(range, oriSymbolsCompItem.afterAmpersand);
@@ -89,10 +92,11 @@ function registerCompletionItemProviders(providerName: string): vscode.Disposabl
         }, '&');
     case 'asterisk':
       return vscode.languages.registerCompletionItemProvider(
-        CL_MODE, {
+        CL_MODE,
+        {
           provideCompletionItems(document, position, token, context) {
             const range = document.getWordRangeAtPosition(position, clValidWithColonSharp);
-            if (!range) {
+            if (range === undefined) {
               return undefined;
             }
             resetCompItemWordRange(range, oriSymbolsCompItem.afterAsterisk);
@@ -102,10 +106,11 @@ function registerCompletionItemProviders(providerName: string): vscode.Disposabl
         }, '*');
     case 'colon':
       return vscode.languages.registerCompletionItemProvider(
-        CL_MODE, {
+        CL_MODE,
+        {
           provideCompletionItems(document, position, token, context) {
             const range = document.getWordRangeAtPosition(position, clValidWithColonSharp);
-            if (!range) {
+            if (range === undefined) {
               return undefined;
             }
             resetCompItemWordRange(range, oriSymbolsCompItem.afterColon);
@@ -115,10 +120,11 @@ function registerCompletionItemProviders(providerName: string): vscode.Disposabl
         }, ':');
     case 'tilde':
       return vscode.languages.registerCompletionItemProvider(
-        CL_MODE, {
+        CL_MODE,
+        {
           provideCompletionItems(document, position, token, context) {
             const range = document.getWordRangeAtPosition(position, clValidWithColonSharp);
-            if (!range) {
+            if (range === undefined) {
               return undefined;
             }
             resetCompItemWordRange(range, oriSymbolsCompItem.afterTilde);
@@ -128,10 +134,11 @@ function registerCompletionItemProviders(providerName: string): vscode.Disposabl
         }, '~');
     case 'sharpsign':
       return vscode.languages.registerCompletionItemProvider(
-        CL_MODE, {
+        CL_MODE,
+        {
           provideCompletionItems(document, position, token, context) {
             const range = document.getWordRangeAtPosition(position, clValidWithColonSharp);
-            if (!range) {
+            if (range === undefined) {
               return undefined;
             }
             resetCompItemWordRange(range, oriSymbolsCompItem.afterSharpsign);
@@ -144,6 +151,4 @@ function registerCompletionItemProviders(providerName: string): vscode.Disposabl
   }
 }
 
-export {
-  registerCompletionItemProviders
-};
+export { registerCompletionItemProviders };

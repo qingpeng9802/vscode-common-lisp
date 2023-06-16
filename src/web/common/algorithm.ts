@@ -56,25 +56,23 @@ function mergeSortedMXArr(arr1: [number, number][], arr2: [number, number][]): [
 
   const m = arr1.length;
   const n = arr2.length;
-
   const res: [number, number][] = new Array(m + n);
 
   let p1 = 0;
   let p2 = 0;
 
-  for (let i = 0; i < m + n; i++) {
+  for (let i = 0; i < m + n; ++i) {
     // run out arr2 || arr1 is smaller
     if (p2 >= n || (p1 < m && arr1[p1][0] < arr2[p2][0])) {
       res[i] = arr1[p1];
-      p1++;
+      ++p1;
     } else {
       res[i] = arr2[p2];
-      p2++;
+      ++p2;
     }
   }
 
   return res;
-
 }
 
 function bisectRight(arr: any[], x: number | vscode.Position, key?: (item: any) => number | vscode.Position): number {
@@ -82,7 +80,7 @@ function bisectRight(arr: any[], x: number | vscode.Position, key?: (item: any) 
   let lo = 0;
   let hi = arr.length;
 
-  if (key) {
+  if (key !== undefined) {
     if (typeof x === 'number') {
       while (lo < hi) {
         mid = Math.floor((lo + hi) / 2);
