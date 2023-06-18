@@ -4,6 +4,8 @@ import _kind from '../cl_data/cl_kind.json';
 import { CL_MODE, clValidWithColonSharp } from '../common/cl_util';
 import { getDocByName, getDocByNameNonAlphabetic } from '../doc/get_doc';
 
+const kindKeys = new Set(Object.keys(_kind));
+
 // Example: https://github.com/NativeScript/nativescript-vscode-extension/blob/474c22c3dea9f9a145dc2cccf01b05e38850de90/src/services/language-services/hover/widget-hover.ts
 function registerHoverProvider() {
   const hoverProviderValidSymbols = vscode.languages.registerHoverProvider(
@@ -32,7 +34,7 @@ function registerHoverProvider() {
 
 function getDoc(word: string) {
   let tooltip = undefined;
-  const isOriSymbol = Object.keys(_kind).includes(word.toLowerCase());
+  const isOriSymbol = kindKeys.has(word.toLowerCase());
 
   if (isOriSymbol) {
     tooltip = getDocByName(word);

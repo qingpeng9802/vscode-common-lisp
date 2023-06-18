@@ -23,7 +23,7 @@
                 "${workspaceFolder}/**",
                 "!**/node_modules/**"
             ],
-            //"preLaunchTask": "npm: watch-web"
+            //"preLaunchTask": "npm: esbuildw"
         }
     ]
 }

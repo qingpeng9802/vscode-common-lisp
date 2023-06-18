@@ -9,68 +9,68 @@ import { registerReferenceProvider } from '../provider_interface/reference_provi
 import { registerSemanticProvider } from '../provider_interface/semantic_tokens_provider';
 
 class TraceableDisposables {
-  public readonly disposables: Record<string, vscode.Disposable | undefined> = {
-    'eventOnDidChangeTD': undefined,
-    'eventOnDidChangeATE': undefined,
+  public readonly disposables: Map<string, vscode.Disposable | undefined> = new Map<string, vscode.Disposable | undefined>([
+    ['eventOnDidChangeTD', undefined],
+    ['eventOnDidChangeATE', undefined],
 
-    'userCompletionItemProvider': undefined,
-    'oriCompletionItemProvider': undefined,
+    ['userCompletionItemProvider', undefined],
+    ['oriCompletionItemProvider', undefined],
 
-    'ampersandCompletionItemProvider': undefined,
-    'asteriskCompletionItemProvider': undefined,
-    'colonCompletionItemProvider': undefined,
+    ['ampersandCompletionItemProvider', undefined],
+    ['asteriskCompletionItemProvider', undefined],
+    ['colonCompletionItemProvider', undefined],
 
-    'tildeCompletionItemProvider': undefined,
-    'sharpsignCompletionItemProvider': undefined,
+    ['tildeCompletionItemProvider', undefined],
+    ['sharpsignCompletionItemProvider', undefined],
 
-    'hoverProvider': undefined,
-    'definitionProvider': undefined,
-    'documentSymbolProvider': undefined,
-    'referenceProvider': undefined,
-    'documentSemanticTokensProvider': undefined,
-    'callHierarchyProvider': undefined,
-  };
+    ['hoverProvider', undefined],
+    ['definitionProvider', undefined],
+    ['documentSymbolProvider', undefined],
+    ['referenceProvider', undefined],
+    ['documentSemanticTokensProvider', undefined],
+    ['callHierarchyProvider', undefined],
+  ]);
 
-  private static readonly cfgMapDisposable: Record<string, string> = {
-    'commonLisp.providers.CompletionItemProviders.user.enabled': 'userCompletionItemProvider',
-    'commonLisp.providers.CompletionItemProviders.original.enabled': 'oriCompletionItemProvider',
+  private static readonly cfgMapDisposable: Map<string, string> = new Map<string, string>([
+    ['commonLisp.providers.CompletionItemProviders.user.enabled', 'userCompletionItemProvider'],
+    ['commonLisp.providers.CompletionItemProviders.original.enabled', 'oriCompletionItemProvider'],
 
-    'commonLisp.providers.CompletionItemProviders.ampersand.enabled': 'ampersandCompletionItemProvider',
-    'commonLisp.providers.CompletionItemProviders.asterisk.enabled': 'asteriskCompletionItemProvider',
-    'commonLisp.providers.CompletionItemProviders.colon.enabled': 'colonCompletionItemProvider',
+    ['commonLisp.providers.CompletionItemProviders.ampersand.enabled', 'ampersandCompletionItemProvider'],
+    ['commonLisp.providers.CompletionItemProviders.asterisk.enabled', 'asteriskCompletionItemProvider'],
+    ['commonLisp.providers.CompletionItemProviders.colon.enabled', 'colonCompletionItemProvider'],
 
-    'commonLisp.providers.CompletionItemProviders.tilde.enabled': 'tildeCompletionItemProvider',
-    'commonLisp.providers.CompletionItemProviders.sharpsign.enabled': 'sharpsignCompletionItemProvider',
+    ['commonLisp.providers.CompletionItemProviders.tilde.enabled', 'tildeCompletionItemProvider'],
+    ['commonLisp.providers.CompletionItemProviders.sharpsign.enabled', 'sharpsignCompletionItemProvider'],
 
-    'commonLisp.providers.HoverProvider.enabled': 'hoverProvider',
-    'commonLisp.providers.DefinitionProvider.enabled': 'definitionProvider',
-    'commonLisp.providers.DocumentSymbolProvider.enabled': 'documentSymbolProvider',
-    'commonLisp.providers.ReferenceProvider.enabled': 'referenceProvider',
-    'commonLisp.providers.DocumentSemanticTokensProvider.enabled': 'documentSemanticTokensProvider',
-    'commonLisp.providers.CallHierarchyProvider.enabled': 'callHierarchyProvider',
-  };
+    ['commonLisp.providers.HoverProvider.enabled', 'hoverProvider'],
+    ['commonLisp.providers.DefinitionProvider.enabled', 'definitionProvider'],
+    ['commonLisp.providers.DocumentSymbolProvider.enabled', 'documentSymbolProvider'],
+    ['commonLisp.providers.ReferenceProvider.enabled', 'referenceProvider'],
+    ['commonLisp.providers.DocumentSemanticTokensProvider.enabled', 'documentSemanticTokensProvider'],
+    ['commonLisp.providers.CallHierarchyProvider.enabled', 'callHierarchyProvider'],
+  ]);
 
   constructor() {
 
   }
 
   public disposeAll() {
-    for (const [k, dis] of Object.entries(this.disposables)) {
+    for (const [k, dis] of this.disposables) {
       if (dis !== undefined) {
         dis.dispose();
-        this.disposables[k] = undefined;
+        this.disposables.set(k, undefined);
       }
     }
   }
 
   private disposeProviderByName(disposableName: string) {
-    if (!Object.hasOwn(this.disposables, disposableName)) {
+    if (!this.disposables.has(disposableName)) {
       return;
     }
 
-    if (this.disposables[disposableName] !== undefined) {
-      this.disposables[disposableName]?.dispose();
-      this.disposables[disposableName] = undefined;
+    if (this.disposables.get(disposableName) !== undefined) {
+      this.disposables.get(disposableName)?.dispose();
+      this.disposables.set(disposableName, undefined);
     } else {
       return;
     }
@@ -78,11 +78,11 @@ class TraceableDisposables {
 
 
   private setProviderByName(disposableName: string, contextSubcriptions: vscode.Disposable[]) {
-    if (!Object.hasOwn(this.disposables, disposableName)) {
+    if (!this.disposables.has(disposableName)) {
       return;
     }
 
-    if (this.disposables[disposableName] !== undefined) {
+    if (this.disposables.get(disposableName) !== undefined) {
       return;
     }
     //console.log('setting ' + disposableName);
@@ -91,7 +91,7 @@ class TraceableDisposables {
     if (provider === undefined) {
       return;
     }
-    this.disposables[disposableName] = provider;
+    this.disposables.set(disposableName, provider);
     contextSubcriptions.push(provider);
   }
 
@@ -142,28 +142,13 @@ class TraceableDisposables {
   }
 
   public updateDisposables(contextSubcriptions: vscode.Disposable[], workspaceConfigKey: string, newTraceableDisposablesVal: any) {
+    const providerKeys = new Set(TraceableDisposables.cfgMapDisposable.keys());
+
     let disposableName = '';
     if (workspaceConfigKey === 'editor.semanticHighlighting.enabled') {
       disposableName = 'documentSemanticTokensProvider';
-    } else if ([
-      'commonLisp.providers.CompletionItemProviders.user.enabled',
-      'commonLisp.providers.CompletionItemProviders.original.enabled',
-
-      'commonLisp.providers.CompletionItemProviders.ampersand.enabled',
-      'commonLisp.providers.CompletionItemProviders.asterisk.enabled',
-      'commonLisp.providers.CompletionItemProviders.colon.enabled',
-
-      'commonLisp.providers.CompletionItemProviders.tilde.enabled',
-      'commonLisp.providers.CompletionItemProviders.sharpsign.enabled',
-
-      'commonLisp.providers.HoverProvider.enabled',
-      'commonLisp.providers.DefinitionProvider.enabled',
-      'commonLisp.providers.DocumentSymbolProvider.enabled',
-      'commonLisp.providers.ReferenceProvider.enabled',
-      'commonLisp.providers.DocumentSemanticTokensProvider.enabled',
-      'commonLisp.providers.CallHierarchyProvider.enabled',
-    ].includes(workspaceConfigKey)) {
-      disposableName = TraceableDisposables.cfgMapDisposable[workspaceConfigKey];
+    } else if (providerKeys.has(workspaceConfigKey)) {
+      disposableName = TraceableDisposables.cfgMapDisposable.get(workspaceConfigKey)!;
     }
 
     if (newTraceableDisposablesVal === false) {

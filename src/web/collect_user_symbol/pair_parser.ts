@@ -1,5 +1,10 @@
+import { bisectRight } from '../common/algorithm';
+
+import { ScanDocRes } from './ScanDocRes';
+import { isSpace } from './user_symbol_util';
+
 // return result is rightafter `)`, not at `)`
-function findMatchPairParentheseDebug(index: number, text: string): number {
+function findMatchPairAfterPDebug(index: number, text: string): number {
   const [success, res] = eatParentheseDebug(index, text, text.length);
 
   if (!success) {
@@ -9,13 +14,38 @@ function findMatchPairParentheseDebug(index: number, text: string): number {
   //console.log(res);
   return res;
 }
-
+/*
 // return result is rightafter `)`, not at `)`
-function findMatchPairParenthese(index: number, text: string): number {
+function findMatchPairAfterP(index: number, text: string): number {
   const res = eatParenthese(index, text, text.length);
 
   return res;
 }
+
+function findMatchPairAfterP(absindex: number, index: number, scanDocRes: ScanDocRes, text: string): number {
+  const delta = absindex-index;
+  const pair = scanDocRes.pair;
+
+  let pairIdx = bisectRight(pair, absindex, item => item[0]);
+  if (scanDocRes.text[absindex] === '(') {
+    --pairIdx;
+  }
+  let newRes = undefined;
+  if (pairIdx < 1 || pair[pairIdx - 1][1] < absindex) {
+    //console.log('error ', index)
+    newRes = -1;
+  } else {
+    newRes = pair[pairIdx - 1][1] + 1
+  }
+  const rnewRes = newRes - delta;
+
+  const res = eatParenthese(index, text, text.length);
+  if (rnewRes !== res) {
+    console.log(absindex, index, res, rnewRes);
+  }
+  return res;
+}
+*/
 
 // not eat `;` here, rightafter `;`
 function eatLineComment(index: number, text: string, textLength: number): number {
@@ -68,7 +98,7 @@ function eatSharpsignBackslash(index: number, text: string, textLength: number):
   // do not use `g` flag in loop https://stackoverflow.com/questions/43827851/bug-with-regexp-test-javascript
   while (index < textLength) {
     const c = text[index];
-    if (!/\s/.test(c) && c !== ')' && c !== '(') {
+    if (!isSpace(c) && c !== ')' && c !== '(') {
       //console.log(`SB| ${index}: ${doc[index]}`);
       ++index;
     } else {
@@ -80,7 +110,6 @@ function eatSharpsignBackslash(index: number, text: string, textLength: number):
 
 // start rightafter `'(`, that is, first `(` will not be eaten in this function
 function eatParenthese(index: number, text: string, textLength: number): number {
-
   let needClose = 1;
 
   let prevc = text[index - 1];
@@ -161,12 +190,11 @@ function eatParenthese(index: number, text: string, textLength: number): number 
 
     prevc = text[index - 1];
   }
-  return (needClose !== 0) ? -1 : index + 1;
+  return (needClose !== 0) ? -1 : index;
 }
 
 // start rightafter `'(`, that is, first `(` will not be eaten in this function
 function eatParentheseDebug(index: number, text: string, textLength: number): [true, number] | [false, number | undefined] {
-
   const needCloseStack = [index];
 
   let needClose = 1;
@@ -255,7 +283,6 @@ function eatParentheseDebug(index: number, text: string, textLength: number): [t
     prevc = text[index - 1];
 
   }
-  return (needClose !== 0) ? [false, needCloseStack.at(-1)] : [true, index + 1];
+  return (needClose !== 0) ? [false, needCloseStack.at(-1)] : [true, index];
 }
 
-export { findMatchPairParenthese };

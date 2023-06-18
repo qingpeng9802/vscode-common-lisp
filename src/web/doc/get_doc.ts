@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 import _doc from '../cl_data/cl_doc.json';
 import _doc_non_alphabetic from '../cl_data/cl_non_alphabetic_doc.json';
 
-const non_alphabetic_index_str =`\n\n[[Docs]](http://www.lispworks.com/documentation/lw50/CLHS/Front/X_Mast_9.htm)`;
+const non_alphabetic_index_str = `\n\n[[Docs]](http://www.lispworks.com/documentation/lw50/CLHS/Front/X_Mast_9.htm)`;
 
 function _getDocByName(symbolName: string, _docJson: Record<string, any>): vscode.MarkdownString | undefined {
   const docByName = _docJson[symbolName.toLowerCase()];

@@ -10,21 +10,21 @@ import { structuredInfo } from './structured_info';
 
 function getCallHierarchyCallsByCallHierarchyItem(
   item: vscode.CallHierarchyItem,
-  callHierarchyCallsDict: Record<string, Record<string, vscode.CallHierarchyOutgoingCall>>): vscode.CallHierarchyOutgoingCall[];
+  callHierarchyCallsDict: Map<string, Map<string, vscode.CallHierarchyOutgoingCall>>): vscode.CallHierarchyOutgoingCall[];
 function getCallHierarchyCallsByCallHierarchyItem(
   item: vscode.CallHierarchyItem,
-  callHierarchyCallsDict: Record<string, Record<string, vscode.CallHierarchyIncomingCall>>): vscode.CallHierarchyIncomingCall[];
+  callHierarchyCallsDict: Map<string, Map<string, vscode.CallHierarchyIncomingCall>>): vscode.CallHierarchyIncomingCall[];
 function getCallHierarchyCallsByCallHierarchyItem(
   item: vscode.CallHierarchyItem,
-  callHierarchyCallsDict: Record<string, Record<string, vscode.CallHierarchyIncomingCall | vscode.CallHierarchyOutgoingCall>>):
+  callHierarchyCallsDict: Map<string, Map<string, vscode.CallHierarchyIncomingCall | vscode.CallHierarchyOutgoingCall>>):
   (vscode.CallHierarchyIncomingCall | vscode.CallHierarchyOutgoingCall)[] {
 
   const callHierarchyItemStr = `${item.name}|${item.uri.path}|${item.range.start.line},${item.range.start.character},${item.range.end.line},${item.range.end.character}`;
-  const callHierarchyCallDict = callHierarchyCallsDict[item.name];
+  const callHierarchyCallDict = callHierarchyCallsDict.get(item.name);
   if (callHierarchyCallDict === undefined) {
     return [];
   }
-  const res = callHierarchyCallDict[callHierarchyItemStr];
+  const res = callHierarchyCallDict.get(callHierarchyItemStr);
   return (res !== undefined) ? [res] : [];
 }
 
@@ -35,11 +35,11 @@ function getCallHrchyItems(
   const word = currDocSymbolInfo.document.getText(range);
   const queryStr = `${word}|${currDocSymbolInfo.document.uri.path}|${range.start.line},${range.start.character},${range.end.line},${range.end.character}`;
 
-  const itemD = currCallHierarchyInfo.callHrchyItems[word];
+  const itemD = currCallHierarchyInfo.callHrchyItems.get(word);
   if (itemD === undefined) {
     return [];
   }
-  const res = itemD[queryStr];
+  const res = itemD.get(queryStr);
   return (res !== undefined) ? res : [];
 }
 

@@ -15,22 +15,21 @@ const oriSymbolsCompItem = genAllOriSymbols();
 // default completion item's word range does not include the '-' character, so we need to reset it
 // @sideEffect: compItems:vscode.CompletionItem[]
 function resetCompItemWordRange(range: vscode.Range, compItems: vscode.CompletionItem[]) {
-  for (const compItem of compItems) {
-    compItem.range = range;
-  }
+  compItems.forEach(item => {
+    item.range = range;
+  });
 }
 
 function getUserompletionItems(currUserSymbolsCompItem: UserSymbolsCompItem, position: number): vscode.CompletionItem[] {
   const res: vscode.CompletionItem[] = currUserSymbolsCompItem.globalCItems;
 
   const idx = bisectRight(currUserSymbolsCompItem.localScopeCItems, position, item => item[1][0]);
-  for (let i = idx - 1; i >= 0; i--) {
-    if (
-      // contains position
-      currUserSymbolsCompItem.localScopeCItems[i][1][0] <= position &&
-      position <= currUserSymbolsCompItem.localScopeCItems[i][1][1]
-    ) {
-      res.push(currUserSymbolsCompItem.localScopeCItems[i][0]);
+  for (let i = idx - 1; i >= 0; --i) {
+    const [compItem, numRange] = currUserSymbolsCompItem.localScopeCItems[i];
+    const [start, end] = numRange;
+    // contains position
+    if (start <= position && position <= end) {
+      res.push(compItem);
     }
   }
 

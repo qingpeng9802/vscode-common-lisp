@@ -45,27 +45,27 @@ function setDirtyHookForStructuredInfo(contextSubcriptions: vscode.Disposable[],
   // According to https://github.com/microsoft/vscode/issues/49975#issuecomment-389817172
   // the document change event is emitted before any language actions (IntelliSense, outline, etc.).
   // Therefore, it is safe to use `onDidChangeTextDocument` and `onDidChangeActiveTextEditor` event to mark dirty on the StructuredInfo.
-  if (traceableDisposables.disposables['eventOnDidChangeTD'] === undefined) {
-    traceableDisposables.disposables['eventOnDidChangeTD'] = vscode.workspace.onDidChangeTextDocument(event => {
+  if (traceableDisposables.disposables.get('eventOnDidChangeTD') === undefined) {
+    traceableDisposables.disposables.set('eventOnDidChangeTD', vscode.workspace.onDidChangeTextDocument(event => {
       if (event.contentChanges.length !== 0 && activeEditor !== undefined && event.document === activeEditor.document &&
         event.document.languageId === CL_MODE) {
-        structuredInfo.setDirtyTrue();
+        structuredInfo.setDirty(true);
         //console.log('dirty it by TD');
       }
-    }, null, contextSubcriptions);
+    }, null, contextSubcriptions));
   }
 
-  if (traceableDisposables.disposables['eventOnDidChangeATE'] === undefined) {
-    traceableDisposables.disposables['eventOnDidChangeATE'] = vscode.window.onDidChangeActiveTextEditor(editor => {
+  if (traceableDisposables.disposables.get('eventOnDidChangeATE') === undefined) {
+    traceableDisposables.disposables.set('eventOnDidChangeATE', vscode.window.onDidChangeActiveTextEditor(editor => {
       if (editor === undefined) {
         return;
       }
       activeEditor = editor;
       if (editor !== undefined && editor.document.languageId === CL_MODE) {
-        structuredInfo.setDirtyTrue();
+        structuredInfo.setDirty(true);
         //console.log('dirty it by ATE');
       }
-    }, null, contextSubcriptions);
+    }, null, contextSubcriptions));
   }
 }
 

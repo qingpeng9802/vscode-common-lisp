@@ -1,6 +1,6 @@
 import type * as vscode from 'vscode';
 
-import { bisectRight } from '../common/algorithm';
+import { bisectLeft, bisectRight } from '../common/algorithm';
 
 import type { SymbolInfo } from './SymbolInfo';
 
@@ -47,29 +47,6 @@ function isRangeIntExcludedRange(r: vscode.Range, excludedRange: vscode.Range[])
   return false;
 }
 
-function findInnermost(symbols: SymbolInfo[], range: [number, number], position: number): SymbolInfo | undefined {
-  let farthest: SymbolInfo | undefined = undefined;
-
-  for (const symbol of symbols) {
-    if (symbol.scope === undefined) {
-      continue;
-    }
-
-    // if the finding range is the symbol itself, return it
-    if (symbol.numRange[0] === range[0] && symbol.numRange[1] === range[1]) {
-      return symbol;
-    }
-
-    if (symbol.scope[0] <= position && position <= symbol.scope[1]) {
-      if (farthest === undefined || (farthest.scope !== undefined && symbol.scope[0] > farthest.scope[0])) {
-        farthest = symbol;
-      }
-    }
-
-  }
-  return farthest;
-}
-
 // no using lexical scope
 // Common Lisp the Language, 2nd Edition
 // 7.1. Reference https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node78.html#SECTION001111000000000000000
@@ -89,6 +66,13 @@ function getValidGroupInd(indices: [number, number][], nameGroup: number[]): [nu
 }
 
 function checkDefName(r: RegExpMatchArray, nameGroup: number[]): string | undefined {
+  for (const g of nameGroup) {
+    if (r[g] !== undefined) {
+      return r[g];
+    }
+  }
+  return undefined;
+  /*
   let defName: string | undefined = undefined;
 
   for (const g of nameGroup) {
@@ -103,27 +87,58 @@ function checkDefName(r: RegExpMatchArray, nameGroup: number[]): string | undefi
     return undefined;
   }
 
-  /*
-  if (isStringClValidSymbol(defName) === undefined) {
-    return undefined;
-  }
-  */
+
+  //if (isStringClValidSymbol(defName) === undefined) {
+  //  return undefined;
+  //}
+
   return defName;
+  */
 }
 
-function addToDictArr(dict: Record<string, any[]>, k: string, item: any) {
-  if (Object.hasOwn(dict, k)) {
-    dict[k].push(item);
-  } else {
-    dict[k] = [item];
+function addToDictArr(dict: Map<string, any[]>, k: string, item: any) {
+  dict.get(k);
+  if (!dict.has(k)) {
+    dict.set(k, []);
   }
+  dict.get(k)!.push(item);
 }
+
+function findMatchPairAfterP(absIndex: number, pair: [number, number][], validUpper: number | undefined = undefined): number {
+  const idx = bisectLeft(pair, absIndex, item => item[0]);
+  if (idx === -1 || idx === 0) {
+    return -1;
+  }
+
+  const res = pair[idx - 1][1];
+  // validUpper is not including
+  if (res < absIndex || (validUpper !== undefined && validUpper <= res)) {
+    return -1;
+  }
+  return res + 1;
+}
+
+function findMatchPairExactP(absIndex: number, pairMap: Map<number, number>, validUpper: number | undefined = undefined): number {
+  const idx = pairMap.get(absIndex);
+  if (idx === undefined) {
+    return -1;
+  }
+  // validUpper is not including
+  if (idx < absIndex || (validUpper !== undefined && validUpper <= idx)) {
+    return -1;
+  }
+  return idx + 1;
+}
+
+const space = new Set([' ', '\f', '\n', '\r', '\t', '\v']);
+const isSpace = (c: string) => space.has(c);
 
 export {
-  findInnermost,
   isQuote,
   checkDefName, getValidGroupInd,
   isRangeIntExcludedRanges,
   addToDictArr,
-  isShadowed
+  isShadowed,
+  findMatchPairAfterP, findMatchPairExactP,
+  isSpace
 };

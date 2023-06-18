@@ -1,4 +1,7 @@
 import { ScanDocRes } from './ScanDocRes';
+import { isSpace } from './user_symbol_util';
+
+const passSet = new Set([',', '@', '.', '#', '`', '\'']);
 
 // return result is rightafter `)`, not at `)`
 function scanDoc(text: string): ScanDocRes {
@@ -67,7 +70,7 @@ function eatSharpsignBackslash(index: number, text: string, textLength: number,)
   // do not use `g` flag in loop https://stackoverflow.com/questions/43827851/bug-with-regexp-test-javascript
   while (index < textLength) {
     const c = text[index];
-    if (!/\s/.test(c) && c !== ')' && c !== '(') {
+    if (!isSpace(c) && c !== ')' && c !== '(') {
       //console.log(`SB| ${index}: ${doc[index]}`);
       ++index;
     } else {
@@ -80,7 +83,7 @@ function eatSharpsignBackslash(index: number, text: string, textLength: number,)
 function eatSingleQuoteOrSingleBackQuote(index: number, text: string, textLength: number,): number {
   while (index < textLength) {
     const c = text[index];
-    if (!/\s/.test(c) && c !== ')') {
+    if (!isSpace(c) && c !== ')') {
       //console.log(`SQ| ${index}: ${doc[index]}`);
       ++index;
     } else {
@@ -93,13 +96,13 @@ function eatSingleQuoteOrSingleBackQuote(index: number, text: string, textLength
 
 // start rightafter `'(`, that is, first `(` will not be eaten in this function
 function eatDoc(index: number, text: string, textLength: number, scanDocRes: ScanDocRes): -1 | undefined {
-  const passSet = new Set([',', '@', '.', '#', '`', '\'']);
-
   let needClose = 0;
 
   let quotedPairStartNeedClose: [number, number] | undefined = undefined;
   let backquotePairStartNeedClose: [number, number] | undefined = undefined;
   let commaPairStartNeedClose: [number, number] | undefined = undefined;
+
+  const needCloseStack = [];
 
   let prevc = '';
   // NOTE: since we start rightafter `(`, so we do not check index-1>0
@@ -110,15 +113,23 @@ function eatDoc(index: number, text: string, textLength: number, scanDocRes: Sca
     switch (c) {
       case '(':
         // just add 1
+        needCloseStack.push(index);
         ++needClose;
 
         ++index;
         break;
 
-      case ')':
+      case ')': {
         if (needClose === 0) {
-          return -1;
+          ++index;
+          break;
         }
+
+        const left = needCloseStack.pop();
+        if (left !== undefined) {
+          scanDocRes.pair.push([left, index]);
+        }
+
         //console.log(`closing: [${close}, ${index}]`);
         --needClose;
         if (quotedPairStartNeedClose !== undefined && needClose === quotedPairStartNeedClose[1]) {
@@ -136,24 +147,22 @@ function eatDoc(index: number, text: string, textLength: number, scanDocRes: Sca
 
         ++index;
         break;
-
+      }
       case '"':
         // skip string
         index = eatDoubleQuote(index + 1, text, textLength, scanDocRes);
         if (index === -1) {
           return -1;
-        } else {
-          break;
         }
+        break;
 
       case ';':
         // skip line comment
         index = eatLineComment(index + 1, text, textLength, scanDocRes);
         if (index === -1) {
           return -1;
-        } else {
-          break;
         }
+        break;
 
       case '|':
         // skip comment
@@ -161,9 +170,8 @@ function eatDoc(index: number, text: string, textLength: number, scanDocRes: Sca
           index = eatBlockComment(index + 1, text, textLength, scanDocRes);
           if (index === -1) {
             return -1;
-          } else {
-            break;
           }
+          break;
         } else {
           ++index;
           break;
@@ -174,9 +182,8 @@ function eatDoc(index: number, text: string, textLength: number, scanDocRes: Sca
           index = eatSharpsignBackslash(index + 1, text, textLength);
           if (index === -1) {
             return -1;
-          } else {
-            break;
           }
+          break;
         } else {
           ++index;
           ++index;
@@ -185,19 +192,10 @@ function eatDoc(index: number, text: string, textLength: number, scanDocRes: Sca
 
       case '\'':
         if (quotedPairStartNeedClose === undefined && index + 1 < textLength) {
-          let tempInd = index + 1;
-
           if (prevc !== '#') {
-            while (tempInd < textLength && passSet.has(text[tempInd])) {
-              ++tempInd;
-            }
-            if (text[tempInd] === '(') {
-              quotedPairStartNeedClose = [tempInd, needClose];
-            } else {
-              while (tempInd < textLength && !/\s/.test(text[tempInd]) && text[tempInd] !== ')') {
-                ++tempInd;
-              }
-              scanDocRes.quotedRange.push([index + 1, tempInd]);
+            const open = collectRange(index, needClose, scanDocRes.quotedRange, text, textLength);
+            if (open !== undefined) {
+              quotedPairStartNeedClose = open;
             }
           }
         }
@@ -207,46 +205,25 @@ function eatDoc(index: number, text: string, textLength: number, scanDocRes: Sca
 
       case '`':
         if (backquotePairStartNeedClose === undefined && index + 1 < textLength) {
-          let tempInd = index + 1;
-
-          if (text[tempInd] === ',') {
+          if (text[index + 1] === ',') {
             ++index;
             ++index;
             break;
           }
-
-          while (tempInd < textLength && passSet.has(text[tempInd])) {
-            ++tempInd;
+          const open = collectRange(index, needClose, scanDocRes.backquoteRange, text, textLength);
+          if (open !== undefined) {
+            backquotePairStartNeedClose = open;
           }
-          if (text[tempInd] === '(') {
-            backquotePairStartNeedClose = [tempInd, needClose];
-          } else {
-            while (tempInd < textLength && !/\s/.test(text[tempInd]) && text[tempInd] !== ')') {
-              ++tempInd;
-            }
-            scanDocRes.backquoteRange.push([index + 1, tempInd]);
-          }
-
         }
         ++index;
         break;
 
       case ',':
         if (commaPairStartNeedClose === undefined && index + 1 < textLength) {
-          let tempInd = index + 1;
-
-          while (tempInd < textLength && passSet.has(text[tempInd])) {
-            ++tempInd;
+          const open = collectRange(index, needClose, scanDocRes.commaRange, text, textLength);
+          if (open !== undefined) {
+            commaPairStartNeedClose = open;
           }
-          if (text[tempInd] === '(') {
-            commaPairStartNeedClose = [tempInd, needClose];
-          } else {
-            while (tempInd < textLength && !/\s/.test(text[tempInd]) && text[tempInd] !== ')') {
-              ++tempInd;
-            }
-            scanDocRes.commaRange.push([index + 1, tempInd]);
-          }
-
         }
 
         ++index;
@@ -267,6 +244,30 @@ function eatDoc(index: number, text: string, textLength: number, scanDocRes: Sca
     }
 
     prevc = c;
+  }
+
+  scanDocRes.pair.sort(
+    (a, b) => a[0] - b[0]
+  );
+  return undefined;
+}
+
+function collectRange(
+  index: number, needClose: number, rangeCollector: [number, number][],
+  text: string, textLength: number
+): [number, number] | undefined {
+  let tempInd = index + 1;
+  while (tempInd < textLength && passSet.has(text[tempInd])) {
+    ++tempInd;
+  }
+
+  if (text[tempInd] === '(') {
+    return [tempInd, needClose];
+  } else {
+    while (tempInd < textLength && !isSpace(text[tempInd]) && text[tempInd] !== ')') {
+      ++tempInd;
+    }
+    rangeCollector.push([index + 1, tempInd]);
   }
   return undefined;
 }

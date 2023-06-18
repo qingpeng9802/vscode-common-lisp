@@ -3,6 +3,7 @@ import type * as vscode from 'vscode';
 class SymbolInfo {
   public readonly name: string;
   public readonly containerName: string | undefined;
+  // if has scope, this symbol is valid only if the symbol is in scope
   public readonly scope: [number, number] | undefined;
   public readonly loc: vscode.Location;
   public readonly kind: vscode.SymbolKind;

@@ -1,10 +1,11 @@
 import * as vscode from 'vscode';
 
 import type { DocSymbolInfo } from '../../collect_user_symbol/DocSymbolInfo';
-import { addToDictArr, isRangeIntExcludedRanges } from '../../collect_user_symbol/user_symbol_util';
+import type { SymbolInfo } from '../../collect_user_symbol/SymbolInfo';
+import { isRangeIntExcludedRanges } from '../../collect_user_symbol/user_symbol_util';
 import { bisectRight } from '../../common/algorithm';
 
-import { ParsedToken } from './ParsedToken';
+import type { ParsedToken } from './ParsedToken';
 
 const tokenTypes = new Map<string, number>();
 const tokenModifiers = new Map<string, number>();
@@ -80,148 +81,127 @@ function _encodeTokenModifiers(strTokenModifiers: string[]): number {
   return result;
 }
 
-const vscodeKindToTokenType: Record<vscode.SymbolKind, string | [string, string[]]> = {
+const vscodeKindToTokenType: Map<vscode.SymbolKind, string | [string, string[]]> = new Map<vscode.SymbolKind, string | [string, string[]]>([
   // no direct mapping
-  [vscode.SymbolKind.File]: 'variable',
+  [vscode.SymbolKind.File, 'variable'],
   // no direct mapping
-  [vscode.SymbolKind.Module]: 'namespace',
-  [vscode.SymbolKind.Namespace]: 'namespace',
+  [vscode.SymbolKind.Module, 'namespace'],
+  [vscode.SymbolKind.Namespace, 'namespace'],
   // no direct mapping
-  [vscode.SymbolKind.Package]: 'type',
-  [vscode.SymbolKind.Class]: 'class',
-  [vscode.SymbolKind.Method]: 'method',
-  [vscode.SymbolKind.Property]: 'property',
-  [vscode.SymbolKind.Field]: '',
-  [vscode.SymbolKind.Constructor]: '',
-  [vscode.SymbolKind.Enum]: 'enum',
-  [vscode.SymbolKind.Interface]: 'interface',
-  [vscode.SymbolKind.Function]: 'function',
-  [vscode.SymbolKind.Variable]: 'variable',
-  [vscode.SymbolKind.Constant]: ['variable', ['readonly']],
+  [vscode.SymbolKind.Package, 'type'],
+  [vscode.SymbolKind.Class, 'class'],
+  [vscode.SymbolKind.Method, 'method'],
+  [vscode.SymbolKind.Property, 'property'],
+  [vscode.SymbolKind.Field, ''],
+  [vscode.SymbolKind.Constructor, ''],
+  [vscode.SymbolKind.Enum, 'enum'],
+  [vscode.SymbolKind.Interface, 'interface'],
+  [vscode.SymbolKind.Function, 'function'],
+  [vscode.SymbolKind.Variable, 'variable'],
+  [vscode.SymbolKind.Constant, ['variable', ['readonly']]],
 
-  [vscode.SymbolKind.String]: 'string',
-  [vscode.SymbolKind.Number]: 'number',
+  [vscode.SymbolKind.String, 'string'],
+  [vscode.SymbolKind.Number, 'number'],
   // no direct mapping
-  [vscode.SymbolKind.Boolean]: '',
+  [vscode.SymbolKind.Boolean, ''],
   // no direct mapping
-  [vscode.SymbolKind.Array]: '',
+  [vscode.SymbolKind.Array, ''],
   // no direct mapping
-  [vscode.SymbolKind.Object]: '',
+  [vscode.SymbolKind.Object, ''],
   // no direct mapping
-  [vscode.SymbolKind.Key]: '',
+  [vscode.SymbolKind.Key, ''],
   // no direct mapping
-  [vscode.SymbolKind.Null]: '',
-  [vscode.SymbolKind.EnumMember]: 'enumMember',
-  [vscode.SymbolKind.Struct]: 'struct',
-  [vscode.SymbolKind.Event]: 'event',
-  [vscode.SymbolKind.Operator]: 'operator',
-  [vscode.SymbolKind.TypeParameter]: 'typeParameter',
-};
+  [vscode.SymbolKind.Null, ''],
+  [vscode.SymbolKind.EnumMember, 'enumMember'],
+  [vscode.SymbolKind.Struct, 'struct'],
+  [vscode.SymbolKind.Event, 'event'],
+  [vscode.SymbolKind.Operator, 'operator'],
+  [vscode.SymbolKind.TypeParameter, 'typeParameter']
+]);
 
 function genAllPossibleWord(currDocSymbolInfo: DocSymbolInfo):
-  [Record<string, [number, number][]>, [string, [number, number]][]] {
+  [Map<string, [number, number][]>, [string, [number, number]][]] {
   const text = currDocSymbolInfo.docRes.text;
 
   // not start with colon
   const reg = /(?<=[^A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.])([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+)(?=[^A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.])/igm;
   const matchRes = text.matchAll(reg);
 
-  const needColorDict: Record<string, [number, number][]> = {};
+  const needColorDict: Map<string, [number, number][]> = new Map<string, [number, number][]>();
   const globalOrderedRanges: [string, [number, number]][] = [];
 
-  for (const r of matchRes) {
-    if (r.index === undefined) {
-      continue;
-    }
+  const allNames = currDocSymbolInfo.allNames;
+  allNames.forEach(v=>{
+    needColorDict.set(v, []);
+  });
+  const globalDef = new Set(currDocSymbolInfo.globalDef.keys());
 
+  for (const r of matchRes) {
     const word = r[1].toLowerCase();
-    if (currDocSymbolInfo.allNames.has(word)) {
-      addToDictArr(needColorDict, word, [r.index, r.index + word.length]);
-    }
-    if (Object.hasOwn(currDocSymbolInfo.globalDef, word)) {
-      globalOrderedRanges.push([word, [r.index, r.index + word.length]]);
+    const hasName = needColorDict.get(word);
+
+    if (hasName !== undefined) {
+      const rindex = r.index!;
+      const numRange: [number, number] = [rindex, rindex + word.length];
+      hasName.push(numRange);
+
+      if (globalDef.has(word)) {
+        globalOrderedRanges.push([word, numRange]);
+      }
     }
   }
 
   return [needColorDict, globalOrderedRanges];
 }
 
-function getTokenDict(currDocSymbolInfo: DocSymbolInfo, needColorDict: Record<string, [number, number][]>, buildingConfig: Record<string, any>): Record<string, ParsedToken> {
+function getTokenDict(
+  currDocSymbolInfo: DocSymbolInfo,
+  needColorDict: Map<string, [number, number][]>,
+  buildingConfig: Map<string, any>,
+  tokensBuilder: vscode.SemanticTokensBuilder
+) {
   // config
   const excludedRanges: [number, number][] = currDocSymbolInfo.docRes.getExcludedRangesForDocumentSemanticTokensProvider(buildingConfig);
 
-  const tokenDictGlobal = updateTokenDict(currDocSymbolInfo, excludedRanges, needColorDict, 'global');
-  const tokenDictLocal = updateTokenDict(currDocSymbolInfo, excludedRanges, needColorDict, 'local');
-  const tokenDict = { ...tokenDictGlobal, ...tokenDictLocal };
-  return tokenDict;
+  const tokenDictGlobal = updateTokenDict(currDocSymbolInfo, excludedRanges, needColorDict, 'global', tokensBuilder);
+  const tokenDictLocal = updateTokenDict(currDocSymbolInfo, excludedRanges, needColorDict, 'local', tokensBuilder);
 }
 
 function updateTokenDict(
   currDocSymbolInfo: DocSymbolInfo,
   excludedRanges: [number, number][],
-  needColorDict: Record<string, [number, number][]>,
-  updateScope: 'global' | 'local'
+  needColorDict: Map<string, [number, number][]>,
+  updateScope: 'global' | 'local',
+  tokensBuilder: vscode.SemanticTokensBuilder
 ) {
-  const tokenDict: Record<string, ParsedToken> = {};
+  const tokenDict: Map<string, ParsedToken> = new Map<string, ParsedToken>();
+  const isGlobal = updateScope === 'global';
+  const d = isGlobal ? currDocSymbolInfo.globalDef : currDocSymbolInfo.allLocal;
 
-  let d = currDocSymbolInfo.globalDef;
-  if (updateScope === 'local') {
-    d = currDocSymbolInfo.allLocal;
-  }
+  for (const [name, info] of d) {
+    // this is left to `yaml grammar` style guide
+    if (name.startsWith(':')) {
+      continue;
+    }
+    // do not override global variables color, this is left to `yaml grammar` file
+    if (
+      isGlobal && (
+        (name.startsWith('+') && name.endsWith('+')) ||
+        (name.startsWith('*') && name.endsWith('*')))
+    ) {
+      continue;
+    }
 
-  for (const info of Object.values(d)) {
     for (const item of info) {
-      // this is left to `yaml grammar` style guide
-      if (item.name.startsWith(':')) {
+      if (isGlobal && item.kind === vscode.SymbolKind.Variable) {
         continue;
       }
-      // do not override global variables color, this is left to `yaml grammar` file
-      if (
-        updateScope === 'global' && (
-          (item.name.startsWith('+') && item.name.endsWith('+')) ||
-          (item.name.startsWith('*') && item.name.endsWith('*')) ||
-          item.kind === vscode.SymbolKind.Variable)
-      ) {
-        continue;
-      }
-
-      const tokenMapRes = vscodeKindToTokenType[item.kind];
-
-      let tokenType = '';
-      let tokenModifiers: string[] = [];
-      if (Array.isArray(tokenMapRes)) {
-        tokenType = tokenMapRes[0];
-        tokenModifiers = tokenMapRes[1];
-      } else {
-        tokenType = tokenMapRes;
-        tokenModifiers = [];
-      }
-
       // color def itself
-      const key = `${item.name}|${item.loc.range.start.line},${item.loc.range.start.character},${item.name.length}`;
-
-      const packagePrefixIndSelf = item.name.indexOf(':');
-      if (packagePrefixIndSelf !== -1) {
-        // `::`
-        const lastPackagePrefixIndSelf = item.name.lastIndexOf(':');
-        if (lastPackagePrefixIndSelf + 1 < item.name.length) {
-          const subItemName = item.name.substring(lastPackagePrefixIndSelf + 1);
-          if (
-            updateScope === 'global' && (
-              (subItemName.startsWith('+') && subItemName.endsWith('+')) ||
-              (subItemName.startsWith('*') && subItemName.endsWith('*')))) {
-            continue;
-          }
-        }
-
-        tokenDict[key] = new ParsedToken(item.loc.range.start.translate(0, packagePrefixIndSelf), item.name.length - packagePrefixIndSelf, tokenType, tokenModifiers);
-
-      } else {
-        tokenDict[key] = new ParsedToken(item.loc.range.start, item.name.length, tokenType, tokenModifiers);
-      }
+      const startPos = item.loc.range.start;
+      setParsedToken(tokensBuilder, item, startPos, isGlobal);
 
       // color its scope
-      const currNeedColor = needColorDict[item.name];
+      const currNeedColor = needColorDict.get(item.name);
       if (currNeedColor === undefined || currNeedColor.length === 0) {
         continue;
       }
@@ -230,31 +210,12 @@ function updateTokenDict(
       const idxEnd = (item.scope !== undefined) ? bisectRight(currNeedColor, item.scope[1], item => item[0]) : currNeedColor.length;
 
       for (let i = idxStart; i < idxEnd; ++i) {
-        if (isRangeIntExcludedRanges(currNeedColor[i], excludedRanges)
-        ) {
+        if (isRangeIntExcludedRanges(currNeedColor[i], excludedRanges)) {
           continue;
         }
 
         const startPos = currDocSymbolInfo.document.positionAt(currNeedColor[i][0]);
-        const key = `${item.name}|${startPos.line},${startPos.character},${item.name.length}`;
-
-        const packagePrefixIndScope = item.name.indexOf(':');
-        if (packagePrefixIndScope !== -1) {
-          // `::`
-          const lastPackagePrefixIndScope = item.name.lastIndexOf(':');
-          if (lastPackagePrefixIndScope + 1 < item.name.length) {
-            const subItemName = item.name.substring(lastPackagePrefixIndScope + 1);
-            if (
-              (subItemName.startsWith('+') && subItemName.endsWith('+')) ||
-              (subItemName.startsWith('*') && subItemName.endsWith('*'))) {
-              continue;
-            }
-          }
-
-          tokenDict[key] = new ParsedToken(startPos.translate(0, packagePrefixIndScope), item.name.length - packagePrefixIndScope, tokenType, tokenModifiers);
-        } else {
-          tokenDict[key] = new ParsedToken(startPos, item.name.length, tokenType, tokenModifiers);
-        }
+        setParsedToken(tokensBuilder, item, startPos);
       }
 
     }
@@ -263,14 +224,46 @@ function updateTokenDict(
   return tokenDict;
 }
 
-function buildSemanticTokens(currDocSymbolInfo: DocSymbolInfo, needColorDict: Record<string, [number, number][]>, buildingConfig: Record<string, any>): vscode.SemanticTokens {
+// dependency injection tokensBuilder
+function setParsedToken(tokensBuilder: vscode.SemanticTokensBuilder, item: SymbolInfo, startPos: vscode.Position, isGlobal = true) {
+  const tokenMapRes = vscodeKindToTokenType.get(item.kind)!;
+  let tokenType = '';
+  let tokenModifiers: string[] = [];
+  if (Array.isArray(tokenMapRes)) {
+    tokenType = tokenMapRes[0];
+    tokenModifiers = tokenMapRes[1];
+  } else {
+    tokenType = tokenMapRes;
+    tokenModifiers = [];
+  }
+
+  const packagePrefixIndScope = item.name.indexOf(':');
+  let len = item.name.length;
+  if (packagePrefixIndScope !== -1) {
+    // `::`
+    const lastPackagePrefixIndScope = item.name.lastIndexOf(':');
+    if (lastPackagePrefixIndScope + 1 < item.name.length) {
+      const subItemName = item.name.substring(lastPackagePrefixIndScope + 1);
+      if (
+        isGlobal &&
+        (subItemName.startsWith('+') && subItemName.endsWith('+')) ||
+        (subItemName.startsWith('*') && subItemName.endsWith('*'))) {
+        return;
+      }
+    }
+    startPos = startPos.translate(0, packagePrefixIndScope);
+    len = len - packagePrefixIndScope;
+  }
+
+  tokensBuilder.push(startPos.line, startPos.character, len, _encodeTokenType(tokenType), _encodeTokenModifiers(tokenModifiers));
+  //const key = `${item.name}|${startPos.line},${startPos.character},${item.name.length}`;
+}
+
+function buildSemanticTokens(currDocSymbolInfo: DocSymbolInfo, needColorDict: Map<string, [number, number][]>, buildingConfig: Map<string, any>): vscode.SemanticTokens {
   const tokensBuilder = new vscode.SemanticTokensBuilder();
 
-  const tokenDict = getTokenDict(currDocSymbolInfo, needColorDict, buildingConfig);
+  const tokenDict = getTokenDict(currDocSymbolInfo, needColorDict, buildingConfig, tokensBuilder);
   //console.log(tokenDict)
-  for (const t of Object.values(tokenDict)) {
-    tokensBuilder.push(t.startPos.line, t.startPos.character, t.len, _encodeTokenType(t.tokenType), _encodeTokenModifiers(t.tokenModifiers));
-  }
 
   return tokensBuilder.build();
 }

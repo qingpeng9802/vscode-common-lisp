@@ -3,21 +3,21 @@ import type * as vscode from 'vscode';
 function excludeRangesFromRanges(oriRanges: [number, number][], excludeRanges: [number, number][]): [number, number][] {
   const res: [number, number][] = [];
   for (const currRange of oriRanges) {
-    const start = currRange[0];
-    const end = currRange[1];
+    const [start, end] = currRange;
 
     const idxStart = bisectRight(excludeRanges, start, item => item[0]);
     const idxEnd = bisectRight(excludeRanges, end, item => item[1]);
 
-    if (idxEnd - idxStart === 0) {
+    if (idxStart === idxEnd) {
       res.push([start, end]);
       continue;
     }
 
     let newStart = start;
     for (let i = idxStart; i < idxEnd; ++i) {
-      res.push([newStart, excludeRanges[i][0]]);
-      newStart = excludeRanges[i][1];
+      const [exStart, exEnd] = excludeRanges[i];
+      res.push([newStart, exStart]);
+      newStart = exEnd;
     }
     res.push([newStart, end]);
   }
@@ -29,10 +29,12 @@ function excludeRangesFromRanges(oriRanges: [number, number][], excludeRanges: [
 function mergeSortedIntervals(intervals: [number, number][]): [number, number][] {
   const merged: [number, number][] = [];
   for (const interval of intervals) {
-    if (merged.length === 0 || merged.at(-1)![1] < interval[0]) {
+    const [intervalStart, intervalEnd] = interval;
+    const mergedLast = merged.at(-1)!;
+    if (merged.length === 0 || mergedLast[1] < intervalStart) {
       merged.push(interval);
     } else {
-      merged.at(-1)![1] = Math.max(merged.at(-1)![1], interval[1]);
+      mergedLast[1] = Math.max(mergedLast[1], intervalEnd);
     }
   }
   return merged;
@@ -56,18 +58,17 @@ function mergeSortedMXArr(arr1: [number, number][], arr2: [number, number][]): [
 
   const m = arr1.length;
   const n = arr2.length;
-  const res: [number, number][] = new Array(m + n);
+  const total = m + n;
+  // use packed arr instead of holey arr https://v8.dev/blog/elements-kinds
+  const res: [number, number][] = [];
 
-  let p1 = 0;
-  let p2 = 0;
-
-  for (let i = 0; i < m + n; ++i) {
+  for (let i = 0, p1 = 0, p2 = 0; i < total; ++i) {
     // run out arr2 || arr1 is smaller
     if (p2 >= n || (p1 < m && arr1[p1][0] < arr2[p2][0])) {
-      res[i] = arr1[p1];
+      res.push(arr1[p1]);
       ++p1;
     } else {
-      res[i] = arr2[p2];
+      res.push(arr2[p2]);
       ++p2;
     }
   }
@@ -114,6 +115,45 @@ function bisectRight(arr: any[], x: number | vscode.Position, key?: (item: any) 
   return lo;
 }
 
+function bisectLeft(arr: any[], x: number | vscode.Position, key?: (item: any) => number | vscode.Position): number {
+  let mid = -1;
+  let lo = 0;
+  let hi = arr.length;
+
+  if (key !== undefined) {
+    if (typeof x === 'number') {
+      while (lo < hi) {
+        mid = Math.floor((lo + hi) / 2);
+        if (x <= (key(arr[mid]) as number)) {
+          hi = mid;
+        } else {
+          lo = mid + 1;
+        }
+      }
+    } else {
+      while (lo < hi) {
+        mid = Math.floor((lo + hi) / 2);
+        if (x.isBeforeOrEqual(key(arr[mid]) as vscode.Position)) {
+          hi = mid;
+        } else {
+          lo = mid + 1;
+        }
+      }
+    }
+
+  } else {
+    while (lo < hi) {
+      mid = Math.floor((lo + hi) / 2);
+      if (x <= arr[mid]) {
+        hi = mid;
+      } else {
+        lo = mid + 1;
+      }
+    }
+  }
+  return lo;
+}
+
 // leave for example only
 function sortRangeInPlaceEntry(d: [any, [number, number]][]) {
   d.sort(
@@ -134,5 +174,6 @@ export {
   mergeSortedIntervals,
   mergeSortedMXArrList,
   mergeSortedMXArr,
-  bisectRight
+  bisectRight,
+  bisectLeft
 };

@@ -5,16 +5,16 @@ import { scanDoc } from './no_code';
 import { collectGlobalDef, collectLocalDef } from './non_var';
 import { collectKeywordSingleVar, collectKeywordVars } from './var';
 
-function getDocSymbolInfo(document: vscode.TextDocument, buildingConfig: Record<string, any>) {
+function getDocSymbolInfo(document: vscode.TextDocument, buildingConfig: Map<string, any>) {
   const text = document.getText();
   const scanDocRes = scanDoc(text);
   const excludedRanges = scanDocRes.getExcludedRangesForStaticAnalysis(buildingConfig);
 
-  const [globalDef, globalNamedLambda] = collectGlobalDef(document, text, excludedRanges);
-  const [localDef, localNamedLambda] = collectLocalDef(document, text, excludedRanges);
+  const [globalDef, globalNamedLambda] = collectGlobalDef(document, scanDocRes, excludedRanges);
+  const [localDef, localNamedLambda] = collectLocalDef(document, scanDocRes, excludedRanges);
 
-  const localAnonLambda = collectKeywordVars(document, text, excludedRanges);
-  const localAnonSingle = collectKeywordSingleVar(document, text, excludedRanges);
+  const localAnonLambda = collectKeywordVars(document, scanDocRes, excludedRanges);
+  const localAnonSingle = collectKeywordSingleVar(document, scanDocRes, excludedRanges);
 
   return new DocSymbolInfo(
     document, scanDocRes,

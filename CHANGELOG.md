@@ -1,6 +1,6 @@
 # Change Log
 
-## [1.2.1] - 2023-06-02
+## [1.2.1] - 2023-06-22
 ### Fixed
 - `comp_item_provider.ts` fix duplicated autocomplete items
 - fix some minor bugs, no major feature changes
@@ -11,6 +11,9 @@
   The response time should be reduced, but more frequent requests may take  
   more cpu time.  
   
+### Deprecated
+- old `pair_parser`
+
 ### Removed
 - In `WorkspaceConfig.ts`, `debounceTimeout` and `throttleTimeout` are removed
   

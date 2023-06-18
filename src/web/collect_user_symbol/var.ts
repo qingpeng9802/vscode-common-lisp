@@ -1,31 +1,30 @@
 import * as vscode from 'vscode';
 
+import type { ScanDocRes } from './ScanDocRes';
 import { SymbolInfo } from './SymbolInfo';
 import { processVars } from './lambda_list';
-import { findMatchPairParenthese } from './pair_parser';
-import { addToDictArr, checkDefName, isRangeIntExcludedRanges } from './user_symbol_util';
+import { findMatchPairExactP, addToDictArr, checkDefName, isRangeIntExcludedRanges } from './user_symbol_util';
 
-function collectKeywordVars(document: vscode.TextDocument, text: string, ExcludedRange: [number, number][]): Record<string, SymbolInfo[]> {
+function collectKeywordVars(document: vscode.TextDocument, scanDocRes: ScanDocRes, ExcludedRange: [number, number][]): Map<string, SymbolInfo[]> {
   const uri = document.uri;
-
-  const defLocalNames: Record<string, SymbolInfo[]> = {};
+  const text = scanDocRes.text;
+  const defLocalNames: Map<string, SymbolInfo[]> = new Map<string, SymbolInfo[]>();
 
   // commonlisp.yaml special-operator | macro
   // `progv` allows binding one or more dynamic variables, is not implemented
   const matchRes1 = text.matchAll(/(?<=#'|\s|^)(\()(\s*)(lambda|let\*|let|symbol-macrolet|do\*|do|prog\*|prog|multiple-value-bind|destructuring-bind)\s+?(\()/igmd);
 
   for (const r of matchRes1) {
-    if (r.index === undefined || r.indices === undefined) {
+    if (r.indices === undefined) {
       continue;
     }
 
     // working in currtext
-    const openParentheseInd = r.indices[3][0];
-    const closedParenthese = findMatchPairParenthese(openParentheseInd, text);
+    const closedParenthese = findMatchPairExactP(r.indices[1][0], scanDocRes.pairMap);
     if (closedParenthese === -1) {
       continue;
     }
-    const currText = text.substring(openParentheseInd, closedParenthese);
+
     const leftPInd = r.indices[4][0];
 
     // get vars list, start with `(`
@@ -38,18 +37,18 @@ function collectKeywordVars(document: vscode.TextDocument, text: string, Exclude
       allowDestructuring = true;
     } else { }
 
-    const varsRes = processVars(leftPInd, openParentheseInd, currText, isLambdaList, allowDestructuring);
+    const varsRes = processVars(leftPInd, isLambdaList, allowDestructuring, scanDocRes, closedParenthese);
     if (varsRes === undefined) {
       continue;
     }
+
     const [vars, varsStrEnd] = varsRes;
 
 
     if (r[3] === 'let*' || r[3] === 'do*' || r[3] === 'prog*') {
       // get lexical scope
       // only for let* | do* | progn, sequencial binding
-      for (const [nn, rang] of Object.entries(vars)) {
-        const lexicalScope: [number, number] = [varsStrEnd, closedParenthese];
+      for (const [nn, rang] of vars) {
         if (isRangeIntExcludedRanges(rang, ExcludedRange)) {
           continue;
         }
@@ -59,25 +58,24 @@ function collectKeywordVars(document: vscode.TextDocument, text: string, Exclude
           document.positionAt(rang[1]),
         );
 
-        addToDictArr(
-          defLocalNames, nn.toLowerCase(),
-          new SymbolInfo(
-            nn.toLowerCase(), r[3].toLowerCase(), lexicalScope, new vscode.Location(uri, range), vscode.SymbolKind.Variable, rang
-          )
-        );
+        const lexicalScope: [number, number] = [rang[1] + 1, closedParenthese];
+
+        addToDictArr(defLocalNames, nn.toLowerCase(), new SymbolInfo(
+          nn.toLowerCase(), r[3].toLowerCase(), lexicalScope, new vscode.Location(uri, range), vscode.SymbolKind.Variable, rang
+        ));
 
       }
 
     } else {
       // get lexical scope
       // lexical scope valid after definition, that is, after next '()' pair
-      const startValidPos = findMatchPairParenthese(leftPInd + 1 - openParentheseInd, currText) + openParentheseInd;
+      const startValidPos = findMatchPairExactP(leftPInd, scanDocRes.pairMap, closedParenthese);
       if (startValidPos === -1) {
         continue;
       }
       const lexicalScope: [number, number] = [startValidPos, closedParenthese];
 
-      for (const [nn, rang] of Object.entries(vars)) {
+      for (const [nn, rang] of vars) {
         if (isRangeIntExcludedRanges(rang, ExcludedRange)) {
           continue;
         }
@@ -86,11 +84,9 @@ function collectKeywordVars(document: vscode.TextDocument, text: string, Exclude
           document.positionAt(rang[1]),
         );
 
-        addToDictArr(
-          defLocalNames, nn.toLowerCase(),
-          new SymbolInfo(nn.toLowerCase(), r[3].toLowerCase(), lexicalScope, new vscode.Location(uri, range), vscode.SymbolKind.Variable, rang
-          )
-        );
+        addToDictArr(defLocalNames, nn.toLowerCase(), new SymbolInfo(
+          nn.toLowerCase(), r[3].toLowerCase(), lexicalScope, new vscode.Location(uri, range), vscode.SymbolKind.Variable, rang
+        ));
 
       }
 
@@ -101,16 +97,16 @@ function collectKeywordVars(document: vscode.TextDocument, text: string, Exclude
   return defLocalNames;
 }
 
-function collectKeywordSingleVar(document: vscode.TextDocument, text: string, ExcludedRange: [number, number][]): Record<string, SymbolInfo[]> {
+function collectKeywordSingleVar(document: vscode.TextDocument, scanDocRes: ScanDocRes, ExcludedRange: [number, number][]): Map<string, SymbolInfo[]> {
   const uri = document.uri;
-
-  const defLocalNames: Record<string, SymbolInfo[]> = {};
+  const text = scanDocRes.text;
+  const defLocalNames: Map<string, SymbolInfo[]> = new Map<string, SymbolInfo[]>();
 
   // commonlisp.yaml macro
   const matchRes2 = text.matchAll(/(?<=#'|\s|^)(\()(\s*)(do-symbols|do-external-symbols|do-all-symbols|dolist|dotimes|pprint-logical-block|with-input-from-string|with-open-file|with-open-stream|with-output-to-string|with-package-iterator|with-hash-table-iterator)\s+?(\()\s*?([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+)(\s|\)|\()/igmd);
 
   for (const r of matchRes2) {
-    if (r.index === undefined || r.indices === undefined) {
+    if (r.indices === undefined) {
       continue;
     }
 
@@ -127,15 +123,12 @@ function collectKeywordSingleVar(document: vscode.TextDocument, text: string, Ex
     // console.log(`${defLocalName}: Range`);
 
     // working in currtext
-    const openParentheseInd = r.indices[3][0];
-    const closedParenthese = findMatchPairParenthese(openParentheseInd, text);
+    const closedParenthese = findMatchPairExactP(r.indices[1][0], scanDocRes.pairMap);
     if (closedParenthese === -1) {
       continue;
     }
-    const currText = text.substring(openParentheseInd, closedParenthese);
-    const leftPInd = r.indices[4][0];
 
-    const startValidPos = findMatchPairParenthese(leftPInd + 1 - openParentheseInd, currText) + openParentheseInd;
+    const startValidPos = findMatchPairExactP(r.indices[4][0], scanDocRes.pairMap, closedParenthese);
     if (startValidPos === -1) {
       continue;
     }
@@ -147,11 +140,9 @@ function collectKeywordSingleVar(document: vscode.TextDocument, text: string, Ex
       document.positionAt(nameRangeInd[1]),
     );
 
-    addToDictArr(
-      defLocalNames, defLocalName.toLowerCase(),
-      new SymbolInfo(defLocalName.toLowerCase(), r[3].toLowerCase(), lexicalScope, new vscode.Location(uri, range), vscode.SymbolKind.Variable, nameRangeInd
-      )
-    );
+    addToDictArr(defLocalNames, defLocalName.toLowerCase(), new SymbolInfo(
+      defLocalName.toLowerCase(), r[3].toLowerCase(), lexicalScope, new vscode.Location(uri, range), vscode.SymbolKind.Variable, nameRangeInd
+    ));
 
   }
 

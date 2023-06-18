@@ -11,12 +11,21 @@ class ScanDocRes {
   public readonly backquotePairRange: [number, number][] = [];
   public readonly commaRange: [number, number][] = [];
   public readonly commaPairRange: [number, number][] = [];
+  public readonly pair: [number, number][] = [];
 
   // cache for later use
   private _commentAndStringRange: [number, number][] | undefined = undefined;
+  private _pairMap: Map<number, number> | undefined = undefined;
 
   constructor(text: string) {
     this.text = text;
+  }
+
+  get pairMap() {
+    if (this._pairMap === undefined) {
+      this._pairMap = new Map<number, number>(this.pair);
+    }
+    return this._pairMap;
   }
 
   get commentAndStringRange() {
@@ -41,9 +50,9 @@ class ScanDocRes {
     }
   }
 
-  public getExcludedRangesForStaticAnalysis(buildingConfig: Record<string, any>) {
+  public getExcludedRangesForStaticAnalysis(buildingConfig: Map<string, any>) {
     let excludedRanges: [number, number][] = this.commentAndStringRange;
-    const saSQAndBQExcludedRangesCfg = buildingConfig['commonLisp.StaticAnalysis.SingleQuoteAndBackQuote.ExcludedRanges'];
+    const saSQAndBQExcludedRangesCfg = buildingConfig.get('commonLisp.StaticAnalysis.SingleQuoteAndBackQuote.ExcludedRanges');
 
     switch (saSQAndBQExcludedRangesCfg) {
       case SingleQuoteAndBackQuoteExcludedRanges.BQ:
@@ -112,9 +121,9 @@ class ScanDocRes {
     return excludedRanges;
   }
 
-  public getExcludedRangesForDocumentSemanticTokensProvider(buildingConfig: Record<string, any>): [number, number][] {
-    const excludedRangesCfg = buildingConfig['commonLisp.DocumentSemanticTokensProvider.ExcludedRanges'];
-    const SQAndBQHighlightCfg = buildingConfig['commonLisp.DocumentSemanticTokensProvider.SingleQuoteAndBackQuote.Highlight'];
+  public getExcludedRangesForDocumentSemanticTokensProvider(buildingConfig: Map<string, any>): [number, number][] {
+    const excludedRangesCfg = buildingConfig.get('commonLisp.DocumentSemanticTokensProvider.ExcludedRanges');
+    const SQAndBQHighlightCfg = buildingConfig.get('commonLisp.DocumentSemanticTokensProvider.SingleQuoteAndBackQuote.Highlight');
     let excludedRanges: [number, number][] = this.getExcludedRanges(excludedRangesCfg);
 
     switch (SQAndBQHighlightCfg) {
@@ -184,9 +193,9 @@ class ScanDocRes {
     return excludedRanges;
   }
 
-  public getExcludedRangesForDefReferenceProvider(buildingConfig: Record<string, any>, provider: string): [number, number][] {
-    const excludedRangesCfg = buildingConfig[`commonLisp.${provider}.ExcludedRanges`];
-    const backQuoteCfg = buildingConfig[`commonLisp.${provider}.BackQuoteFilter.enabled`];
+  public getExcludedRangesForDefReferenceProvider(buildingConfig: Map<string, any>, provider: string): [number, number][] {
+    const excludedRangesCfg = buildingConfig.get(`commonLisp.${provider}.ExcludedRanges`);
+    const backQuoteCfg = buildingConfig.get(`commonLisp.${provider}.BackQuoteFilter.enabled`);
     let excludedRanges: [number, number][] = this.getExcludedRanges(excludedRangesCfg);
 
     if (backQuoteCfg) {

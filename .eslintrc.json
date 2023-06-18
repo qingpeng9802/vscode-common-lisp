@@ -26,6 +26,7 @@
         "plugin:@typescript-eslint/recommended"
     ],
     "rules": {
+        "complexity": "warn",
         //ts "semi": [ 2, "always" ],
         //ts "quotes": [ "warn", "single", { "avoidEscape": true, "allowTemplateLiterals": true } ],
         "indent": [ "warn", 2, { "SwitchCase": 1, "ignoreComments": true } ],

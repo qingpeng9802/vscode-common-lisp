@@ -1042,32 +1042,32 @@ const enum ClSymbolKind {
   Variable = 'Variable'
 }
 
-const clOriSymbolsByKind: Record<ClSymbolKind, string[]> = {
-  [ClSymbolKind.Accessor]: clAccessor,
-  [ClSymbolKind.Class]: clClass,
-  [ClSymbolKind.ConditionType]: clConditionType,
-  [ClSymbolKind.ConstantVariable]: clConstantVariable,
-  [ClSymbolKind.Declaration]: clDeclaration,
-  [ClSymbolKind.Function]: clFunction,
-  [ClSymbolKind.LocalFunction]: clLocalFunction,
-  [ClSymbolKind.LocalMacro]: clLocalMacro,
-  [ClSymbolKind.Macro]: clMacro,
-  [ClSymbolKind.MacroLambdaList]: clMacroLambdaList,
-  [ClSymbolKind.OrdinaryLambdaList]: clOrdinaryLambdaList,
-  [ClSymbolKind.SpecialForm]: clSpecialForm,
-  [ClSymbolKind.SpecialOperator]: clSpecialOperator,
-  [ClSymbolKind.StandardGenericFunction]: clStandardGenericFunction,
-  [ClSymbolKind.Symbol]: clSymbol,
-  [ClSymbolKind.SystemClass]: clSystemClass,
-  [ClSymbolKind.Type]: clType,
-  [ClSymbolKind.TypeSpecifier]: clTypeSpecifier,
-  [ClSymbolKind.Variable]: clVariable
-};
+const clOriSymbolsByKind: Map<ClSymbolKind, string[]> = new Map<ClSymbolKind, string[]>([
+  [ClSymbolKind.Accessor, clAccessor],
+  [ClSymbolKind.Class, clClass],
+  [ClSymbolKind.ConditionType, clConditionType],
+  [ClSymbolKind.ConstantVariable, clConstantVariable],
+  [ClSymbolKind.Declaration, clDeclaration],
+  [ClSymbolKind.Function, clFunction],
+  [ClSymbolKind.LocalFunction, clLocalFunction],
+  [ClSymbolKind.LocalMacro, clLocalMacro],
+  [ClSymbolKind.Macro, clMacro],
+  [ClSymbolKind.MacroLambdaList, clMacroLambdaList],
+  [ClSymbolKind.OrdinaryLambdaList, clOrdinaryLambdaList],
+  [ClSymbolKind.SpecialForm, clSpecialForm],
+  [ClSymbolKind.SpecialOperator, clSpecialOperator],
+  [ClSymbolKind.StandardGenericFunction, clStandardGenericFunction],
+  [ClSymbolKind.Symbol, clSymbol],
+  [ClSymbolKind.SystemClass, clSystemClass],
+  [ClSymbolKind.Type, clType],
+  [ClSymbolKind.TypeSpecifier, clTypeSpecifier],
+  [ClSymbolKind.Variable, clVariable]
+]);
 
-function getOriSymbolsLength(oriSymbols: Record<ClSymbolKind, string[]>): number {
+function getOriSymbolsLength(oriSymbols: Map<ClSymbolKind, string[]>): number {
   const s: Set<string> = new Set();
   let length = 0;
-  for (const symbols of Object.values(oriSymbols)) {
+  for (const symbols of oriSymbols.values()) {
     symbols.forEach(item => {
       if (s.has(item)) {
         throw new Error('There should not be any duplicated commonlisp symbol.');
@@ -1079,7 +1079,7 @@ function getOriSymbolsLength(oriSymbols: Record<ClSymbolKind, string[]>): number
   return length;
 }
 
-function getCLOriSymbols(): Record<ClSymbolKind, string[]> {
+function getCLOriSymbols(): Map<ClSymbolKind, string[]> {
   const LEN_CL_ALL_SYMBOLS = 978;
   if (getOriSymbolsLength(clOriSymbolsByKind) !== LEN_CL_ALL_SYMBOLS) {
     throw new Error(`Please make sure all ${LEN_CL_ALL_SYMBOLS} commonlisp symbols have been included.`);
@@ -1088,10 +1088,10 @@ function getCLOriSymbols(): Record<ClSymbolKind, string[]> {
 }
 
 function _printSymbolKind() {
-  const d: Record<string, string> = {};
-  for (const [k, partSymbols] of Object.entries(clOriSymbolsByKind)) {
+  const d: Map<string, string> = new Map<string, string>();
+  for (const [k, partSymbols] of clOriSymbolsByKind) {
     for (const s of partSymbols) {
-      d[s] = k;
+      d.set(s, k);
     }
   }
   //console.log(JSON.stringify(d));

@@ -46,8 +46,8 @@ function getReferenceByWord(
   currDocSymbolInfo: DocSymbolInfo,
   range: vscode.Range,
   positionFlag: vscode.Position | undefined,
-  buildingConfig: Record<string, any>,
-  needColorDict: Record<string, [number, number][]> | undefined,
+  buildingConfig: Map<string, any>,
+  needColorDict: Map<string, [number, number][]> | undefined,
   includeDefinition: boolean):
   vscode.Location[] {
 
@@ -72,7 +72,7 @@ function getReferenceByWord(
   if (needColorDict === undefined) {
     return [];
   }
-  let sameNameWords = needColorDict[selectedWord];
+  let sameNameWords = needColorDict.get(selectedWord);
   if (sameNameWords === undefined) {
     return [];
   }
@@ -83,40 +83,43 @@ function getReferenceByWord(
   }
 
   const res: vscode.Location[] = [];
+  // loop cache
+  const [symbolSelectedStart, symbolSelectedEnd] = symbolSelected.numRange;
+  const isSymbolSelectedLengthLargerThanOne = (selectedWord.length > 1);
+  const isShaowValid = shadow !== undefined && shadow.length !== 0;
+  const uri = doc.uri;
   for (const wordRange of sameNameWords) {
     if (isRangeIntExcludedRanges(wordRange, excludedRanges)
     ) {
       continue;
     }
 
+    const [wordStart, wordEnd] = wordRange;
     if (
       !includeDefinition &&
       // intersection
-      (wordRange[0] <= symbolSelected.numRange[1] && symbolSelected.numRange[0] <= wordRange[1])) {
+      (symbolSelectedEnd >= wordStart && wordEnd >= symbolSelectedStart)) {
       continue;
     }
 
     if (positionFlag !== undefined) {
       // lexcial scope is enabled, exclude global vars (with quote) from lexical scope
       if (
-        (selectedWord.length > 1) &&
-        (isQuote(doc, doc.positionAt(wordRange[0])) !== undefined)) {
+        isSymbolSelectedLengthLargerThanOne &&
+        (isQuote(doc, doc.positionAt(wordStart)) !== undefined)) {
         continue;
       }
     }
 
     // shadowing is enabled, exclude local vars from global scope
-    if (shadow !== undefined && shadow.length !== 0 && isShadowed(wordRange, shadow)) {
+    if (isShaowValid && isShadowed(wordRange, shadow)) {
       continue;
     }
 
     // console.log(`${document.offsetAt(range.start)} -> ${document.offsetAt(range.end)}`);
     res.push(new vscode.Location(
-      doc.uri,
-      new vscode.Range(
-        doc.positionAt(wordRange[0]),
-        doc.positionAt(wordRange[1])
-      )
+      uri,
+      new vscode.Range(doc.positionAt(wordStart), doc.positionAt(wordEnd))
     ));
 
   }

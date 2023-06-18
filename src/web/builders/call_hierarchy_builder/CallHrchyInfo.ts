@@ -2,16 +2,16 @@ import type * as vscode from 'vscode';
 
 class CallHrchyInfo {
   // {name, {stringify, item}}
-  public readonly callHrchyItems: Record<string, Record<string, vscode.CallHierarchyItem>>;
+  public readonly callHrchyItems: Map<string, Map<string, vscode.CallHierarchyItem>>;
   // {name, {stringify, item}}
-  public readonly incomingCall: Record<string, Record<string, vscode.CallHierarchyIncomingCall>>;
+  public readonly incomingCall: Map<string, Map<string, vscode.CallHierarchyIncomingCall>>;
   // {name, {stringify, item}}
-  public readonly outgoingCall: Record<string, Record<string, vscode.CallHierarchyOutgoingCall>>;
+  public readonly outgoingCall: Map<string, Map<string, vscode.CallHierarchyOutgoingCall>>;
 
   constructor(
-    callHrchyItems: Record<string, Record<string, vscode.CallHierarchyItem>>,
-    incomingCall: Record<string, Record<string, vscode.CallHierarchyIncomingCall>>,
-    outgoingCall: Record<string, Record<string, vscode.CallHierarchyOutgoingCall>>
+    callHrchyItems: Map<string, Map<string, vscode.CallHierarchyItem>>,
+    incomingCall: Map<string, Map<string, vscode.CallHierarchyIncomingCall>>,
+    outgoingCall: Map<string, Map<string, vscode.CallHierarchyOutgoingCall>>
   ) {
     this.callHrchyItems = callHrchyItems;
     this.incomingCall = incomingCall;

@@ -45,7 +45,7 @@ function getSymbolLocByRange(
   currDocSymbolInfo: DocSymbolInfo,
   range: vscode.Range,
   positionFlag: vscode.Position | undefined,
-  buildingConfig: Record<string, any>):
+  buildingConfig: Map<string, any>):
   vscode.Location | undefined {
 
   // config
