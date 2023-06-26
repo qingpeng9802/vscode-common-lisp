@@ -4,7 +4,6 @@ import type { DocSymbolInfo } from '../../collect_info/DocSymbolInfo';
 import type { SymbolInfo } from '../../collect_info/SymbolInfo';
 import { isRangeIntExcludedRanges } from '../../collect_info/collect_util';
 import { loopKeywordsTokenMap, loopKeywordsSet } from '../../collect_info/loop_keywords';
-import { bisectRight } from '../../common/algorithm';
 
 import type { ParsedToken } from './ParsedToken';
 

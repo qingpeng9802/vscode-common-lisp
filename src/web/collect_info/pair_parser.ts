@@ -1,6 +1,3 @@
-import { bisectRight } from '../common/algorithm';
-
-import { ScanDocRes } from './ScanDocRes';
 import { isSpace } from './collect_util';
 
 // return result is rightafter `)`, not at `)`
