@@ -1,0 +1,69 @@
+name: vsce Publish Pre-release
+
+# Controls when the workflow will run
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: "Tag Name"
+        required: true
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  #test:
+  #  strategy:
+  #    matrix:
+  #      os: [macos-latest, ubuntu-latest, windows-latest]
+  #  runs-on: ${{ matrix.os }}
+  #
+  #  steps:
+  #    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+  #    - uses: actions/checkout@v2
+  #    - uses: actions/setup-node@v2
+  #      with:
+  #        node-version: 18
+  #    - name: Install dependencies
+  #      run: npm ci
+  #
+  #    - name: Build Grammar from yaml to json
+  #      run: npm run bg
+  #
+  #    - name: Webpack compile web
+  #      run: npm run pretest
+  #
+  #    - name: Run headless test
+  #      uses: coactions/setup-xvfb@v1
+  #      with:
+  #        run: npm test
+
+  publish:
+    #needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 18
+      - name: Install dependencies
+        run: npm ci
+
+      #- name: Build Grammar from yaml to json
+      #  run: npm run bg
+
+      - name: Package web extension
+        run: npm run vscode:prepublish
+
+      - name: Install vsce
+        run: npm i -g vsce
+
+      - name: run vsce publish with pre-release flag
+        run: npm run publish --pre-release
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+
+      - name: print tag
+        env:
+          TAGS: ${{ github.event.inputs.tags }}
+        run: |
+          echo "[$TAGS] publish with pre-release completed."
