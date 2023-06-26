@@ -1,10 +1,9 @@
 import * as vscode from 'vscode';
 
-import { CL_MODE } from '../common/cl_util';
-import { TriggerProvider } from '../common/enum';
-
-import { TriggerEvent } from './TriggerEvent';
-import { structuredInfo } from './structured_info';
+import { CL_MODE } from '../../common/cl_util';
+import { TriggerProvider } from '../../common/enum';
+import { TriggerEvent } from '../TriggerEvent';
+import { structuredInfo } from '../structured_info';
 
 function registerDocumentSymbolProvider() {
   const documentSymbolProvider = vscode.languages.registerDocumentSymbolProvider(

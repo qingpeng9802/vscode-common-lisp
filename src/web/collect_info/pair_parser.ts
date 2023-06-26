@@ -1,7 +1,7 @@
 import { bisectRight } from '../common/algorithm';
 
 import { ScanDocRes } from './ScanDocRes';
-import { isSpace } from './user_symbol_util';
+import { isSpace } from './collect_util';
 
 // return result is rightafter `)`, not at `)`
 function findMatchPairAfterPDebug(index: number, text: string): number {
@@ -194,7 +194,9 @@ function eatParenthese(index: number, text: string, textLength: number): number 
 }
 
 // start rightafter `'(`, that is, first `(` will not be eaten in this function
-function eatParentheseDebug(index: number, text: string, textLength: number): [true, number] | [false, number | undefined] {
+function eatParentheseDebug(
+  index: number, text: string, textLength: number
+): [true, number] | [false, number | undefined] {
   const needCloseStack = [index];
 
   let needClose = 1;

@@ -1,13 +1,11 @@
 import * as vscode from 'vscode';
 
-import type { DocSymbolInfo } from '../collect_user_symbol/DocSymbolInfo';
-import { isQuote, isRangeIntExcludedRanges, isShadowed } from '../collect_user_symbol/user_symbol_util';
-import { bisectRight } from '../common/algorithm';
-import { clValidWithColonSharp, CL_MODE } from '../common/cl_util';
-import { TriggerProvider } from '../common/enum';
-
-import { TriggerEvent } from './TriggerEvent';
-import { structuredInfo } from './structured_info';
+import type { DocSymbolInfo } from '../../collect_info/DocSymbolInfo';
+import { isQuote, isRangeIntExcludedRanges, isShadowed } from '../../collect_info/collect_util';
+import { clValidWithColonSharp, CL_MODE } from '../../common/cl_util';
+import { TriggerProvider } from '../../common/enum';
+import { TriggerEvent } from '../TriggerEvent';
+import { structuredInfo } from '../structured_info';
 
 function registerReferenceProvider() {
   const referenceProvider = vscode.languages.registerReferenceProvider(
@@ -25,6 +23,7 @@ function registerReferenceProvider() {
         }
 
         const positionFlag = (isQuote(document, position) !== undefined) ? undefined : position;
+
         return getReferenceByWord(
           structuredInfo.currDocSymbolInfo,
           range,
@@ -43,16 +42,14 @@ function registerReferenceProvider() {
 // Design options: include? definition, include? comment, include? string
 // See https://github.com/microsoft/vscode/issues/74237
 function getReferenceByWord(
-  currDocSymbolInfo: DocSymbolInfo,
-  range: vscode.Range,
-  positionFlag: vscode.Position | undefined,
-  buildingConfig: Map<string, any>,
-  needColorDict: Map<string, [number, number][]> | undefined,
-  includeDefinition: boolean):
-  vscode.Location[] {
+  currDocSymbolInfo: DocSymbolInfo, range: vscode.Range, positionFlag: vscode.Position | undefined,
+  buildingConfig: Map<string, any>, needColorDict: Map<string, [number, number][]> | undefined,
+  includeDefinition: boolean
+): vscode.Location[] {
 
   // config
-  const excludedRanges = currDocSymbolInfo.docRes.getExcludedRangesForDefReferenceProvider(buildingConfig, 'ReferenceProvider');
+  const excludedRanges =
+    currDocSymbolInfo.docRes.getExcludedRangesForDefReferenceProvider(buildingConfig, 'ReferenceProvider');
   const doc = currDocSymbolInfo.document;
   const numRange: [number, number] = [doc.offsetAt(range.start), doc.offsetAt(range.end)];
   if (isRangeIntExcludedRanges(numRange, excludedRanges)) {
@@ -67,28 +64,18 @@ function getReferenceByWord(
     return [];
   }
 
-
-  const selectedWord = symbolSelected.name;
   if (needColorDict === undefined) {
     return [];
   }
-  let sameNameWords = needColorDict.get(selectedWord);
-  if (sameNameWords === undefined) {
-    return [];
-  }
-  if (symbolSelected.scope !== undefined) {
-    const idxStart = bisectRight(sameNameWords, symbolSelected.scope[0], item => item[0]);
-    const idxEnd = bisectRight(sameNameWords, symbolSelected.scope[1], item => item[0]);
-    sameNameWords = sameNameWords.slice(idxStart, idxEnd);
-  }
 
+  const scopedSameNameWords = symbolSelected.getScopedSameNameWords(needColorDict, currDocSymbolInfo.stepFormArr);
   const res: vscode.Location[] = [];
   // loop cache
   const [symbolSelectedStart, symbolSelectedEnd] = symbolSelected.numRange;
-  const isSymbolSelectedLengthLargerThanOne = (selectedWord.length > 1);
+  const isSymbolSelectedLengthLargerThanOne = (symbolSelected.name.length > 1);
   const isShaowValid = shadow !== undefined && shadow.length !== 0;
   const uri = doc.uri;
-  for (const wordRange of sameNameWords) {
+  for (const wordRange of scopedSameNameWords) {
     if (isRangeIntExcludedRanges(wordRange, excludedRanges)
     ) {
       continue;
@@ -124,7 +111,7 @@ function getReferenceByWord(
 
   }
 
-  if (includeDefinition) {
+  if (includeDefinition && symbolSelected.scope !== undefined) {
     res.push(symbolSelected.loc);
   }
 

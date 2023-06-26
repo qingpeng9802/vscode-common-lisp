@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
 
-import type { DocSymbolInfo } from '../../collect_user_symbol/DocSymbolInfo';
-import type { SymbolInfo } from '../../collect_user_symbol/SymbolInfo';
-import { isRangeIntExcludedRanges, isShadowed } from '../../collect_user_symbol/user_symbol_util';
+import type { DocSymbolInfo } from '../../collect_info/DocSymbolInfo';
+import type { SymbolInfo } from '../../collect_info/SymbolInfo';
+import { isRangeIntExcludedRanges, isShadowed } from '../../collect_info/collect_util';
 import { bisectRight } from '../../common/algorithm';
 
 import { CallHrchyInfo } from './CallHrchyInfo';
@@ -26,8 +26,10 @@ function buildCallHierarchyItem(info: SymbolInfo): vscode.CallHierarchyItem {
 // @sideEffect ic: vscode.CallHierarchyIncomingCall
 // @sideEffect og: vscode.CallHierarchyOutgoingCall
 function buildEdge(
-  icD: Map<string, vscode.CallHierarchyIncomingCall>, stringifyCallerKey: string | undefined, fromItem: vscode.CallHierarchyItem | undefined,
-  ogD: Map<string, vscode.CallHierarchyOutgoingCall>, stringifyIsCalledKey: string | undefined, toItem: vscode.CallHierarchyItem | undefined,
+  icD: Map<string, vscode.CallHierarchyIncomingCall>,
+  stringifyCallerKey: string | undefined, fromItem: vscode.CallHierarchyItem | undefined,
+  ogD: Map<string, vscode.CallHierarchyOutgoingCall>,
+  stringifyIsCalledKey: string | undefined, toItem: vscode.CallHierarchyItem | undefined,
   callAppearRange: vscode.Range[]
 ) {
   if (fromItem !== undefined && stringifyCallerKey !== undefined) {
@@ -40,8 +42,7 @@ function buildEdge(
 }
 
 function getRealCaller(
-  globalOrderedRange: [string, [number, number]],
-  currDocSymbolInfo: DocSymbolInfo,
+  globalOrderedRange: [string, [number, number]], currDocSymbolInfo: DocSymbolInfo,
 ): [string, vscode.Range, SymbolInfo] | undefined {
 
   const [currCallerName, currCallerRange] = globalOrderedRange;
@@ -63,7 +64,9 @@ function getRealCaller(
   return [currCallerName, callAppearRange, realCaller];
 }
 
-function genAllCallHierarchyItems(currDocSymbolInfo: DocSymbolInfo, globalOrderedRanges: [string, [number, number]][]): CallHrchyInfo {
+function genAllCallHierarchyItems(
+  currDocSymbolInfo: DocSymbolInfo, globalOrderedRanges: [string, [number, number]][]
+): CallHrchyInfo {
   const [callHrchyInfo, visited] = genAllCallHierarchyItemsNonOrphan(currDocSymbolInfo, globalOrderedRanges);
 
   const callHrchyItems = callHrchyInfo.callHrchyItems;
@@ -113,7 +116,9 @@ function genAllCallHierarchyItems(currDocSymbolInfo: DocSymbolInfo, globalOrdere
 }
 
 
-function genAllCallHierarchyItemsNonOrphan(currDocSymbolInfo: DocSymbolInfo, globalOrderedRanges: [string, [number, number]][]): [CallHrchyInfo, Set<number>] {
+function genAllCallHierarchyItemsNonOrphan(
+  currDocSymbolInfo: DocSymbolInfo, globalOrderedRanges: [string, [number, number]][]
+): [CallHrchyInfo, Set<number>] {
   const visited: Set<number> = new Set();
 
   const callHrchyItems: Map<string, Map<string, vscode.CallHierarchyItem>> =

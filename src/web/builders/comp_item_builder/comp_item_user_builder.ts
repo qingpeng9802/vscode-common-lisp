@@ -1,48 +1,49 @@
 import * as vscode from 'vscode';
 
-import type { DocSymbolInfo } from '../../collect_user_symbol/DocSymbolInfo';
-import type { SymbolInfo } from '../../collect_user_symbol/SymbolInfo';
+import type { DocSymbolInfo } from '../../collect_info/DocSymbolInfo';
+import type { SymbolInfo } from '../../collect_info/SymbolInfo';
 
 import { UserSymbolsCompItem } from './UserSymbolsCompItem';
 
-const vscodeCIKindToVscodeCIKind: Map<vscode.SymbolKind, vscode.CompletionItemKind> = new Map<vscode.SymbolKind, vscode.CompletionItemKind>([
-  [vscode.SymbolKind.File, vscode.CompletionItemKind.File],
-  [vscode.SymbolKind.Module, vscode.CompletionItemKind.Module],
-  // no direct mapping
-  [vscode.SymbolKind.Namespace, vscode.CompletionItemKind.Module],
-  // no direct mapping
-  [vscode.SymbolKind.Package, vscode.CompletionItemKind.Module],
-  [vscode.SymbolKind.Class, vscode.CompletionItemKind.Class],
-  [vscode.SymbolKind.Method, vscode.CompletionItemKind.Method],
-  [vscode.SymbolKind.Property, vscode.CompletionItemKind.Property],
-  [vscode.SymbolKind.Field, vscode.CompletionItemKind.Field],
-  [vscode.SymbolKind.Constructor, vscode.CompletionItemKind.Constructor],
-  [vscode.SymbolKind.Enum, vscode.CompletionItemKind.Enum],
-  [vscode.SymbolKind.Interface, vscode.CompletionItemKind.Interface],
-  [vscode.SymbolKind.Function, vscode.CompletionItemKind.Function],
-  [vscode.SymbolKind.Variable, vscode.CompletionItemKind.Variable],
-  [vscode.SymbolKind.Constant, vscode.CompletionItemKind.Constant],
-  // no direct mapping
-  [vscode.SymbolKind.String, vscode.CompletionItemKind.Variable],
-  // no direct mapping
-  [vscode.SymbolKind.Number, vscode.CompletionItemKind.Variable],
-  // no direct mapping
-  [vscode.SymbolKind.Boolean, vscode.CompletionItemKind.Variable],
-  // no direct mapping
-  [vscode.SymbolKind.Array, vscode.CompletionItemKind.Variable],
-  // no direct mapping
-  [vscode.SymbolKind.Object, vscode.CompletionItemKind.Variable],
-  // no direct mapping
-  [vscode.SymbolKind.Key, vscode.CompletionItemKind.Variable],
-  // no direct mapping
-  [vscode.SymbolKind.Null, vscode.CompletionItemKind.Keyword],
-  [vscode.SymbolKind.EnumMember, vscode.CompletionItemKind.EnumMember],
-  [vscode.SymbolKind.Struct, vscode.CompletionItemKind.Struct],
-  [vscode.SymbolKind.Event, vscode.CompletionItemKind.Event],
-  [vscode.SymbolKind.Operator, vscode.CompletionItemKind.Operator],
-  [vscode.SymbolKind.TypeParameter, vscode.CompletionItemKind.TypeParameter],
+const vscodeCIKindToVscodeCIKind: Map<vscode.SymbolKind, vscode.CompletionItemKind> =
+  new Map<vscode.SymbolKind, vscode.CompletionItemKind>([
+    [vscode.SymbolKind.File, vscode.CompletionItemKind.File],
+    [vscode.SymbolKind.Module, vscode.CompletionItemKind.Module],
+    // no direct mapping
+    [vscode.SymbolKind.Namespace, vscode.CompletionItemKind.Module],
+    // no direct mapping
+    [vscode.SymbolKind.Package, vscode.CompletionItemKind.Module],
+    [vscode.SymbolKind.Class, vscode.CompletionItemKind.Class],
+    [vscode.SymbolKind.Method, vscode.CompletionItemKind.Method],
+    [vscode.SymbolKind.Property, vscode.CompletionItemKind.Property],
+    [vscode.SymbolKind.Field, vscode.CompletionItemKind.Field],
+    [vscode.SymbolKind.Constructor, vscode.CompletionItemKind.Constructor],
+    [vscode.SymbolKind.Enum, vscode.CompletionItemKind.Enum],
+    [vscode.SymbolKind.Interface, vscode.CompletionItemKind.Interface],
+    [vscode.SymbolKind.Function, vscode.CompletionItemKind.Function],
+    [vscode.SymbolKind.Variable, vscode.CompletionItemKind.Variable],
+    [vscode.SymbolKind.Constant, vscode.CompletionItemKind.Constant],
+    // no direct mapping
+    [vscode.SymbolKind.String, vscode.CompletionItemKind.Variable],
+    // no direct mapping
+    [vscode.SymbolKind.Number, vscode.CompletionItemKind.Variable],
+    // no direct mapping
+    [vscode.SymbolKind.Boolean, vscode.CompletionItemKind.Variable],
+    // no direct mapping
+    [vscode.SymbolKind.Array, vscode.CompletionItemKind.Variable],
+    // no direct mapping
+    [vscode.SymbolKind.Object, vscode.CompletionItemKind.Variable],
+    // no direct mapping
+    [vscode.SymbolKind.Key, vscode.CompletionItemKind.Variable],
+    // no direct mapping
+    [vscode.SymbolKind.Null, vscode.CompletionItemKind.Keyword],
+    [vscode.SymbolKind.EnumMember, vscode.CompletionItemKind.EnumMember],
+    [vscode.SymbolKind.Struct, vscode.CompletionItemKind.Struct],
+    [vscode.SymbolKind.Event, vscode.CompletionItemKind.Event],
+    [vscode.SymbolKind.Operator, vscode.CompletionItemKind.Operator],
+    [vscode.SymbolKind.TypeParameter, vscode.CompletionItemKind.TypeParameter],
 
-]);
+  ]);
 
 function symbolInfoToCompletionItem(symbolInfo: SymbolInfo): vscode.CompletionItem {
   const citemLabel: vscode.CompletionItemLabel = {

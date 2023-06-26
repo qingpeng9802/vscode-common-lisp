@@ -1,14 +1,108 @@
 import * as vscode from 'vscode';
 
-import type { ScanDocRes } from './ScanDocRes';
-import { SymbolInfo } from './SymbolInfo';
-import { processVars } from './lambda_list';
-import { findMatchPairExactP, addToDictArr, checkDefName, isRangeIntExcludedRanges } from './user_symbol_util';
+import { clValidSymbolSingleCharColonSet } from '../../common/cl_util';
+import type { ScanDocRes } from '../ScanDocRes';
+import { SymbolInfo } from '../SymbolInfo';
+import { findMatchPairExactP, addToDictArr, checkDefName, isRangeIntExcludedRanges, isSpace } from '../collect_util';
 
-function collectKeywordVars(document: vscode.TextDocument, scanDocRes: ScanDocRes, ExcludedRange: [number, number][]): Map<string, SymbolInfo[]> {
+import { processVars } from './lambda_list';
+
+function getStepFormArr(vars: Map<string, [number, number]>, varsStr: string, baseInd: number, scanDocRes: ScanDocRes) {
+  // {name, validScope}
+  const res: [number, number][] = [];
+
+  for (const rang of vars.values()) {
+    const end = rang[1] - baseInd;
+    const stepForm = getStepFormRange(end, baseInd, varsStr, scanDocRes);
+    if (stepForm !== undefined) {
+      res.push(stepForm);
+    }
+  }
+
+  return res;
+}
+
+function getStepFormRange(
+  i: number, baseInd: number, varsStr: string, scanDocRes: ScanDocRes,
+): [number, number] | undefined {
+
+  let varName = '';
+  let varStart = -1;
+
+  // (var [init-form [step-form]]) total 2 items
+  //     ^ from here
+  let countItem = 0;
+  const upper = varsStr.length;
+  while (i < upper) {
+    if (varsStr[i] === ';') {
+      while (i < upper && varsStr[i] !== '\n') {
+        ++i;
+      }
+
+    } else if (varsStr[i] === '|' && varsStr[i - 1] === '#') {
+      while (i < upper && (varsStr[i] !== '#' || varsStr[i - 1] !== '|')) {
+        ++i;
+      }
+
+    } else if (clValidSymbolSingleCharColonSet.has(varsStr[i])) {
+      if (varStart === -1) {
+        varStart = i;
+      }
+      varName += varsStr[i];
+      ++i;
+
+    } else if (varsStr[i] === '(') {
+      if (countItem === 0) {
+        const idx = findMatchPairExactP(baseInd + i, scanDocRes.pairMap);
+        if (idx === -1) {
+          return undefined;
+        }
+        const newInd = idx - baseInd;
+        i = newInd;
+        countItem = 1;
+      } else if (countItem === 1) {
+        const idx = findMatchPairExactP(baseInd + i, scanDocRes.pairMap);
+        if (idx === -1) {
+          return undefined;
+        } else {
+          return [baseInd + i, idx];
+        }
+      } else {
+        return undefined;
+      }
+
+    } else if (isSpace(varsStr[i]) || varsStr[i] === ')') {
+      // cannot find match anymore
+      if (countItem === 0) {
+        if (varName && varStart !== -1 &&
+          varName !== '.' &&
+          !varName.includes(':') &&
+          !varName.startsWith('&')
+        ) {
+          countItem = 1;
+        }
+      } else {
+        return undefined;
+      }
+
+      varStart = -1;
+      varName = '';
+      ++i;
+    } else {
+      ++i;
+    }
+  }
+  return undefined;
+}
+
+
+function collectKeywordVars(
+  document: vscode.TextDocument, scanDocRes: ScanDocRes, excludedRange: [number, number][]
+): [Map<string, SymbolInfo[]>, [number, number][]] {
   const uri = document.uri;
   const text = scanDocRes.text;
   const defLocalNames: Map<string, SymbolInfo[]> = new Map<string, SymbolInfo[]>();
+  const stepForm: [number, number][] = [];
 
   // commonlisp.yaml special-operator | macro
   // `progv` allows binding one or more dynamic variables, is not implemented
@@ -44,12 +138,16 @@ function collectKeywordVars(document: vscode.TextDocument, scanDocRes: ScanDocRe
 
     const [vars, varsStrEnd] = varsRes;
 
+    if (r[3] === 'do') {
+      // http://www.lispworks.com/documentation/lw60/CLHS/Body/m_do_do.htm step-form
+      stepForm.push(...getStepFormArr(vars, text.substring(leftPInd, varsStrEnd), leftPInd, scanDocRes));
+    }
 
     if (r[3] === 'let*' || r[3] === 'do*' || r[3] === 'prog*') {
       // get lexical scope
       // only for let* | do* | progn, sequencial binding
       for (const [nn, rang] of vars) {
-        if (isRangeIntExcludedRanges(rang, ExcludedRange)) {
+        if (isRangeIntExcludedRanges(rang, excludedRange)) {
           continue;
         }
 
@@ -61,11 +159,10 @@ function collectKeywordVars(document: vscode.TextDocument, scanDocRes: ScanDocRe
         const lexicalScope: [number, number] = [rang[1] + 1, closedParenthese];
 
         addToDictArr(defLocalNames, nn.toLowerCase(), new SymbolInfo(
-          nn.toLowerCase(), r[3].toLowerCase(), lexicalScope, new vscode.Location(uri, range), vscode.SymbolKind.Variable, rang
+          nn.toLowerCase(), r[3].toLowerCase(), lexicalScope,
+          new vscode.Location(uri, range), vscode.SymbolKind.Variable, rang
         ));
-
       }
-
     } else {
       // get lexical scope
       // lexical scope valid after definition, that is, after next '()' pair
@@ -76,7 +173,7 @@ function collectKeywordVars(document: vscode.TextDocument, scanDocRes: ScanDocRe
       const lexicalScope: [number, number] = [startValidPos, closedParenthese];
 
       for (const [nn, rang] of vars) {
-        if (isRangeIntExcludedRanges(rang, ExcludedRange)) {
+        if (isRangeIntExcludedRanges(rang, excludedRange)) {
           continue;
         }
         const range = new vscode.Range(
@@ -85,19 +182,20 @@ function collectKeywordVars(document: vscode.TextDocument, scanDocRes: ScanDocRe
         );
 
         addToDictArr(defLocalNames, nn.toLowerCase(), new SymbolInfo(
-          nn.toLowerCase(), r[3].toLowerCase(), lexicalScope, new vscode.Location(uri, range), vscode.SymbolKind.Variable, rang
+          nn.toLowerCase(), r[3].toLowerCase(), lexicalScope,
+          new vscode.Location(uri, range), vscode.SymbolKind.Variable, rang
         ));
-
       }
-
     }
 
   }
   //console.log(defLocalNames);
-  return defLocalNames;
+  return [defLocalNames, stepForm];
 }
 
-function collectKeywordSingleVar(document: vscode.TextDocument, scanDocRes: ScanDocRes, ExcludedRange: [number, number][]): Map<string, SymbolInfo[]> {
+function collectKeywordSingleVar(
+  document: vscode.TextDocument, scanDocRes: ScanDocRes, excludedRange: [number, number][]
+): Map<string, SymbolInfo[]> {
   const uri = document.uri;
   const text = scanDocRes.text;
   const defLocalNames: Map<string, SymbolInfo[]> = new Map<string, SymbolInfo[]>();
@@ -116,7 +214,7 @@ function collectKeywordSingleVar(document: vscode.TextDocument, scanDocRes: Scan
     }
 
     const nameRangeInd = r.indices[5];
-    if (isRangeIntExcludedRanges(nameRangeInd, ExcludedRange)) {
+    if (isRangeIntExcludedRanges(nameRangeInd, excludedRange)) {
       continue;
     }
 
@@ -141,12 +239,13 @@ function collectKeywordSingleVar(document: vscode.TextDocument, scanDocRes: Scan
     );
 
     addToDictArr(defLocalNames, defLocalName.toLowerCase(), new SymbolInfo(
-      defLocalName.toLowerCase(), r[3].toLowerCase(), lexicalScope, new vscode.Location(uri, range), vscode.SymbolKind.Variable, nameRangeInd
+      defLocalName.toLowerCase(), r[3].toLowerCase(), lexicalScope,
+      new vscode.Location(uri, range), vscode.SymbolKind.Variable, nameRangeInd
     ));
 
   }
-
   return defLocalNames;
 }
+
 
 export { collectKeywordVars, collectKeywordSingleVar };

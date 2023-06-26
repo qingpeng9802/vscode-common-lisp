@@ -1,6 +1,9 @@
 # Change Log
 
-## [1.2.1] - 2023-06-22
+## [1.2.1] - 2023-06-26
+### Added
+- add LOOP keywords highlighting
+
 ### Fixed
 - `comp_item_provider.ts` fix duplicated autocomplete items
 - fix some minor bugs, no major feature changes
@@ -12,7 +15,7 @@
   more cpu time.  
   
 ### Deprecated
-- old `pair_parser`
+- old `pair_parser.ts`
 
 ### Removed
 - In `WorkspaceConfig.ts`, `debounceTimeout` and `throttleTimeout` are removed

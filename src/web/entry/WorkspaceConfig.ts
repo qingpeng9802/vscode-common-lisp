@@ -13,9 +13,11 @@ class WorkspaceConfig {
 
     ['editor.semanticHighlighting.enabled', undefined],
 
-    ['commonLisp.StaticAnalysis.SingleQuoteAndBackQuote.ExcludedRanges', SingleQuoteAndBackQuoteExcludedRanges.BQButComma],
+    ['commonLisp.StaticAnalysis.SingleQuoteAndBackQuote.ExcludedRanges',
+      SingleQuoteAndBackQuoteExcludedRanges.BQButComma],
     ['commonLisp.DocumentSemanticTokensProvider.ExcludedRanges', ExcludeRanges.CommentString],
-    ['commonLisp.DocumentSemanticTokensProvider.SingleQuoteAndBackQuote.Highlight', SingleQuoteAndBackQuoteHighlight.SQAndBQC],
+    ['commonLisp.DocumentSemanticTokensProvider.SingleQuoteAndBackQuote.Highlight',
+      SingleQuoteAndBackQuoteHighlight.SQAndBQC],
     ['commonLisp.ReferenceProvider.ExcludedRanges', ExcludeRanges.CommentString],
     ['commonLisp.ReferenceProvider.BackQuoteFilter.enabled', true],
     ['commonLisp.DefinitionProvider.ExcludedRanges', ExcludeRanges.None],
@@ -23,6 +25,7 @@ class WorkspaceConfig {
 
     ['commonLisp.providers.CompletionItemProviders.user.enabled', true],
     ['commonLisp.providers.CompletionItemProviders.original.enabled', true],
+    ['commonLisp.providers.CompletionItemProviders.loop.enabled', true],
 
     ['commonLisp.providers.CompletionItemProviders.ampersand.enabled', true],
     ['commonLisp.providers.CompletionItemProviders.asterisk.enabled', true],
@@ -52,7 +55,11 @@ class WorkspaceConfig {
     //console.log(workspaceConfig);
   }
 
-  public updateConfig(contextSubcriptions: vscode.Disposable[], traceableDisposables: TraceableDisposables, e: vscode.ConfigurationChangeEvent) {
+  public updateConfig(
+    contextSubcriptions: vscode.Disposable[],
+    traceableDisposables: TraceableDisposables,
+    e: vscode.ConfigurationChangeEvent
+  ) {
     const config = vscode.workspace.getConfiguration();
     const langEntry: any = config.get(`[${WorkspaceConfig.CL_ID}]`);
     for (const k of this.config.keys()) {

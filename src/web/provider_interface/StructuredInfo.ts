@@ -6,9 +6,12 @@ import type { UserSymbolsCompItem } from '../builders/comp_item_builder/UserSymb
 import { genUserSymbolsCompItem } from '../builders/comp_item_builder/comp_item_user_builder';
 import { genDocumentSymbol } from '../builders/doc_symbol_builder/doc_symbol_builder';
 import { buildSemanticTokens, genAllPossibleWord } from '../builders/semantic_tokens_builder/semantic_tokens_builder';
-import type { DocSymbolInfo } from '../collect_user_symbol/DocSymbolInfo';
-import { getDocSymbolInfo } from '../collect_user_symbol/collect_user_symbol_info';
-import { TriggerProvider, ExcludeRanges, SingleQuoteAndBackQuoteExcludedRanges, SingleQuoteAndBackQuoteHighlight, ProduceOption } from '../common/enum';
+import type { DocSymbolInfo } from '../collect_info/DocSymbolInfo';
+import { getDocSymbolInfo } from '../collect_info/collect_all_info';
+import {
+  TriggerProvider, ExcludeRanges,
+  SingleQuoteAndBackQuoteExcludedRanges, SingleQuoteAndBackQuoteHighlight, ProduceOption
+} from '../common/enum';
 
 import type { TriggerEvent } from './TriggerEvent';
 
@@ -25,8 +28,10 @@ class StructuredInfo {
 
   // building process config passed down from workspace config
   public readonly buildingConfig: Map<string, any> = new Map<string, any>([
-    ['commonLisp.DocumentSemanticTokensProvider.SingleQuoteAndBackQuote.Highlight', SingleQuoteAndBackQuoteHighlight.SQAndBQC],
-    ['commonLisp.StaticAnalysis.SingleQuoteAndBackQuote.ExcludedRanges', SingleQuoteAndBackQuoteExcludedRanges.BQButComma],
+    ['commonLisp.DocumentSemanticTokensProvider.SingleQuoteAndBackQuote.Highlight',
+      SingleQuoteAndBackQuoteHighlight.SQAndBQC],
+    ['commonLisp.StaticAnalysis.SingleQuoteAndBackQuote.ExcludedRanges',
+      SingleQuoteAndBackQuoteExcludedRanges.BQButComma],
     ['commonLisp.ReferenceProvider.BackQuoteFilter.enabled', true],
     ['commonLisp.DefinitionProvider.BackQuoteFilter.enabled', true],
 
@@ -48,12 +53,21 @@ class StructuredInfo {
 
   private static readonly actionUsedByProviders = new Map<ProduceOption, Set<TriggerProvider>>([
     [ProduceOption.getDocSymbolInfo, new Set([
-      TriggerProvider.provideCompletionItems, TriggerProvider.prepareCallHierarchy, TriggerProvider.provideDefinition,
-      TriggerProvider.provideDocumentSymbols, TriggerProvider.provideReferences, TriggerProvider.provideDocumentSemanticTokens,
+      TriggerProvider.provideCompletionItems, TriggerProvider.prepareCallHierarchy,
+      TriggerProvider.provideDefinition, TriggerProvider.provideDocumentSymbols,
+      TriggerProvider.provideReferences, TriggerProvider.provideDocumentSemanticTokens,
     ])],
+
     [ProduceOption.genUserSymbolsCompItem, new Set([TriggerProvider.provideCompletionItems])],
-    [ProduceOption.genDocumentSymbol, new Set([TriggerProvider.provideCompletionItems, TriggerProvider.prepareCallHierarchy, TriggerProvider.provideDocumentSymbols])],
-    [ProduceOption.genAllPossibleWord, new Set([TriggerProvider.provideReferences, TriggerProvider.provideDocumentSemanticTokens, TriggerProvider.prepareCallHierarchy])],
+
+    [ProduceOption.genDocumentSymbol, new Set([
+      TriggerProvider.provideCompletionItems, TriggerProvider.prepareCallHierarchy,
+      TriggerProvider.provideDocumentSymbols])],
+
+    [ProduceOption.genAllPossibleWord, new Set([
+      TriggerProvider.provideReferences, TriggerProvider.provideDocumentSemanticTokens,
+      TriggerProvider.prepareCallHierarchy])],
+
     [ProduceOption.buildSemanticTokens, new Set([TriggerProvider.provideDocumentSemanticTokens])],
     [ProduceOption.genAllCallHierarchyItems, new Set([TriggerProvider.prepareCallHierarchy])]
   ]);
@@ -80,15 +94,15 @@ class StructuredInfo {
   }
 
   public produceInfoByDoc(doc: vscode.TextDocument, triggerEvent: TriggerEvent) {
-    const t = performance.now();
+    //const t = performance.now();
     const triggerProvider: TriggerProvider = triggerEvent.triggerProvider;
     const needProduceArr = this.getNeedProduceByTriggerProvider(triggerProvider);
 
-    const needProduceSetCheckDirty = new Set(needProduceArr);
+    //const needProduceSetCheckDirty = new Set(needProduceArr);
     // comment this part for profile
-    //const needProduceArrCheckDirty = new Set(
-    //  needProduceArr.filter(ele => this.dirty.get(ele))
-    //);
+    const needProduceSetCheckDirty = new Set(
+      needProduceArr.filter(ele => this.dirty.get(ele))
+    );
 
     // order matters here!
     if (needProduceSetCheckDirty.has(ProduceOption.getDocSymbolInfo)) {
@@ -130,7 +144,7 @@ class StructuredInfo {
 
     this.setDirty(false, needProduceSetCheckDirty);
 
-    console.log(`finish: ${performance.now() - t}ms`, needProduceSetCheckDirty);
+    //console.log(`finish: ${performance.now() - t}ms`, needProduceSetCheckDirty);
   }
 }
 

@@ -1,32 +1,34 @@
 import * as vscode from 'vscode';
 
 import _non_alphabetic from '../../cl_data/cl_non_alphabetic.json';
-import { getDocByName, getDocByNameNonAlphabetic, non_alphabetic_index_str } from '../../doc/get_doc';
+import { loopKeywordsCompItemMap, loopKeywordsSet } from '../../collect_info/loop_keywords';
+import { clOriSymbolsByKind, ClSymbolKind } from '../../common/cl_kind';
+import { getDocByName, getDocByNameNonAlphabetic, non_alphabetic_index_str, loop_keyword_str } from '../../doc/get_doc';
 
 import { OriSymbolsCompItem } from './OriSymbolsCompItem';
-import { clOriSymbolsByKind, ClSymbolKind } from './symbols_by_kind';
 
-const clKindToVscodeCIKind: Map<ClSymbolKind, vscode.CompletionItemKind> = new Map<ClSymbolKind, vscode.CompletionItemKind>([
-  [ClSymbolKind.Accessor, vscode.CompletionItemKind.Method],
-  [ClSymbolKind.Function, vscode.CompletionItemKind.Function],
-  [ClSymbolKind.LocalFunction, vscode.CompletionItemKind.Function],
-  [ClSymbolKind.StandardGenericFunction, vscode.CompletionItemKind.Function],
-  [ClSymbolKind.Class, vscode.CompletionItemKind.Class],
-  [ClSymbolKind.SystemClass, vscode.CompletionItemKind.Class],
-  [ClSymbolKind.ConditionType, vscode.CompletionItemKind.Class],
-  [ClSymbolKind.ConstantVariable, vscode.CompletionItemKind.Constant],
-  [ClSymbolKind.Declaration, vscode.CompletionItemKind.Keyword],
-  [ClSymbolKind.Macro, vscode.CompletionItemKind.Keyword],
-  [ClSymbolKind.LocalMacro, vscode.CompletionItemKind.Keyword],
-  [ClSymbolKind.MacroLambdaList, vscode.CompletionItemKind.Keyword],
-  [ClSymbolKind.OrdinaryLambdaList, vscode.CompletionItemKind.Keyword],
-  [ClSymbolKind.SpecialForm, vscode.CompletionItemKind.Keyword],
-  [ClSymbolKind.SpecialOperator, vscode.CompletionItemKind.Keyword],
-  [ClSymbolKind.Symbol, vscode.CompletionItemKind.Keyword],
-  [ClSymbolKind.Type, vscode.CompletionItemKind.TypeParameter],
-  [ClSymbolKind.TypeSpecifier, vscode.CompletionItemKind.Method],
-  [ClSymbolKind.Variable, vscode.CompletionItemKind.Variable]
-]);
+const clKindToVscodeCIKind: Map<ClSymbolKind, vscode.CompletionItemKind> =
+  new Map<ClSymbolKind, vscode.CompletionItemKind>([
+    [ClSymbolKind.Accessor, vscode.CompletionItemKind.Method],
+    [ClSymbolKind.Function, vscode.CompletionItemKind.Function],
+    [ClSymbolKind.LocalFunction, vscode.CompletionItemKind.Function],
+    [ClSymbolKind.StandardGenericFunction, vscode.CompletionItemKind.Function],
+    [ClSymbolKind.Class, vscode.CompletionItemKind.Class],
+    [ClSymbolKind.SystemClass, vscode.CompletionItemKind.Class],
+    [ClSymbolKind.ConditionType, vscode.CompletionItemKind.Class],
+    [ClSymbolKind.ConstantVariable, vscode.CompletionItemKind.Constant],
+    [ClSymbolKind.Declaration, vscode.CompletionItemKind.Keyword],
+    [ClSymbolKind.Macro, vscode.CompletionItemKind.Keyword],
+    [ClSymbolKind.LocalMacro, vscode.CompletionItemKind.Keyword],
+    [ClSymbolKind.MacroLambdaList, vscode.CompletionItemKind.Keyword],
+    [ClSymbolKind.OrdinaryLambdaList, vscode.CompletionItemKind.Keyword],
+    [ClSymbolKind.SpecialForm, vscode.CompletionItemKind.Keyword],
+    [ClSymbolKind.SpecialOperator, vscode.CompletionItemKind.Keyword],
+    [ClSymbolKind.Symbol, vscode.CompletionItemKind.Keyword],
+    [ClSymbolKind.Type, vscode.CompletionItemKind.TypeParameter],
+    [ClSymbolKind.TypeSpecifier, vscode.CompletionItemKind.Method],
+    [ClSymbolKind.Variable, vscode.CompletionItemKind.Variable]
+  ]);
 
 
 function assignKindAndDoc(
@@ -106,6 +108,25 @@ function genNonAlphabeticDict(): Map<string, vscode.CompletionItem[]> {
   return d;
 }
 
+function genLoopKeywords() {
+  // http://www.lispworks.com/documentation/lw51/CLHS/Body/m_loop.htm#loop
+  // https://lispcookbook.github.io/cl-cookbook/iteration.html
+  const citems: vscode.CompletionItem[] = [];
+  for (const k of loopKeywordsSet) {
+    const item = new vscode.CompletionItem(k, loopKeywordsCompItemMap.get(k));
+
+    item.detail = 'LOOP keyword';
+
+    item.documentation = new vscode.MarkdownString(loop_keyword_str);
+    item.documentation.isTrusted = true;
+    item.documentation.supportHtml = true;
+
+    citems.push(item);
+  }
+
+  return citems;
+}
+
 function genAllOriSymbols() {
   const oriSymbols: vscode.CompletionItem[] = genOriSymbols();
 
@@ -116,7 +137,11 @@ function genAllOriSymbols() {
   const afterTilde: vscode.CompletionItem[] = nonAlphabeticDict.get('~')!;
   const afterSharpsign: vscode.CompletionItem[] = nonAlphabeticDict.get('#')!;
 
-  return new OriSymbolsCompItem(oriSymbols, afterAmpersand, afterAsterisk, afterColon, afterTilde, afterSharpsign);
+  const loopSymbols: vscode.CompletionItem[] = genLoopKeywords();
+
+  return new OriSymbolsCompItem(
+    oriSymbols, afterAmpersand, afterAsterisk, afterColon, afterTilde, afterSharpsign, loopSymbols
+  );
 }
 
 

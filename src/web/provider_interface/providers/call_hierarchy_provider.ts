@@ -1,23 +1,22 @@
 import * as vscode from 'vscode';
 
-import type { CallHrchyInfo } from '../builders/call_hierarchy_builder/CallHrchyInfo';
-import type { DocSymbolInfo } from '../collect_user_symbol/DocSymbolInfo';
-import { clValidWithColonSharp, CL_MODE } from '../common/cl_util';
-import { TriggerProvider } from '../common/enum';
+import type { CallHrchyInfo } from '../../builders/call_hierarchy_builder/CallHrchyInfo';
+import type { DocSymbolInfo } from '../../collect_info/DocSymbolInfo';
+import { clValidWithColonSharp, CL_MODE } from '../../common/cl_util';
+import { TriggerProvider } from '../../common/enum';
+import { TriggerEvent } from '../TriggerEvent';
+import { structuredInfo } from '../structured_info';
 
-import { TriggerEvent } from './TriggerEvent';
-import { structuredInfo } from './structured_info';
-
+function getCallHierarchyCallsByCallHierarchyItem(
+  item: vscode.CallHierarchyItem, callHierarchyCallsDict: Map<string, Map<string, vscode.CallHierarchyOutgoingCall>>
+): vscode.CallHierarchyOutgoingCall[];
+function getCallHierarchyCallsByCallHierarchyItem(
+  item: vscode.CallHierarchyItem, callHierarchyCallsDict: Map<string, Map<string, vscode.CallHierarchyIncomingCall>>
+): vscode.CallHierarchyIncomingCall[];
 function getCallHierarchyCallsByCallHierarchyItem(
   item: vscode.CallHierarchyItem,
-  callHierarchyCallsDict: Map<string, Map<string, vscode.CallHierarchyOutgoingCall>>): vscode.CallHierarchyOutgoingCall[];
-function getCallHierarchyCallsByCallHierarchyItem(
-  item: vscode.CallHierarchyItem,
-  callHierarchyCallsDict: Map<string, Map<string, vscode.CallHierarchyIncomingCall>>): vscode.CallHierarchyIncomingCall[];
-function getCallHierarchyCallsByCallHierarchyItem(
-  item: vscode.CallHierarchyItem,
-  callHierarchyCallsDict: Map<string, Map<string, vscode.CallHierarchyIncomingCall | vscode.CallHierarchyOutgoingCall>>):
-  (vscode.CallHierarchyIncomingCall | vscode.CallHierarchyOutgoingCall)[] {
+  callHierarchyCallsDict: Map<string, Map<string, vscode.CallHierarchyIncomingCall | vscode.CallHierarchyOutgoingCall>>
+): (vscode.CallHierarchyIncomingCall | vscode.CallHierarchyOutgoingCall)[] {
 
   const callHierarchyItemStr = `${item.name}|${item.uri.path}|${item.range.start.line},${item.range.start.character},${item.range.end.line},${item.range.end.character}`;
   const callHierarchyCallDict = callHierarchyCallsDict.get(item.name);

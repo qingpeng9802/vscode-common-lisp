@@ -1,9 +1,10 @@
 import type * as vscode from 'vscode';
 
 import { DocSymbolInfo } from './DocSymbolInfo';
-import { scanDoc } from './no_code';
-import { collectGlobalDef, collectLocalDef } from './non_var';
-import { collectKeywordSingleVar, collectKeywordVars } from './var';
+import { collectLoopVar } from './collect_from_text/loop';
+import { scanDoc } from './collect_from_text/no_code';
+import { collectGlobalDef, collectLocalDef } from './collect_from_text/non_var';
+import { collectKeywordSingleVar, collectKeywordVars } from './collect_from_text/var';
 
 function getDocSymbolInfo(document: vscode.TextDocument, buildingConfig: Map<string, any>) {
   const text = document.getText();
@@ -13,14 +14,17 @@ function getDocSymbolInfo(document: vscode.TextDocument, buildingConfig: Map<str
   const [globalDef, globalNamedLambda] = collectGlobalDef(document, scanDocRes, excludedRanges);
   const [localDef, localNamedLambda] = collectLocalDef(document, scanDocRes, excludedRanges);
 
-  const localAnonLambda = collectKeywordVars(document, scanDocRes, excludedRanges);
+  const [localAnonLambda, stepForm] = collectKeywordVars(document, scanDocRes, excludedRanges);
   const localAnonSingle = collectKeywordSingleVar(document, scanDocRes, excludedRanges);
+  const [localAnonLoop, loopBlocks] = collectLoopVar(document, scanDocRes, excludedRanges);
 
   return new DocSymbolInfo(
     document, scanDocRes,
     globalDef, globalNamedLambda,
     localDef, localNamedLambda,
-    localAnonLambda, localAnonSingle);
+    localAnonLambda, localAnonSingle, localAnonLoop,
+    loopBlocks, stepForm
+  );
 }
 
 export { getDocSymbolInfo };

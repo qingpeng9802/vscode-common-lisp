@@ -104,7 +104,9 @@ function addToDictArr(dict: Map<string, any[]>, k: string, item: any) {
   dict.get(k)!.push(item);
 }
 
-function findMatchPairAfterP(absIndex: number, pair: [number, number][], validUpper: number | undefined = undefined): number {
+function findMatchPairAfterP(
+  absIndex: number, pair: [number, number][], validUpper: number | undefined = undefined
+): number {
   const idx = bisectLeft(pair, absIndex, item => item[0]);
   if (idx === -1 || idx === 0) {
     return -1;
@@ -118,7 +120,9 @@ function findMatchPairAfterP(absIndex: number, pair: [number, number][], validUp
   return res + 1;
 }
 
-function findMatchPairExactP(absIndex: number, pairMap: Map<number, number>, validUpper: number | undefined = undefined): number {
+function findMatchPairExactP(
+  absIndex: number, pairMap: Map<number, number>, validUpper: number | undefined = undefined
+): number {
   const idx = pairMap.get(absIndex);
   if (idx === undefined) {
     return -1;

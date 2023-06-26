@@ -1,5 +1,5 @@
-import { ScanDocRes } from './ScanDocRes';
-import { isSpace } from './user_symbol_util';
+import { ScanDocRes } from '../ScanDocRes';
+import { isSpace } from '../collect_util';
 
 const passSet = new Set([',', '@', '.', '#', '`', '\'']);
 
@@ -253,8 +253,7 @@ function eatDoc(index: number, text: string, textLength: number, scanDocRes: Sca
 }
 
 function collectRange(
-  index: number, needClose: number, rangeCollector: [number, number][],
-  text: string, textLength: number
+  index: number, needClose: number, rangeCollector: [number, number][], text: string, textLength: number
 ): [number, number] | undefined {
   let tempInd = index + 1;
   while (tempInd < textLength && passSet.has(text[tempInd])) {

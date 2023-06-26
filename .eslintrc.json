@@ -26,7 +26,15 @@
         "plugin:@typescript-eslint/recommended"
     ],
     "rules": {
-        "complexity": "warn",
+        //"complexity": "warn",
+        "max-len": [ "warn", {
+                "code": 120,
+                "ignoreRegExpLiterals": true,
+                "ignoreStrings": true,
+                "ignoreTemplateLiterals": true,
+                "ignoreUrls": true
+            } ],
+        "brace-style": [ "warn", "1tbs", { "allowSingleLine": true } ],
         //ts "semi": [ 2, "always" ],
         //ts "quotes": [ "warn", "single", { "avoidEscape": true, "allowTemplateLiterals": true } ],
         "indent": [ "warn", 2, { "SwitchCase": 1, "ignoreComments": true } ],
@@ -148,7 +156,9 @@
         "@typescript-eslint/lines-between-class-members": [ "error", "always", { "exceptAfterSingleLine": true } ],
         "@typescript-eslint/object-curly-spacing": [ "warn", "always" ],
         "@typescript-eslint/space-before-blocks": "warn",
-        "@typescript-eslint/space-before-function-paren": [ "warn", { "anonymous": "always", "named": "never", "asyncArrow": "always" } ],
+        "@typescript-eslint/space-before-function-paren": [ "warn", {
+                "anonymous": "always", "named": "never", "asyncArrow": "always"
+            } ],
 
         "@typescript-eslint/no-duplicate-imports": "warn",
         "@typescript-eslint/no-extra-semi": "warn",
@@ -159,7 +169,9 @@
         "@typescript-eslint/no-invalid-this": "warn",
         "@typescript-eslint/no-throw-literal": "warn",
         "@typescript-eslint/no-unused-expressions": "warn",
-        "@typescript-eslint/no-use-before-define": [ "error", { "functions": false, "classes": false, "variables": true } ],
+        "@typescript-eslint/no-use-before-define": [ "error", {
+                "functions": false, "classes": false, "variables": true
+            } ],
         "@typescript-eslint/no-dynamic-delete": "error",
         "@typescript-eslint/no-dupe-class-members": "error",
         "@typescript-eslint/no-extraneous-class": "error",
@@ -293,10 +305,10 @@
                         "message": "[layer 0] ./src/web/doc"
                     },
                     {
-                        "target": "./src/web/collect_user_symbol",
+                        "target": "./src/web/collect_info",
                         "from": "./src/web",
-                        "except": [ "./collect_user_symbol", "./common" ],
-                        "message": "[layer 0] ./src/web/collect_user_symbol"
+                        "except": [ "./collect_info", "./common" ],
+                        "message": "[layer 0] ./src/web/collect_info"
                     },
                     // layer 1
                     {

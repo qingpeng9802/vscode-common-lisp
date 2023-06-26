@@ -10,13 +10,16 @@ class OriSymbolsCompItem {
   public readonly afterTilde: vscode.CompletionItem[];
   public readonly afterSharpsign: vscode.CompletionItem[];
 
+  public readonly loopSymbols: vscode.CompletionItem[];
+
   constructor(
     oriSymbols: vscode.CompletionItem[],
     afterAmpersand: vscode.CompletionItem[],
     afterAsterisk: vscode.CompletionItem[],
     afterColon: vscode.CompletionItem[],
     afterTilde: vscode.CompletionItem[],
-    afterSharpsign: vscode.CompletionItem[]
+    afterSharpsign: vscode.CompletionItem[],
+    loopSymbols: vscode.CompletionItem[]
   ) {
 
     this.oriSymbols = oriSymbols;
@@ -25,6 +28,7 @@ class OriSymbolsCompItem {
     this.afterColon = afterColon;
     this.afterTilde = afterTilde;
     this.afterSharpsign = afterSharpsign;
+    this.loopSymbols = loopSymbols;
   }
 }
 

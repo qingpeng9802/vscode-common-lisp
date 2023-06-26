@@ -1,39 +1,42 @@
 import type * as vscode from 'vscode';
 
-import { registerCallHierarchyProvider } from '../provider_interface/call_hierarchy_provider';
-import { registerCompletionItemProviders } from '../provider_interface/comp_item_provider';
-import { registerDefinitionProvider } from '../provider_interface/def_provider';
-import { registerDocumentSymbolProvider } from '../provider_interface/doc_symbol_provider';
-import { registerHoverProvider } from '../provider_interface/hover_provider';
-import { registerReferenceProvider } from '../provider_interface/reference_provider';
-import { registerSemanticProvider } from '../provider_interface/semantic_tokens_provider';
+import { registerCallHierarchyProvider } from '../provider_interface/providers/call_hierarchy_provider';
+import { registerCompletionItemProviders } from '../provider_interface/providers/comp_item_provider';
+import { registerDefinitionProvider } from '../provider_interface/providers/def_provider';
+import { registerDocumentSymbolProvider } from '../provider_interface/providers/doc_symbol_provider';
+import { registerHoverProvider } from '../provider_interface/providers/hover_provider';
+import { registerReferenceProvider } from '../provider_interface/providers/reference_provider';
+import { registerSemanticProvider } from '../provider_interface/providers/semantic_tokens_provider';
 
 class TraceableDisposables {
-  public readonly disposables: Map<string, vscode.Disposable | undefined> = new Map<string, vscode.Disposable | undefined>([
-    ['eventOnDidChangeTD', undefined],
-    ['eventOnDidChangeATE', undefined],
+  public readonly disposables: Map<string, vscode.Disposable | undefined> =
+    new Map<string, vscode.Disposable | undefined>([
+      ['eventOnDidChangeTD', undefined],
+      ['eventOnDidChangeATE', undefined],
 
-    ['userCompletionItemProvider', undefined],
-    ['oriCompletionItemProvider', undefined],
+      ['userCompletionItemProvider', undefined],
+      ['oriCompletionItemProvider', undefined],
+      ['loopCompletionItemProvider', undefined],
 
-    ['ampersandCompletionItemProvider', undefined],
-    ['asteriskCompletionItemProvider', undefined],
-    ['colonCompletionItemProvider', undefined],
+      ['ampersandCompletionItemProvider', undefined],
+      ['asteriskCompletionItemProvider', undefined],
+      ['colonCompletionItemProvider', undefined],
 
-    ['tildeCompletionItemProvider', undefined],
-    ['sharpsignCompletionItemProvider', undefined],
+      ['tildeCompletionItemProvider', undefined],
+      ['sharpsignCompletionItemProvider', undefined],
 
-    ['hoverProvider', undefined],
-    ['definitionProvider', undefined],
-    ['documentSymbolProvider', undefined],
-    ['referenceProvider', undefined],
-    ['documentSemanticTokensProvider', undefined],
-    ['callHierarchyProvider', undefined],
-  ]);
+      ['hoverProvider', undefined],
+      ['definitionProvider', undefined],
+      ['documentSymbolProvider', undefined],
+      ['referenceProvider', undefined],
+      ['documentSemanticTokensProvider', undefined],
+      ['callHierarchyProvider', undefined],
+    ]);
 
   private static readonly cfgMapDisposable: Map<string, string> = new Map<string, string>([
     ['commonLisp.providers.CompletionItemProviders.user.enabled', 'userCompletionItemProvider'],
     ['commonLisp.providers.CompletionItemProviders.original.enabled', 'oriCompletionItemProvider'],
+    ['commonLisp.providers.CompletionItemProviders.loop.enabled', 'loopCompletionItemProvider'],
 
     ['commonLisp.providers.CompletionItemProviders.ampersand.enabled', 'ampersandCompletionItemProvider'],
     ['commonLisp.providers.CompletionItemProviders.asterisk.enabled', 'asteriskCompletionItemProvider'],
@@ -103,6 +106,9 @@ class TraceableDisposables {
       case 'oriCompletionItemProvider':
         return registerCompletionItemProviders('oriSymbols');
 
+      case 'loopCompletionItemProvider':
+        return registerCompletionItemProviders('loop');
+
       case 'ampersandCompletionItemProvider':
         return registerCompletionItemProviders('ampersand');
 
@@ -141,7 +147,11 @@ class TraceableDisposables {
     }
   }
 
-  public updateDisposables(contextSubcriptions: vscode.Disposable[], workspaceConfigKey: string, newTraceableDisposablesVal: any) {
+  public updateDisposables(
+    contextSubcriptions: vscode.Disposable[],
+    workspaceConfigKey: string,
+    newTraceableDisposablesVal: any
+  ) {
     const providerKeys = new Set(TraceableDisposables.cfgMapDisposable.keys());
 
     let disposableName = '';

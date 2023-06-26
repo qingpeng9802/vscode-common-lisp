@@ -1,12 +1,11 @@
 import * as vscode from 'vscode';
 
-import type { DocSymbolInfo } from '../collect_user_symbol/DocSymbolInfo';
-import { isQuote, isRangeIntExcludedRanges } from '../collect_user_symbol/user_symbol_util';
-import { CL_MODE, clValidWithColonSharp } from '../common/cl_util';
-import { TriggerProvider } from '../common/enum';
-
-import { TriggerEvent } from './TriggerEvent';
-import { structuredInfo } from './structured_info';
+import type { DocSymbolInfo } from '../../collect_info/DocSymbolInfo';
+import { isQuote, isRangeIntExcludedRanges } from '../../collect_info/collect_util';
+import { CL_MODE, clValidWithColonSharp } from '../../common/cl_util';
+import { TriggerProvider } from '../../common/enum';
+import { TriggerEvent } from '../TriggerEvent';
+import { structuredInfo } from '../structured_info';
 
 function registerDefinitionProvider() {
   const definitionProvider = vscode.languages.registerDefinitionProvider(
@@ -42,14 +41,13 @@ function registerDefinitionProvider() {
 // 5.2.1. Named Functions https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node63.html#SECTION00921000000000000000
 // set `position` to `undefined`, will only process global definition
 function getSymbolLocByRange(
-  currDocSymbolInfo: DocSymbolInfo,
-  range: vscode.Range,
-  positionFlag: vscode.Position | undefined,
-  buildingConfig: Map<string, any>):
-  vscode.Location | undefined {
+  currDocSymbolInfo: DocSymbolInfo, range: vscode.Range, positionFlag: vscode.Position | undefined,
+  buildingConfig: Map<string, any>
+): vscode.Location | undefined {
 
   // config
-  const excludedRanges = currDocSymbolInfo.docRes.getExcludedRangesForDefReferenceProvider(buildingConfig, 'DefinitionProvider');
+  const excludedRanges =
+    currDocSymbolInfo.docRes.getExcludedRangesForDefReferenceProvider(buildingConfig, 'DefinitionProvider');
   const doc = currDocSymbolInfo.document;
   const numRange: [number, number] = [doc.offsetAt(range.start), doc.offsetAt(range.end)];
   if (isRangeIntExcludedRanges(numRange, excludedRanges)) {

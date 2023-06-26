@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
 
-import _kind from '../cl_data/cl_kind.json';
-import { CL_MODE, clValidWithColonSharp } from '../common/cl_util';
-import { getDocByName, getDocByNameNonAlphabetic } from '../doc/get_doc';
+import _kind from '../../cl_data/cl_kind.json';
+import { CL_MODE, clValidWithColonSharp } from '../../common/cl_util';
+import { getDocByName, getDocByNameNonAlphabetic } from '../../doc/get_doc';
 
 const kindKeys = new Set(Object.keys(_kind));
 

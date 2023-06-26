@@ -1,5 +1,7 @@
 import type * as vscode from 'vscode';
 
+import { bisectRight } from '../common/algorithm';
+
 import type { ScanDocRes } from './ScanDocRes';
 import type { SymbolInfo } from './SymbolInfo';
 
@@ -15,6 +17,10 @@ class DocSymbolInfo {
 
   public readonly localAnonLambda: Map<string, SymbolInfo[]>;
   public readonly localAnonSingle: Map<string, SymbolInfo[]>;
+  public readonly localAnonLoop: Map<string, SymbolInfo[]>;
+
+  public readonly loopBlocks: [number, number][];
+  public readonly stepFormArr: [number, number][];
 
   //public readonly globalNames: Set<string>;
   //public readonly allLocalNames: Set<string>;
@@ -33,6 +39,10 @@ class DocSymbolInfo {
 
     localAnonLambda: Map<string, SymbolInfo[]>,
     localAnonSingle: Map<string, SymbolInfo[]>,
+    localAnonLoop: Map<string, SymbolInfo[]>,
+
+    loopBlocks: [number, number][],
+    stepFormArr: [number, number][],
   ) {
     this.document = document;
     this.docRes = docRes;
@@ -45,6 +55,10 @@ class DocSymbolInfo {
 
     this.localAnonLambda = localAnonLambda;
     this.localAnonSingle = localAnonSingle;
+    this.localAnonLoop = localAnonLoop;
+
+    this.loopBlocks = loopBlocks;
+    this.stepFormArr = stepFormArr;
 
     // sort to tolerance for multiple definition
     for (const info of this.globalDef.values()) {
@@ -83,7 +97,10 @@ class DocSymbolInfo {
 
   private getAllLocal(): Map<string, SymbolInfo[]> {
     const allLocal: Map<string, SymbolInfo[]> = new Map<string, SymbolInfo[]>();
-    const dicts = [this.globalNamedLambda, this.localDef, this.localNamedLambda, this.localAnonLambda, this.localAnonSingle];
+    const dicts = [
+      this.globalNamedLambda, this.localDef, this.localNamedLambda,
+      this.localAnonLambda, this.localAnonSingle, this.localAnonLoop
+    ];
     for (const d of dicts) {
       for (const [k, info] of d) {
         if (!allLocal.has(k)) {
@@ -127,10 +144,37 @@ class DocSymbolInfo {
     return farthest;
   }
 
+  private isInStepForm(numPosition: number, shadow: SymbolInfo[]) {
+    // select candidate shadow
+    shadow = shadow.filter(item => item.containerName === 'do');
+    if (shadow.length === 0) {
+      return undefined;
+    }
+
+    // filter by the smallest range for quick elimination
+    const idx = bisectRight(this.stepFormArr, numPosition, item => item[0]);
+    if (idx === -1 || idx === 0 || numPosition >= this.stepFormArr[idx - 1][1]) {
+      return undefined;
+    }
+
+    // now, can confirm position is in step form, waive scope
+    // check extended scope [numRange[1], scope[0]]
+    shadow = shadow.filter(item => item.scope !== undefined);
+    const idxDo = bisectRight(shadow, numPosition, item => item.numRange[1]);
+    if (idxDo === -1 || idxDo === 0 || numPosition >= shadow[idxDo - 1].scope![0]) {
+      return undefined;
+    }
+    return shadow[idxDo - 1];
+  }
+
   // return [selected symbol, shadowed symbols]
   // if global is selected, return shadowed symbols (position===undefined)
   // if local is selected, return empty shadowed symbols (position!==undefined)
-  public getSymbolWithShadowByRange(word: string, range: [number, number] | vscode.Range, positionFlag: vscode.Position | undefined): [SymbolInfo | undefined, SymbolInfo[]] {
+  public getSymbolWithShadowByRange(
+    word: string,
+    range: [number, number] | vscode.Range,
+    positionFlag: vscode.Position | undefined
+  ): [SymbolInfo | undefined, SymbolInfo[]] {
     const localShadow = this.allLocal.get(word);
     const shadow = (localShadow !== undefined) ? localShadow : [];
 
@@ -158,6 +202,12 @@ class DocSymbolInfo {
       const innermost = this.findInnermost(shadow, range, numPosition);
       if (innermost !== undefined) {
         return [innermost, []];
+      }
+
+      // check if it is `do`'s step form
+      const stepForm = this.isInStepForm(numPosition, shadow);
+      if (stepForm !== undefined) {
+        return [stepForm, []];
       }
 
       // we cannot find valid scope by the position,

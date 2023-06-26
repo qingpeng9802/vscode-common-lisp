@@ -5,10 +5,10 @@
 
         "pretty": true,
         "lib": [
-            "esnext",
+            "es2022",
             "WebWorker"
         ],
-        "target": "esnext",
+        "target": "es2022",
         "module": "commonjs",
         //"moduleResolution": "bundler",
         "isolatedModules": true,

@@ -1,9 +1,9 @@
 import * as vscode from 'vscode';
 
-import type { DocSymbolInfo } from '../../collect_user_symbol/DocSymbolInfo';
-import type { ScanDocRes } from '../../collect_user_symbol/ScanDocRes';
-import type { SymbolInfo } from '../../collect_user_symbol/SymbolInfo';
-import { findMatchPairAfterP } from '../../collect_user_symbol/user_symbol_util';
+import type { DocSymbolInfo } from '../../collect_info/DocSymbolInfo';
+import type { ScanDocRes } from '../../collect_info/ScanDocRes';
+import type { SymbolInfo } from '../../collect_info/SymbolInfo';
+import { findMatchPairAfterP } from '../../collect_info/collect_util';
 import { bisectRight } from '../../common/algorithm';
 
 function genAnonContainerNameNum(d: Map<string, number>, anonContainerName: string): number {
@@ -17,8 +17,9 @@ function genAnonContainerNameNum(d: Map<string, number>, anonContainerName: stri
 }
 
 // @sideEffect: SymbolInfo.numberedContainerName
-function globalContainerToSymbolInfosDict(defs: Map<string, SymbolInfo[]>, containerName: string):
-  Map<string, vscode.DocumentSymbol> {
+function globalContainerToSymbolInfosDict(
+  defs: Map<string, SymbolInfo[]>, containerName: string
+): Map<string, vscode.DocumentSymbol> {
   const res: Map<string, vscode.DocumentSymbol> = new Map<string, vscode.DocumentSymbol>();
 
   for (const [defName, info] of defs) {
@@ -32,7 +33,9 @@ function globalContainerToSymbolInfosDict(defs: Map<string, SymbolInfo[]>, conta
 }
 
 // @sideEffect: SymbolInfo.numberedContainerName
-function noValidContainerToSymbolInfosDict(defs: Map<string, SymbolInfo[]>, anonContainerNameDict: Map<string, number>): Map<string, vscode.DocumentSymbol> {
+function noValidContainerToSymbolInfosDict(
+  defs: Map<string, SymbolInfo[]>, anonContainerNameDict: Map<string, number>
+): Map<string, vscode.DocumentSymbol> {
   const res: Map<string, vscode.DocumentSymbol> = new Map<string, vscode.DocumentSymbol>();
 
   for (const [defName, info] of defs) {
@@ -50,7 +53,9 @@ function noValidContainerToSymbolInfosDict(defs: Map<string, SymbolInfo[]>, anon
 }
 
 // @sideEffect: SymbolInfo.numberedContainerName
-function noValidContainerToSymbolInfos(defs: Map<string, SymbolInfo[]>, anonContainerNameDict: Map<string, number>): vscode.DocumentSymbol[] {
+function noValidContainerToSymbolInfos(
+  defs: Map<string, SymbolInfo[]>, anonContainerNameDict: Map<string, number>
+): vscode.DocumentSymbol[] {
   const res: vscode.DocumentSymbol[] = [];
 
   for (const [defName, info] of defs) {
