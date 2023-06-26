@@ -55,10 +55,10 @@ jobs:
         run: npm run vscode:prepublish
 
       - name: Install vsce
-        run: npm i -g vsce
+        run: npm i -g @vscode/vsce
 
       - name: run vsce publish with pre-release flag
-        run: npm run publish --pre-release
+        run: npm run publish-pre
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
 

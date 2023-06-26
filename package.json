@@ -276,6 +276,7 @@
     "scripts": {
         "package": "vsce package",
         "publish": "vsce publish",
+        "publish-pre": "vsce publish --pre-release",
         "bg": "node scripts/build_grammar.mjs",
         "lint": "eslint src --ext ts",
         "pretest": "npm run webpackc",

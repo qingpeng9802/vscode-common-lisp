@@ -63,7 +63,7 @@ Most errors and warnings can be fixed automatically by running `npm run lint -- 
 There are no tests now. The features of this project are still changing. Most of the time needs to be allocated for polishing the features.  
 
 ### Package vsix
-Run `npm i -g vsce` to install `vsce` globally since `vsce` is not in the `package.json`.  
+Run `npm i -g @vscode/vsce` to install `vsce` globally since `vsce` is not in the `package.json`.  
 
 Run `vsce package`.  
 Then, you will get a `common-lisp-x.x.x.vsix` in your `./` .
