@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.2.2] - 2023-06-26
+### Changed
+- `README.md` update README
+
 ## [1.2.1] - 2023-06-26
 ### Added
 - add LOOP keywords highlighting
