@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.2.4] - 2023-06-27
+### Added
+- polish LOOP keywords highlighting
+
 ## [1.2.3] - 2023-06-27
 ### Fixed
 - fix non-alphabetic auto-completion

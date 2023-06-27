@@ -109,7 +109,7 @@ function collectLoopVar(
 
     const subStart = r.indices[4][0];
     const subText = text.substring(subStart, closedParenthese);
-    const subMatchRes = subText.matchAll(/(?<=#'|\s|^)(for|as|with|named)\s*(([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+)\s|(\())/igmd);
+    const subMatchRes = subText.matchAll(/(?<=#'|\s|^)(for|as|with|into|named)\s*(([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+)\s|(\())/igmd);
     for (const subR of subMatchRes) {
       if (subR.indices === undefined) {
         continue;

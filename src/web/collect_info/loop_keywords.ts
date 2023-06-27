@@ -38,7 +38,7 @@ const loopKeywordsTokenMap = new Map<string, string | [string, string[]]>([
   ['minimize', 'function'],
   ['minimizing', 'function'],
   // used by value accumulation above
-  ['into', 'macro'],
+  ['into', 'keyword'],
   // macro End-Test Control Clause Keyword
   //['loop-finish', 'macro'],//colored
   // conditional execution
