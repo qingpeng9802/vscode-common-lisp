@@ -72,6 +72,7 @@ class TraceableDisposables {
     }
 
     if (this.disposables.get(disposableName) !== undefined) {
+      //console.log('disp', disposableName);
       this.disposables.get(disposableName)?.dispose();
       this.disposables.set(disposableName, undefined);
     } else {

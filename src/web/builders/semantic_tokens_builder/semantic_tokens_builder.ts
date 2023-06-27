@@ -5,8 +5,6 @@ import type { SymbolInfo } from '../../collect_info/SymbolInfo';
 import { isRangeIntExcludedRanges } from '../../collect_info/collect_util';
 import { loopKeywordsTokenMap, loopKeywordsSet } from '../../collect_info/loop_keywords';
 
-import type { ParsedToken } from './ParsedToken';
-
 const tokenTypes = new Map<string, number>();
 const tokenModifiers = new Map<string, number>();
 
@@ -192,7 +190,7 @@ function updateLoop(
       const word = r[1].toLowerCase();
       if (
         !loopKeywordsSet.has(word) &&
-        !(word.startsWith(':') && loopKeywordsSet.has(word.substring(1)))
+        !(word.startsWith(':') && loopKeywordsSet.has(word.substring(1))) // some people would like use : before the keyword
       ) {
         continue;
       }
@@ -233,7 +231,6 @@ function updateTokenDict(
   updateScope: 'global' | 'local',
   tokensBuilder: vscode.SemanticTokensBuilder
 ) {
-  const tokenDict: Map<string, ParsedToken> = new Map<string, ParsedToken>();
   const isGlobal = updateScope === 'global';
   const d = isGlobal ? currDocSymbolInfo.globalDef : currDocSymbolInfo.allLocal;
 
@@ -276,7 +273,6 @@ function updateTokenDict(
     }
   }
 
-  return tokenDict;
 }
 
 // dependency injection tokensBuilder

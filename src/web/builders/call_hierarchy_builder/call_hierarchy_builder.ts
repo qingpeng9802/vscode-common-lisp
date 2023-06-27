@@ -41,27 +41,28 @@ function buildEdge(
   return;
 }
 
-function getRealCaller(
+function getRealIsCalled(
   globalOrderedRange: [string, [number, number]], currDocSymbolInfo: DocSymbolInfo,
 ): [string, vscode.Range, SymbolInfo] | undefined {
 
-  const [currCallerName, currCallerRange] = globalOrderedRange;
-  const [realCaller, shadow] = currDocSymbolInfo.getSymbolWithShadowByRange(currCallerName, currCallerRange, undefined);
-  if (realCaller === undefined) {
+  const [isCalledName, isCalledRange] = globalOrderedRange;
+  const [realIsCalled, shadow] = currDocSymbolInfo.getSymbolWithShadowByRange(isCalledName, isCalledRange, undefined);
+  if (realIsCalled === undefined) {
     return undefined;
   }
-  if (shadow !== undefined && shadow.length !== 0 && isShadowed(currCallerRange, shadow)) {
+  if (shadow !== undefined && shadow.length !== 0 && isShadowed(isCalledRange, shadow)) {
     return undefined;
   }
-  if (isRangeIntExcludedRanges(currCallerRange, currDocSymbolInfo.docRes.commentAndStringRange)) {
+  if (isRangeIntExcludedRanges(isCalledRange, currDocSymbolInfo.docRes.commentAndStringRange)) {
     return undefined;
   }
 
   const callAppearRange = new vscode.Range(
-    currDocSymbolInfo.document.positionAt(currCallerRange[0]),
-    currDocSymbolInfo.document.positionAt(currCallerRange[1]),
+    currDocSymbolInfo.document.positionAt(isCalledRange[0]),
+    currDocSymbolInfo.document.positionAt(isCalledRange[1]),
   );
-  return [currCallerName, callAppearRange, realCaller];
+
+  return [isCalledName, callAppearRange, realIsCalled];
 }
 
 function genAllCallHierarchyItems(
@@ -73,44 +74,28 @@ function genAllCallHierarchyItems(
   const callHierarchyICs = callHrchyInfo.incomingCall;
   const callHierarchyOGs = callHrchyInfo.outgoingCall;
 
-  // fileItem
+  // make the file as definition, that is,
+  // make the file as caller
   const fileName = currDocSymbolInfo.document.uri.path.split('/').pop();
-  const isCalledName = (fileName !== undefined) ? fileName : 'Untitled';
-  if (!callHierarchyOGs.has(isCalledName)) {
-    callHierarchyOGs.set(isCalledName, new Map<string, vscode.CallHierarchyOutgoingCall>());
+  const callerName = (fileName !== undefined) ? fileName : 'Untitled';
+  if (!callHierarchyOGs.has(callerName)) {
+    callHierarchyOGs.set(callerName, new Map<string, vscode.CallHierarchyOutgoingCall>());
   }
 
+  // find isCalled ranges who is NOT visited. (orphans)
   for (let i = 0; i < globalOrderedRanges.length; ++i) {
     if (visited.has(i)) {
       continue;
     }
 
-    const realCallerRes = getRealCaller(globalOrderedRanges[i], currDocSymbolInfo);
-    if (realCallerRes === undefined) {
-      continue;
-    }
-    const [currCallerName, callAppearRange, realCaller] = realCallerRes;
-    const realCallerStr = realCaller.stringify();
-    if (callHrchyItems.get(currCallerName) === undefined) {
-      callHrchyItems.set(currCallerName, new Map([[realCallerStr, buildCallHierarchyItem(realCaller)]]));
-    }
-    const toItem = callHrchyItems.get(currCallerName)?.get(realCallerStr);
-
-    // make the range circle back
-    const fromItem = new vscode.CallHierarchyItem(
-      vscode.SymbolKind.Namespace, isCalledName, currDocSymbolInfo.document.uri.path, currDocSymbolInfo.document.uri,
-      realCaller.loc.range, realCaller.loc.range
+    const isCalledRange = globalOrderedRanges[i];
+    // only build IncomingCall Edge since the file cannot be called,
+    // that is, cannot be `toItems`
+    buildEdgeForIsCalledRange(
+      isCalledRange,
+      currDocSymbolInfo, callHrchyItems, callHierarchyICs, callHierarchyOGs,
+      callerName, undefined, undefined
     );
-
-    if (!callHierarchyICs.has(currCallerName)) {
-      callHierarchyICs.set(currCallerName, new Map<string, vscode.CallHierarchyIncomingCall>());
-    }
-
-    buildEdge(
-      callHierarchyICs.get(currCallerName)!, realCallerStr, fromItem,
-      callHierarchyOGs.get(isCalledName)!, undefined, toItem, [callAppearRange]
-    );
-
   }
   return callHrchyInfo;
 }
@@ -119,6 +104,7 @@ function genAllCallHierarchyItems(
 function genAllCallHierarchyItemsNonOrphan(
   currDocSymbolInfo: DocSymbolInfo, globalOrderedRanges: [string, [number, number]][]
 ): [CallHrchyInfo, Set<number>] {
+  // init
   const visited: Set<number> = new Set();
 
   const callHrchyItems: Map<string, Map<string, vscode.CallHierarchyItem>> =
@@ -134,69 +120,108 @@ function genAllCallHierarchyItemsNonOrphan(
     return a.numRange[0] - b.numRange[0];
   });
 
+  // iterate all globalDef as caller
+  // for example a() {b, c}, `a` as the caller
   for (const info of infos) {
-    const isCalledName = info.name;
-    const infoStr = info.stringify();
-    if (callHrchyItems.get(isCalledName) === undefined) {
-      callHrchyItems.set(isCalledName, new Map([[infoStr, buildCallHierarchyItem(info)]]));
+    const callerName = info.name;
+    const callerSymbolStr = info.stringify();
+
+    if (callHrchyItems.get(callerName) === undefined) {
+      callHrchyItems.set(callerName, new Map([[callerSymbolStr, buildCallHierarchyItem(info)]]));
     }
-    const fromItem = callHrchyItems.get(isCalledName)?.get(infoStr);
+    const fromItem = callHrchyItems.get(callerName)?.get(callerSymbolStr);
     if (fromItem === undefined) {
       continue;
     }
 
-    // caller's range
-    const callerRange = info.globalDefRange;
-    if (callerRange === undefined) {
+    // isCalled is in this range
+    // for example a() {b, c}, `b` and `c` are in the range
+    const isCalledRange = info.globalDefRange;
+    if (isCalledRange === undefined) {
       continue;
     }
 
-    if (!callHierarchyOGs.has(isCalledName)) {
-      callHierarchyOGs.set(isCalledName, new Map<string, vscode.CallHierarchyOutgoingCall>());
+    if (!callHierarchyOGs.has(callerName)) {
+      callHierarchyOGs.set(callerName, new Map<string, vscode.CallHierarchyOutgoingCall>());
     }
 
-    const idxStart = bisectRight(globalOrderedRanges, callerRange[0], item => item[1][0]);
-    const idxEnd = bisectRight(globalOrderedRanges, callerRange[1], item => item[1][0]);
+    const idxStart = bisectRight(globalOrderedRanges, isCalledRange[0], item => item[1][0]);
+    const idxEnd = bisectRight(globalOrderedRanges, isCalledRange[1], item => item[1][0]);
+
+    // find possible isCalleds ranges
     for (let i = idxStart; i < idxEnd; ++i) {
       visited.add(i);
 
-      const realCallerRes = getRealCaller(globalOrderedRanges[i], currDocSymbolInfo);
-      if (realCallerRes === undefined) {
-        continue;
-      }
-      const [currCallerName, callAppearRange, realCaller] = realCallerRes;
-      const realCallerStr = realCaller.stringify();
-      if (callHrchyItems.get(currCallerName) === undefined) {
-        callHrchyItems.set(currCallerName, new Map([[realCallerStr, buildCallHierarchyItem(realCaller)]]));
-      }
-      const toItem = callHrchyItems.get(currCallerName)?.get(realCallerStr);
-
-      // this is kind of twisted,
-      // from-to relation represents the curr context
-      // definition must be the ISCALLED, execution must be the CALLER, curr context is not matter
-      // we are creating two directional edges
-      //
-      //            fromItems                   |
-      //            \   |   /                   |
-      // key:     1. currCaller  2. isCalled    |
-      //                             /  |  \    |
-      //                             toItems   \|/
-      //
-      // that is, our dictionary needs the opposite info to build an edge
-      if (!callHierarchyICs.has(currCallerName)) {
-        callHierarchyICs.set(currCallerName, new Map<string, vscode.CallHierarchyIncomingCall>());
-      }
-
-      buildEdge(
-        callHierarchyICs.get(currCallerName)!, realCallerStr, fromItem,
-        callHierarchyOGs.get(isCalledName)!, infoStr, toItem, [callAppearRange]
+      const isCalledRange = globalOrderedRanges[i];
+      buildEdgeForIsCalledRange(
+        isCalledRange,
+        currDocSymbolInfo, callHrchyItems, callHierarchyICs, callHierarchyOGs,
+        callerName, callerSymbolStr, fromItem
       );
-
     }
+
   }
 
   return [currCallHierarchyInfo, visited];
+}
 
+function buildEdgeForIsCalledRange(
+  isCalledRange: [string, [number, number]],
+  currDocSymbolInfo: DocSymbolInfo, callHrchyItems: Map<string, Map<string, vscode.CallHierarchyItem>>,
+  callHierarchyICs: Map<string, Map<string, vscode.CallHierarchyIncomingCall>>,
+  callHierarchyOGs: Map<string, Map<string, vscode.CallHierarchyOutgoingCall>>,
+  callerName: string, callerSymbolStr: string | undefined, fromItem: vscode.CallHierarchyItem | undefined,
+) {
+  const realIsCalledRes = getRealIsCalled(isCalledRange, currDocSymbolInfo);
+  if (realIsCalledRes === undefined) {
+    return;
+  }
+
+  const [isCalledName, callAppearRange, realIsCalled] = realIsCalledRes;
+
+  fromItem = (fromItem === undefined) ?
+    // when the file is the caller, the file has no `range`.
+    // Therefore, make the range circle back, that is,
+    // let the range points to the isCalled itself
+    new vscode.CallHierarchyItem(
+      vscode.SymbolKind.Namespace, callerName,
+      currDocSymbolInfo.document.uri.path, currDocSymbolInfo.document.uri,
+      realIsCalled.loc.range, realIsCalled.loc.range
+    ) : fromItem;
+
+  const realIsCalledStr = realIsCalled.stringify();
+  if (callHrchyItems.get(isCalledName) === undefined) {
+    callHrchyItems.set(isCalledName, new Map([[realIsCalledStr, buildCallHierarchyItem(realIsCalled)]]));
+  }
+  const toItem = callHrchyItems.get(isCalledName)?.get(realIsCalledStr);
+
+  // we are creating two directional edges
+  //
+  //           IncomingCall   OutgoingCall
+  //
+  //            fromItems
+  //                |
+  //                |
+  //               \|/
+  // key:     1. isCalled   2.   caller
+  //                               |
+  //                               |
+  //                              \|/
+  //                             toItems
+  //
+  // note that
+  // `fromItems` is constructed from caller and
+  // `toItems` is constructed from isCalled.
+  // that is, our dictionary needs two infos to build an edge
+  if (!callHierarchyICs.has(isCalledName)) {
+    callHierarchyICs.set(isCalledName, new Map<string, vscode.CallHierarchyIncomingCall>());
+  }
+
+  buildEdge(
+    callHierarchyICs.get(isCalledName)!, realIsCalledStr, fromItem,
+    callHierarchyOGs.get(callerName)!, callerSymbolStr, toItem,
+    [callAppearRange]
+  );
 }
 
 

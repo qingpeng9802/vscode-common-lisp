@@ -36,6 +36,12 @@ function assignKindAndDoc(
 ): vscode.CompletionItem[] {
   const citems: vscode.CompletionItem[] = [];
   for (const s of symbolsArr) {
+    // prevent duplicated items in NonAlphabetic
+    const prefix = s[0];
+    if (prefix === '&' || prefix === '*') {
+      continue;
+    }
+
     const ci = new vscode.CompletionItem(s, kind);
     const doc = getDocByName(s);
     if (doc !== undefined) {
@@ -53,7 +59,8 @@ function genOriSymbols(): vscode.CompletionItem[] {
     const kind = clKindToVscodeCIKind.get(k)!;
     citems.push(...assignKindAndDoc(partSymbols, kind));
   }
-  if (citems.length !== 978) {
+  if (citems.length !== 923) {
+    // not 978 since we filtered `&` and `*` out
     console.warn(`[Autocompletion] Built incomplete kind list (${citems.length}) of symbols`);
   }
 
@@ -66,7 +73,8 @@ function assignKindAndDocNonAlphabetic(
 ): vscode.CompletionItem[] {
   const citems: vscode.CompletionItem[] = [];
   for (const s of symbolsArr) {
-    const ci = new vscode.CompletionItem(s, kind);
+    const fullKeyword = prefix + s;
+    const ci = new vscode.CompletionItem(fullKeyword, kind);
 
     if (prefix === '#' || prefix === '~') {
       // we do not get doc for `#` and `~`
@@ -75,7 +83,7 @@ function assignKindAndDocNonAlphabetic(
       ci.documentation.supportHtml = true;
 
     } else if (prefix === '&' || prefix === '*') {
-      const doc = getDocByName(prefix + s);
+      const doc = getDocByName(fullKeyword);
       ci.documentation = doc;
 
     } else if (prefix === ':') {

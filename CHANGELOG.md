@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.2.3] - 2023-06-27
+### Fixed
+- fix non-alphabetic auto-completion
+
 ## [1.2.2] - 2023-06-26
 ### Changed
 - `README.md` update README

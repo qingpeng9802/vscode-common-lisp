@@ -20,4 +20,3 @@ class ParsedToken {
 
 }
 
-export { ParsedToken };

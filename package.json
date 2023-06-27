@@ -6,7 +6,7 @@
         "name": "Qingpeng Li",
         "email": "qingpeng9802@gmail.com"
     },
-    "version": "1.2.2",
+    "version": "1.2.3",
     "publisher": "qingpeng",
     "engines": {
         "vscode": "^1.63.0"
@@ -302,6 +302,7 @@
         "eslint-import-resolver-typescript": "^3.5.5",
         "eslint-plugin-import": "^2.27.5",
         "eslint-plugin-node": "^11.1.0",
+        "eslint-plugin-unused-imports": "^2.0.0",
         "fs": "^0.0.1-security",
         "js-yaml": "^4.1.0",
         "process": "^0.11.10",

@@ -17,7 +17,7 @@ function genAnonContainerNameNum(d: Map<string, number>, anonContainerName: stri
 }
 
 // @sideEffect: SymbolInfo.numberedContainerName
-function globalContainerToSymbolInfosDict(
+function globalContainerToDocumentSymbolDict(
   defs: Map<string, SymbolInfo[]>, containerName: string
 ): Map<string, vscode.DocumentSymbol> {
   const res: Map<string, vscode.DocumentSymbol> = new Map<string, vscode.DocumentSymbol>();
@@ -33,7 +33,7 @@ function globalContainerToSymbolInfosDict(
 }
 
 // @sideEffect: SymbolInfo.numberedContainerName
-function noValidContainerToSymbolInfosDict(
+function noValidContainerToDocumentSymbolDict(
   defs: Map<string, SymbolInfo[]>, anonContainerNameDict: Map<string, number>
 ): Map<string, vscode.DocumentSymbol> {
   const res: Map<string, vscode.DocumentSymbol> = new Map<string, vscode.DocumentSymbol>();
@@ -53,7 +53,7 @@ function noValidContainerToSymbolInfosDict(
 }
 
 // @sideEffect: SymbolInfo.numberedContainerName
-function noValidContainerToSymbolInfos(
+function noValidContainerToDocumentSymbol(
   defs: Map<string, SymbolInfo[]>, anonContainerNameDict: Map<string, number>
 ): vscode.DocumentSymbol[] {
   const res: vscode.DocumentSymbol[] = [];
@@ -90,10 +90,40 @@ function genDocumentSymbol(currDocSymbolInfo: DocSymbolInfo): vscode.DocumentSym
   // for anonymous container name
   const anonContainerNameDict: Map<string, number> = new Map<string, number>();
 
+  const [globalDefSIDict, localDefSIDict] =
+    withNamedContainerToDocumentSymbolDict(currDocSymbolInfo, anonContainerNameDict);
+
+  // collect wild vars (vars without valid container)
+  const localAnonLambdaVarDSs =
+    noValidContainerToDocumentSymbol(currDocSymbolInfo.localAnonLambda, anonContainerNameDict);
+  const localAnonSingleVarDSs =
+    noValidContainerToDocumentSymbol(currDocSymbolInfo.localAnonSingle, anonContainerNameDict);
+  const localAnonVarDSs = [...localAnonLambdaVarDSs, ...localAnonSingleVarDSs];
+
+  // try local as parent
+  const restlocalAnonVarDSs1 =
+    tryAppendVarsToParentScope(
+      currDocSymbolInfo, localAnonVarDSs, localDefSIDict, currDocSymbolInfo.localDef
+    );
+  const restlocalAnonVarDSs2 = [...localDefSIDict.values(), ...restlocalAnonVarDSs1];
+
+  // try global as parent
+  const restlocalAnonVarDSs3 =
+    tryAppendVarsToParentScope(
+      currDocSymbolInfo, restlocalAnonVarDSs2, globalDefSIDict, currDocSymbolInfo.globalDef
+    );
+
+  return [...globalDefSIDict.values(), ...restlocalAnonVarDSs3];
+}
+
+function withNamedContainerToDocumentSymbolDict(
+  currDocSymbolInfo: DocSymbolInfo, anonContainerNameDict: Map<string, number>
+) {
   // start assgin
+  // global
   const fileName = currDocSymbolInfo.document.uri.path.split('/').pop();
   const globalContainerName = (fileName !== undefined) ? fileName : 'Untitled';
-  const globalDefSIDict = globalContainerToSymbolInfosDict(currDocSymbolInfo.globalDef, globalContainerName);
+  const globalDefSIDict = globalContainerToDocumentSymbolDict(currDocSymbolInfo.globalDef, globalContainerName);
   for (const sInfos of currDocSymbolInfo.globalNamedLambda.values()) {
     for (const sInfo of sInfos) {
       if (sInfo.containerName === undefined) {
@@ -107,7 +137,8 @@ function genDocumentSymbol(currDocSymbolInfo: DocSymbolInfo): vscode.DocumentSym
     }
   }
 
-  const localDefSIDict = noValidContainerToSymbolInfosDict(currDocSymbolInfo.localDef, anonContainerNameDict);
+  // local
+  const localDefSIDict = noValidContainerToDocumentSymbolDict(currDocSymbolInfo.localDef, anonContainerNameDict);
   for (const sInfos of currDocSymbolInfo.localNamedLambda.values()) {
     for (const sInfo of sInfos) {
       if (sInfo.containerName === undefined) {
@@ -121,25 +152,27 @@ function genDocumentSymbol(currDocSymbolInfo: DocSymbolInfo): vscode.DocumentSym
     }
   }
 
-  // wild vars
-  const localAnonLambdaSIs = noValidContainerToSymbolInfos(currDocSymbolInfo.localAnonLambda, anonContainerNameDict);
-  const localAnonSingleSIs = noValidContainerToSymbolInfos(currDocSymbolInfo.localAnonSingle, anonContainerNameDict);
+  return [globalDefSIDict, localDefSIDict];
+}
 
-  // try to append wild vars to parent scope from down to top ----------------------------------------------------------
-  let headVars: vscode.DocumentSymbol[] = [...localAnonLambdaSIs, ...localAnonSingleSIs];
-  let restVars: vscode.DocumentSymbol[] = [];
+function tryAppendVarsToParentScope(
+  currDocSymbolInfo: DocSymbolInfo, localAnonVarDSs: vscode.DocumentSymbol[],
+  localDefSIDict: Map<string, vscode.DocumentSymbol>, def: Map<string, SymbolInfo[]>
+) {
+  // try to append wild vars to parent scope from down to top
+  const restlocalAnonVarDSs: vscode.DocumentSymbol[] = [];
 
-  const topLevelLocalDefs = Array.from(currDocSymbolInfo.localDef.values()).flat();
-  const topLevelLocalScopes = genSortedTopLevelScopes(currDocSymbolInfo.docRes, topLevelLocalDefs);
+  const topLevelDefs = Array.from(def.values()).flat();
+  const topLevelScopes = genSortedTopLevelScopes(currDocSymbolInfo.docRes, topLevelDefs);
 
-  for (const si of headVars) {
+  for (const si of localAnonVarDSs) {
     const siStart = currDocSymbolInfo.document.offsetAt(si.range.start);
     const siEnd = currDocSymbolInfo.document.offsetAt(si.range.end);
 
-    let idx = bisectRight(topLevelLocalScopes, siStart, item => item[1][0]);
+    let idx = bisectRight(topLevelScopes, siStart, item => item[1][0]);
     while (idx > 0) {
-      const topLevelLocalScopesLast = topLevelLocalScopes[idx - 1];
-      const [lastScopeDefName, lastScope] = topLevelLocalScopesLast;
+      const topLevelScopesLast = topLevelScopes[idx - 1];
+      const [lastScopeDefName, lastScope] = topLevelScopesLast;
       const [lastScopeStart, lastScopeEnd] = lastScope;
 
       if (lastScopeStart <= siStart && siEnd <= lastScopeEnd) {
@@ -150,41 +183,10 @@ function genDocumentSymbol(currDocSymbolInfo: DocSymbolInfo): vscode.DocumentSym
       }
     }
     if (idx === 0) {
-      restVars.push(si);
+      restlocalAnonVarDSs.push(si);
     }
   }
-
-  headVars = [...localDefSIDict.values(), ...restVars];
-  restVars = [];
-
-  const topLevelDefs = Array.from(currDocSymbolInfo.globalDef.values()).flat();
-  const topLevelScopes = genSortedTopLevelScopes(currDocSymbolInfo.docRes, topLevelDefs);
-  for (const si of headVars) {
-    const siStart = currDocSymbolInfo.document.offsetAt(si.range.start);
-    const siEnd = currDocSymbolInfo.document.offsetAt(si.range.end);
-
-    let idx = bisectRight(topLevelScopes, currDocSymbolInfo.document.offsetAt(si.range.start), item => item[1][0]);
-    while (idx > 0) {
-      const topLevelScopesLast = topLevelScopes[idx - 1];
-      const [lastScopeDefName, lastScope] = topLevelScopesLast;
-      const [lastScopeStart, lastScopeEnd] = lastScope;
-
-      if (lastScopeStart <= siStart && siEnd <= lastScopeEnd) {
-        globalDefSIDict.get(lastScopeDefName)!.children.push(si);
-        break;
-      } else {
-        idx--;
-      }
-    }
-    if (idx === 0) {
-      restVars.push(si);
-    }
-  }
-
-  return [
-    ...globalDefSIDict.values(),
-    ...restVars
-  ];
+  return restlocalAnonVarDSs;
 }
 
 export { genDocumentSymbol };

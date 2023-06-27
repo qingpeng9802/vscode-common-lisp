@@ -72,7 +72,7 @@ class WorkspaceConfig {
 
 
       if (newConfigVal !== undefined) {
-        //console.log(`update workspace config: ${k} = ${newConfig}`);
+        //console.log(`update workspace config: ${k} = ${newConfigVal as string}`);
         this.config.set(k, newConfigVal);
         traceableDisposables.updateDisposables(contextSubcriptions, k, newConfigVal);
       }

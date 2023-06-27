@@ -15,7 +15,8 @@
     "plugins": [
         "node",
         "import",
-        "@typescript-eslint"
+        "@typescript-eslint",
+        "unused-imports"
     ],
     "extends": [
         "eslint:recommended",
