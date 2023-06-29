@@ -209,7 +209,7 @@ function endName(
 // `varStr` must start from and contain first '('
 // `leftPOffset` is the absolute index of whole text when i == 0 [ind at '(']
 function processVars(
-  leftPOffset: number, isLambdaList: boolean, allowDestructuring: boolean, scanDocRes: ScanDocRes, validUpper: number
+  leftPOffset: number, scanDocRes: ScanDocRes, validUpper: number, allowDestructuring: boolean,
 ): [Map<string, [number, number]>, number] | undefined {
   //const res: Map<string, [number, number]> = new Map<string, [number, number]>();
 
@@ -220,12 +220,7 @@ function processVars(
   }
   const varsStr = scanDocRes.text.substring(varsStrStart, varsStrEnd);
 
-  if (isLambdaList) {
-    return [processRecList(varsStr, leftPOffset, scanDocRes, '', allowDestructuring), varsStrEnd];
-  } else {
-    return [processRecList(varsStr, leftPOffset, scanDocRes, ''), varsStrEnd];
-  }
-
+  return [processRecList(varsStr, leftPOffset, scanDocRes, '', allowDestructuring), varsStrEnd];
 }
 
 export { processVars };

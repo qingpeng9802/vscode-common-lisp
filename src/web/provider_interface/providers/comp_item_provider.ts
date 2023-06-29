@@ -3,9 +3,10 @@ import * as vscode from 'vscode';
 import type { UserSymbolsCompItem } from '../../builders/comp_item_builder/UserSymbolsCompItem';
 import { genAllOriSymbols } from '../../builders/comp_item_builder/comp_item_ori_builder';
 import { bisectRight } from '../../common/algorithm';
-import { clValidWithColonSharp, CL_MODE } from '../../common/cl_util';
+import { CL_MODE } from '../../common/cl_util';
 import { TriggerProvider } from '../../common/enum';
 import { TriggerEvent } from '../TriggerEvent';
+import { getCLWordRangeAtPosition } from '../provider_util';
 import { structuredInfo } from '../structured_info';
 
 // only need once
@@ -44,7 +45,7 @@ function registerCompletionItemProviders(providerName: string): vscode.Disposabl
         CL_MODE,
         {
           provideCompletionItems(document, position, token, context) {
-            const range = document.getWordRangeAtPosition(position, clValidWithColonSharp);
+            const range = getCLWordRangeAtPosition(document, position);
             if (range === undefined) {
               return undefined;
             }
@@ -67,7 +68,7 @@ function registerCompletionItemProviders(providerName: string): vscode.Disposabl
         CL_MODE,
         {
           provideCompletionItems(document, position, token, context) {
-            const range = document.getWordRangeAtPosition(position, clValidWithColonSharp);
+            const range = getCLWordRangeAtPosition(document, position);
             if (range === undefined) {
               return undefined;
             }
@@ -97,7 +98,7 @@ function registerCompletionItemProviders(providerName: string): vscode.Disposabl
         CL_MODE,
         {
           provideCompletionItems(document, position, token, context) {
-            const range = document.getWordRangeAtPosition(position, clValidWithColonSharp);
+            const range = getCLWordRangeAtPosition(document, position);
             if (range === undefined) {
               return undefined;
             }
@@ -111,7 +112,7 @@ function registerCompletionItemProviders(providerName: string): vscode.Disposabl
         CL_MODE,
         {
           provideCompletionItems(document, position, token, context) {
-            const range = document.getWordRangeAtPosition(position, clValidWithColonSharp);
+            const range = getCLWordRangeAtPosition(document, position);
             if (range === undefined) {
               return undefined;
             }
@@ -125,7 +126,7 @@ function registerCompletionItemProviders(providerName: string): vscode.Disposabl
         CL_MODE,
         {
           provideCompletionItems(document, position, token, context) {
-            const range = document.getWordRangeAtPosition(position, clValidWithColonSharp);
+            const range = getCLWordRangeAtPosition(document, position);
             if (range === undefined) {
               return undefined;
             }
@@ -139,7 +140,7 @@ function registerCompletionItemProviders(providerName: string): vscode.Disposabl
         CL_MODE,
         {
           provideCompletionItems(document, position, token, context) {
-            const range = document.getWordRangeAtPosition(position, clValidWithColonSharp);
+            const range = getCLWordRangeAtPosition(document, position);
             if (range === undefined) {
               return undefined;
             }
@@ -153,7 +154,7 @@ function registerCompletionItemProviders(providerName: string): vscode.Disposabl
         CL_MODE,
         {
           provideCompletionItems(document, position, token, context) {
-            const range = document.getWordRangeAtPosition(position, clValidWithColonSharp);
+            const range = getCLWordRangeAtPosition(document, position);
             if (range === undefined) {
               return undefined;
             }
@@ -167,7 +168,7 @@ function registerCompletionItemProviders(providerName: string): vscode.Disposabl
         CL_MODE,
         {
           provideCompletionItems(document, position, token, context) {
-            const range = document.getWordRangeAtPosition(position, clValidWithColonSharp);
+            const range = getCLWordRangeAtPosition(document, position);
             if (range === undefined) {
               return undefined;
             }

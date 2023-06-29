@@ -65,7 +65,7 @@ function getValidGroupInd(indices: [number, number][], nameGroup: number[]): [nu
   return undefined;
 }
 
-function checkDefName(r: RegExpMatchArray, nameGroup: number[]): string | undefined {
+function getValidGroupRes(r: RegExpMatchArray, nameGroup: number[]): string | undefined {
   for (const g of nameGroup) {
     if (r[g] !== undefined) {
       return r[g];
@@ -139,7 +139,7 @@ const isSpace = (c: string) => space.has(c);
 
 export {
   isQuote,
-  checkDefName, getValidGroupInd,
+  getValidGroupRes, getValidGroupInd,
   isRangeIntExcludedRanges,
   addToDictArr,
   isShadowed,

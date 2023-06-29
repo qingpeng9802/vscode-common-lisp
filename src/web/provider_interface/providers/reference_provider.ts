@@ -2,9 +2,10 @@ import * as vscode from 'vscode';
 
 import type { DocSymbolInfo } from '../../collect_info/DocSymbolInfo';
 import { isQuote, isRangeIntExcludedRanges, isShadowed } from '../../collect_info/collect_util';
-import { clValidWithColonSharp, CL_MODE } from '../../common/cl_util';
+import { CL_MODE } from '../../common/cl_util';
 import { TriggerProvider } from '../../common/enum';
 import { TriggerEvent } from '../TriggerEvent';
+import { getCLWordRangeAtPosition } from '../provider_util';
 import { structuredInfo } from '../structured_info';
 
 function registerReferenceProvider() {
@@ -12,7 +13,7 @@ function registerReferenceProvider() {
     CL_MODE,
     {
       provideReferences(document, position, context, token) {
-        const range = document.getWordRangeAtPosition(position, clValidWithColonSharp);
+        const range = getCLWordRangeAtPosition(document, position);
         if (range === undefined) {
           return undefined;
         }
@@ -68,10 +69,9 @@ function getReferenceByWord(
     return [];
   }
 
-  const scopedSameNameWords = symbolSelected.getScopedSameNameWords(needColorDict, currDocSymbolInfo.stepFormArr);
+  const scopedSameNameWords = symbolSelected.getScopedSameNameWordsExcludeItself(needColorDict, currDocSymbolInfo);
   const res: vscode.Location[] = [];
   // loop cache
-  const [symbolSelectedStart, symbolSelectedEnd] = symbolSelected.numRange;
   const isSymbolSelectedLengthLargerThanOne = (symbolSelected.name.length > 1);
   const isShaowValid = shadow !== undefined && shadow.length !== 0;
   const uri = doc.uri;
@@ -82,12 +82,6 @@ function getReferenceByWord(
     }
 
     const [wordStart, wordEnd] = wordRange;
-    if (
-      !includeDefinition &&
-      // intersection
-      (symbolSelectedEnd >= wordStart && wordEnd >= symbolSelectedStart)) {
-      continue;
-    }
 
     if (positionFlag !== undefined) {
       // lexcial scope is enabled, exclude global vars (with quote) from lexical scope
@@ -111,7 +105,7 @@ function getReferenceByWord(
 
   }
 
-  if (includeDefinition && symbolSelected.scope !== undefined) {
+  if (includeDefinition) {
     res.push(symbolSelected.loc);
   }
 

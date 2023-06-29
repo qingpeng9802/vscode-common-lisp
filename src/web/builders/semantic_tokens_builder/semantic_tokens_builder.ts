@@ -4,127 +4,22 @@ import type { DocSymbolInfo } from '../../collect_info/DocSymbolInfo';
 import type { SymbolInfo } from '../../collect_info/SymbolInfo';
 import { isRangeIntExcludedRanges } from '../../collect_info/collect_util';
 import { loopKeywordsTokenMap, loopKeywordsSet } from '../../collect_info/loop_keywords';
+import { excludeRangesFromRanges, mergeSortedIntervals } from '../../common/algorithm';
 
-const tokenTypes = new Map<string, number>();
-const tokenModifiers = new Map<string, number>();
-
-const legend = getLegend();
-
-function getLegend() {
-  const tokenTypesLegend: string[] = [
-    'namespace',
-    'class',
-    'enum',
-    'interface',
-    'struct',
-    'typeParameter',
-    'type',
-    'parameter',
-    'variable',
-    'property',
-    'enumMember',
-    'decorator',
-    'event',
-    'function',
-    'method',
-    'macro',
-    'label',
-    'comment',
-    'string',
-    'keyword',
-    'number',
-    'regexp',
-    'operator',
-    '' // placeholder for unknown
-  ];
-
-  const tokenModifiersLegend: string[] = [
-    'declaration',
-    'definition',
-    'readonly',
-    'static',
-    'deprecated',
-    'abstract',
-    'async',
-    'modification',
-    'documentation',
-    'defaultLibrary',
-  ];
-
-  tokenTypesLegend.forEach((tokenType, index) => tokenTypes.set(tokenType, index));
-  tokenModifiersLegend.forEach((tokenModifier, index) => tokenModifiers.set(tokenModifier, index));
-
-  return new vscode.SemanticTokensLegend(tokenTypesLegend, tokenModifiersLegend);
-}
-
-// https://github.com/microsoft/vscode-extension-samples/blob/main/semantic-tokens-sample/src/extension.ts#L45-L65
-function _encodeTokenType(tokenType: string): number {
-  if (tokenTypes.has(tokenType)) {
-    return tokenTypes.get(tokenType)!;
-  } else if (tokenType === 'notInLegend') {
-    return tokenTypes.size + 2;
-  }
-  return 0;
-}
-
-function _encodeTokenModifiers(strTokenModifiers: string[]): number {
-  let result = 0;
-  for (const tokenModifier of strTokenModifiers) {
-    if (tokenModifiers.has(tokenModifier)) {
-      result = result | (1 << tokenModifiers.get(tokenModifier)!);
-    } else if (tokenModifier === 'notInLegend') {
-      result = result | (1 << tokenModifiers.size + 2);
-    }
-  }
-  return result;
-}
-
-const vscodeKindToTokenType: Map<vscode.SymbolKind, string | [string, string[]]> =
-  new Map<vscode.SymbolKind, string | [string, string[]]>([
-    // no direct mapping
-    [vscode.SymbolKind.File, 'variable'],
-    // no direct mapping
-    [vscode.SymbolKind.Module, 'namespace'],
-    [vscode.SymbolKind.Namespace, 'namespace'],
-    // no direct mapping
-    [vscode.SymbolKind.Package, 'type'],
-    [vscode.SymbolKind.Class, 'class'],
-    [vscode.SymbolKind.Method, 'method'],
-    [vscode.SymbolKind.Property, 'property'],
-    [vscode.SymbolKind.Field, ''],
-    [vscode.SymbolKind.Constructor, ''],
-    [vscode.SymbolKind.Enum, 'enum'],
-    [vscode.SymbolKind.Interface, 'interface'],
-    [vscode.SymbolKind.Function, 'function'],
-    [vscode.SymbolKind.Variable, 'variable'],
-    [vscode.SymbolKind.Constant, ['variable', ['readonly']]],
-
-    [vscode.SymbolKind.String, 'string'],
-    [vscode.SymbolKind.Number, 'number'],
-    // no direct mapping
-    [vscode.SymbolKind.Boolean, ''],
-    // no direct mapping
-    [vscode.SymbolKind.Array, ''],
-    // no direct mapping
-    [vscode.SymbolKind.Object, ''],
-    // no direct mapping
-    [vscode.SymbolKind.Key, ''],
-    // no direct mapping
-    [vscode.SymbolKind.Null, ''],
-    [vscode.SymbolKind.EnumMember, 'enumMember'],
-    [vscode.SymbolKind.Struct, 'struct'],
-    [vscode.SymbolKind.Event, 'event'],
-    [vscode.SymbolKind.Operator, 'operator'],
-    [vscode.SymbolKind.TypeParameter, 'typeParameter']
-  ]);
+import { _encodeTokenType, _encodeTokenModifiers, vscodeKindToTokenType } from './token_util';
 
 function genAllPossibleWord(
   currDocSymbolInfo: DocSymbolInfo
 ): [Map<string, [number, number][]>, [string, [number, number]][]] {
   const text = currDocSymbolInfo.docRes.text;
+  const t = performance.now();
+
+  // slow regex
+  // eslint-disable-next-line max-len
+  // const reg = /((?<=,)@?([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+)|(?<=[^A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.\,])([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+))(?=[^A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.])/igmd;
 
   // not start with colon
-  const reg = /(?<=[^A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.])([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+)(?=[^A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.])/igm;
+  const reg = /((?<=[^A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.\,]|,@)([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+)|(?<=,)[#:A-Za-z0-9\+\-\*\/\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.][#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]*)(?=[^A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.])/igm;
   const matchRes = text.matchAll(reg);
 
   const needColorDict: Map<string, [number, number][]> = new Map<string, [number, number][]>();
@@ -142,7 +37,8 @@ function genAllPossibleWord(
     const hasName = needColorDict.get(word);
 
     if (hasName !== undefined) {
-      const rindex = r.index!;
+      const ind = r.index!;
+      const rindex = ind;
       const numRange: [number, number] = [rindex, rindex + word.length];
       hasName.push(numRange);
 
@@ -151,7 +47,7 @@ function genAllPossibleWord(
       }
     }
   }
-
+  console.log(`token: ${performance.now() - t} ms`);
   return [needColorDict, globalOrderedRanges];
 }
 
@@ -166,62 +62,14 @@ function getTokenDict(
     currDocSymbolInfo.docRes.getExcludedRangesForDocumentSemanticTokensProvider(buildingConfig);
 
   // overlap in order!
-  const tokenDictGlobal = updateTokenDict(currDocSymbolInfo, excludedRanges, needColorDict, 'global', tokensBuilder);
   const tokenDictLocal = updateTokenDict(currDocSymbolInfo, excludedRanges, needColorDict, 'local', tokensBuilder);
+  const tokenDictGlobal = updateTokenDict(currDocSymbolInfo, excludedRanges, needColorDict, 'global', tokensBuilder);
   updateLoop(currDocSymbolInfo, excludedRanges, tokensBuilder);
-}
 
-function updateLoop(
-  currDocSymbolInfo: DocSymbolInfo,
-  excludedRanges: [number, number][],
-  tokensBuilder: vscode.SemanticTokensBuilder
-) {
-  const document = currDocSymbolInfo.document;
-  const text = document.getText();
-
-  for (const blockRange of currDocSymbolInfo.loopBlocks) {
-    const [start, end] = blockRange;
-    const currText = text.substring(start, end);
-
-    const reg = /(?<=[^A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.])([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+)(?=[^A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.])/igm;
-    const matchRes = currText.matchAll(reg);
-
-    for (const r of matchRes) {
-      const word = r[1].toLowerCase();
-      if (
-        !loopKeywordsSet.has(word) &&
-        !(word.startsWith(':') && loopKeywordsSet.has(word.substring(1))) // some people would like use : before the keyword
-      ) {
-        continue;
-      }
-
-      const rindex = r.index! + start;
-      const numRange: [number, number] = [rindex, rindex + word.length];
-      if (isRangeIntExcludedRanges(numRange, excludedRanges)) {
-        continue;
-      }
-
-      const tokenMapRes = loopKeywordsTokenMap.get(word.startsWith(':') ? word.substring(1) : word)!;
-      let tokenType = '';
-      let tokenModifiers: string[] = [];
-      if (Array.isArray(tokenMapRes)) {
-        tokenType = tokenMapRes[0];
-        tokenModifiers = tokenMapRes[1];
-      } else {
-        tokenType = tokenMapRes;
-        tokenModifiers = [];
-      }
-
-      const startPos = document.positionAt(rindex);
-      tokensBuilder.push(
-        startPos.line, startPos.character, word.length,
-        _encodeTokenType(tokenType), _encodeTokenModifiers(tokenModifiers)
-      );
-      //const key = `loop ${word}|${startPos.line},${startPos.character},${word.length}`;
-      //console.log(key);
-    }
-
-  }
+  // vscode semantic highlighting does not support multi-line token, does not work
+  // overrideQuote(currDocSymbolInfo, tokensBuilder);
+  // not sure if it can cover all cases or not
+  // overrideNotFormattedString(currDocSymbolInfo, tokensBuilder);
 }
 
 function updateTokenDict(
@@ -254,13 +102,10 @@ function updateTokenDict(
       }
       // color def itself
       const startPos = item.loc.range.start;
-      // if scope undefined, later we will color all
-      if (item.scope !== undefined) {
-        setParsedToken(tokensBuilder, item, startPos, isGlobal);
-      }
+      setParsedToken(tokensBuilder, item, startPos, isGlobal);
 
       // color its scope
-      const scopedSameNameWords = item.getScopedSameNameWords(needColorDict, currDocSymbolInfo.stepFormArr);
+      const scopedSameNameWords = item.getScopedSameNameWordsExcludeItself(needColorDict, currDocSymbolInfo);
       for (const rang of scopedSameNameWords) {
         if (isRangeIntExcludedRanges(rang, excludedRanges)) {
           continue;
@@ -273,6 +118,60 @@ function updateTokenDict(
     }
   }
 
+}
+
+function updateLoop(
+  currDocSymbolInfo: DocSymbolInfo,
+  excludedRanges: [number, number][],
+  tokensBuilder: vscode.SemanticTokensBuilder
+) {
+  const document = currDocSymbolInfo.document;
+  const text = document.getText();
+
+  for (const blockRange of currDocSymbolInfo.loopBlocks) {
+    const [start, end] = blockRange;
+    const currText = text.substring(start, end);
+
+    const reg = /(?<=[^:A-Za-z0-9\-\=])([:A-Za-z0-9\-\=]+)(?=[^:A-Za-z0-9\-\=])/igm;
+    const matchRes = currText.matchAll(reg);
+
+    for (const r of matchRes) {
+      const word = r[1].toLowerCase();
+      if (
+        !loopKeywordsSet.has(word) &&
+        // some people would like use : before the keyword
+        !(word.includes(':') && loopKeywordsSet.has(word.substring(word.indexOf(':') + 1)))
+      ) {
+        continue;
+      }
+
+      const rindex = r.index! + start;
+      const numRange: [number, number] = [rindex, rindex + word.length];
+      if (isRangeIntExcludedRanges(numRange, excludedRanges)) {
+        continue;
+      }
+
+      const tokenMapRes = loopKeywordsTokenMap.get(word.startsWith(':') ? word.substring(1) : word)!;
+      let tokenType = '';
+      let tokenModifiers: string[] = [];
+      if (Array.isArray(tokenMapRes)) {
+        tokenType = tokenMapRes[0];
+        tokenModifiers = tokenMapRes[1];
+      } else {
+        tokenType = tokenMapRes;
+        tokenModifiers = [];
+      }
+
+      const startPos = document.positionAt(rindex);
+      tokensBuilder.push(
+        startPos.line, startPos.character, word.length,
+        _encodeTokenType(tokenType), _encodeTokenModifiers(tokenModifiers)
+      );
+      //const key = `loop ${word}|${startPos.line},${startPos.character},${word.length}`;
+      //console.log(key);
+    }
+
+  }
 }
 
 // dependency injection tokensBuilder
@@ -330,4 +229,61 @@ function buildSemanticTokens(
   return tokensBuilder.build();
 }
 
-export { legend, buildSemanticTokens, genAllPossibleWord };
+function overrideQuote(
+  currDocSymbolInfo: DocSymbolInfo,
+  tokensBuilder: vscode.SemanticTokensBuilder
+) {
+  const scanDocRes = currDocSymbolInfo.docRes;
+  const backquotePairAndSymbol = mergeSortedIntervals(
+    [...scanDocRes.backquotePairRange, ...scanDocRes.backquoteRange].sort((a, b) => a[0] - b[0]));
+  const commaPairAndSymbol = mergeSortedIntervals(
+    [...scanDocRes.commaPairRange, ...scanDocRes.commaRange].sort((a, b) => a[0] - b[0]));
+  const excludedComma = excludeRangesFromRanges(backquotePairAndSymbol, commaPairAndSymbol);
+
+  const document = currDocSymbolInfo.document;
+  const textColorRanges = mergeSortedIntervals([
+    ...scanDocRes.quotedPairRange,
+    ...scanDocRes.quotedRange,
+    ...excludedComma
+  ]);
+
+  for (const textRange of textColorRanges) {
+    const [start, end] = textRange;
+    const startPos = document.positionAt(start);
+    tokensBuilder.push(
+      startPos.line, startPos.character, end - start,
+      _encodeTokenType('operator'), _encodeTokenModifiers([])
+    );
+  }
+}
+
+function overrideNotFormattedString(
+  currDocSymbolInfo: DocSymbolInfo,
+  tokensBuilder: vscode.SemanticTokensBuilder
+) {
+  const document = currDocSymbolInfo.document;
+  const text = document.getText();
+  const reg = /(?<=^|\s|\()format[\S\s]*?"/igm;
+  const matchRes = text.matchAll(reg);
+  const doubleQSet = new Set<number>();
+  for (const r of matchRes) {
+    if (r.index === undefined) {
+      continue;
+    }
+    doubleQSet.add(r.index + r[0].length - 1);
+  }
+
+  for (const strRange of currDocSymbolInfo.docRes.stringRange) {
+    const [start, end] = strRange;
+    if (!doubleQSet.has(start)) {
+      // actually not formatted str
+      const startPos = document.positionAt(start);
+      tokensBuilder.push(
+        startPos.line, startPos.character, end - start,
+        _encodeTokenType('string'), _encodeTokenModifiers([])
+      );
+    }
+  }
+}
+
+export { buildSemanticTokens, genAllPossibleWord };

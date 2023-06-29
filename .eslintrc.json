@@ -27,6 +27,8 @@
         "plugin:@typescript-eslint/recommended"
     ],
     "rules": {
+        "unused-imports/no-unused-imports": "warn",
+
         //"complexity": "warn",
         "max-len": [ "warn", {
                 "code": 120,

@@ -10,6 +10,7 @@ function getDocSymbolInfo(document: vscode.TextDocument, buildingConfig: Map<str
   const text = document.getText();
   const scanDocRes = scanDoc(text);
   const excludedRanges = scanDocRes.getExcludedRangesForStaticAnalysis(buildingConfig);
+  console.log(scanDocRes);
 
   const [globalDef, globalNamedLambda] = collectGlobalDef(document, scanDocRes, excludedRanges);
   const [localDef, localNamedLambda] = collectLocalDef(document, scanDocRes, excludedRanges);
@@ -17,7 +18,7 @@ function getDocSymbolInfo(document: vscode.TextDocument, buildingConfig: Map<str
   const [localAnonLambda, stepForm] = collectKeywordVars(document, scanDocRes, excludedRanges);
   const localAnonSingle = collectKeywordSingleVar(document, scanDocRes, excludedRanges);
   const [localAnonLoop, loopBlocks] = collectLoopVar(document, scanDocRes, excludedRanges);
-
+  console.log(loopBlocks);
   return new DocSymbolInfo(
     document, scanDocRes,
     globalDef, globalNamedLambda,

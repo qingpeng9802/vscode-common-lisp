@@ -2,9 +2,10 @@ import * as vscode from 'vscode';
 
 import type { DocSymbolInfo } from '../../collect_info/DocSymbolInfo';
 import { isQuote, isRangeIntExcludedRanges } from '../../collect_info/collect_util';
-import { CL_MODE, clValidWithColonSharp } from '../../common/cl_util';
+import { CL_MODE } from '../../common/cl_util';
 import { TriggerProvider } from '../../common/enum';
 import { TriggerEvent } from '../TriggerEvent';
+import { getCLWordRangeAtPosition } from '../provider_util';
 import { structuredInfo } from '../structured_info';
 
 function registerDefinitionProvider() {
@@ -12,7 +13,7 @@ function registerDefinitionProvider() {
     CL_MODE,
     {
       provideDefinition(document, position, token) {
-        const range = document.getWordRangeAtPosition(position, clValidWithColonSharp);
+        const range = getCLWordRangeAtPosition(document, position);
         if (range === undefined) {
           return undefined;
         }

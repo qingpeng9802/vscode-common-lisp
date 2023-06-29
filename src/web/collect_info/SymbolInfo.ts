@@ -2,6 +2,8 @@ import type * as vscode from 'vscode';
 
 import { bisectRight } from '../common/algorithm';
 
+import type { DocSymbolInfo } from './DocSymbolInfo';
+
 class SymbolInfo {
   public readonly name: string;
   public readonly containerName: string | undefined;
@@ -35,9 +37,9 @@ class SymbolInfo {
     return `${this.name}|${this.loc.uri.path}|${this.loc.range.start.line},${this.loc.range.start.character},${this.loc.range.end.line},${this.loc.range.end.character}`;
   }
 
-  public getScopedSameNameWords(
+  public getScopedSameNameWordsExcludeItself(
     needColorDict: Map<string, [number, number][]>,
-    stepFormArr: [number, number][],
+    currDocSymbolInfo: DocSymbolInfo,
   ): [number, number][] {
     const sameNameWords = needColorDict.get(this.name);
     if (sameNameWords === undefined || sameNameWords.length === 0) {
@@ -54,6 +56,7 @@ class SymbolInfo {
       const scopedSameNameWords = sameNameWords.slice(idxStart, idxEnd);
 
       if (this.containerName === 'do') {
+        const stepFormArr = currDocSymbolInfo.stepFormArr;
         // check extended scope [numRange[1], scope[0]]
         const idxStart = bisectRight(sameNameWords, this.numRange[1], selectFirst);
         const idxEnd = bisectRight(sameNameWords, scopeStart, selectFirst);
@@ -67,8 +70,13 @@ class SymbolInfo {
 
       return scopedSameNameWords;
     } else {
-      // global return all
-      return sameNameWords;
+      // global, exclude same name def
+      const sameNameDefStartSet = new Set(
+        currDocSymbolInfo.globalDef.get(this.name)!
+          .map(item => item.numRange[0])
+      );
+      const filtered = sameNameWords.filter(item=>!sameNameDefStartSet.has(item[0]));
+      return filtered;
     }
   }
 

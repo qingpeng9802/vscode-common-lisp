@@ -3,9 +3,11 @@ import * as vscode from 'vscode';
 import { clValidSymbolSingleCharColonSet } from '../../common/cl_util';
 import type { ScanDocRes } from '../ScanDocRes';
 import { SymbolInfo } from '../SymbolInfo';
-import { findMatchPairExactP, addToDictArr, checkDefName, isRangeIntExcludedRanges, isSpace } from '../collect_util';
+import { findMatchPairExactP, addToDictArr, getValidGroupRes, isRangeIntExcludedRanges, isSpace } from '../collect_util';
 
 import { processVars } from './lambda_list';
+
+const seqBindSet = new Set(['let*', 'do*', 'prog*', 'lambda', 'destructuring-bind']);
 
 function getStepFormArr(vars: Map<string, [number, number]>, varsStr: string, baseInd: number, scanDocRes: ScanDocRes) {
   // {name, validScope}
@@ -106,7 +108,7 @@ function collectKeywordVars(
 
   // commonlisp.yaml special-operator | macro
   // `progv` allows binding one or more dynamic variables, is not implemented
-  const matchRes1 = text.matchAll(/(?<=#'|\s|^)(\()(\s*)(lambda|let\*|let|symbol-macrolet|do\*|do|prog\*|prog|multiple-value-bind|destructuring-bind)\s+?(\()/igmd);
+  const matchRes1 = text.matchAll(/(?<=#'|^|\s|\(|,@|,\.|,)(\()(\s*)(lambda|let\*|let|symbol-macrolet|do\*|do|prog\*|prog|multiple-value-bind|destructuring-bind)\s+?(\()/igmd);
 
   for (const r of matchRes1) {
     if (r.indices === undefined) {
@@ -122,30 +124,24 @@ function collectKeywordVars(
     const leftPInd = r.indices[4][0];
 
     // get vars list, start with `(`
-    let isLambdaList = false;
-    let allowDestructuring = false;
-    if (r[3] === 'lambda') {
-      isLambdaList = true;
-    } else if (r[3] === 'destructuring-bind') {
-      isLambdaList = true;
-      allowDestructuring = true;
-    } else { }
-
-    const varsRes = processVars(leftPInd, isLambdaList, allowDestructuring, scanDocRes, closedParenthese);
+    const currK = r[3].toLowerCase();
+    const allowDestructuring = (currK === 'destructuring-bind');
+    const varsRes = processVars(leftPInd, scanDocRes, closedParenthese, allowDestructuring);
     if (varsRes === undefined) {
       continue;
     }
 
     const [vars, varsStrEnd] = varsRes;
 
-    if (r[3] === 'do') {
+    if (currK === 'do') {
       // http://www.lispworks.com/documentation/lw60/CLHS/Body/m_do_do.htm step-form
+      // only for `do` since `do*` is sequencial binding
       stepForm.push(...getStepFormArr(vars, text.substring(leftPInd, varsStrEnd), leftPInd, scanDocRes));
     }
 
-    if (r[3] === 'let*' || r[3] === 'do*' || r[3] === 'prog*') {
+    if (seqBindSet.has(currK)) {
       // get lexical scope
-      // only for let* | do* | progn, sequencial binding
+      // only for let* | do* | prog* | lambda | destructuring-bind, sequencial binding
       for (const [nn, rang] of vars) {
         if (isRangeIntExcludedRanges(rang, excludedRange)) {
           continue;
@@ -156,10 +152,10 @@ function collectKeywordVars(
           document.positionAt(rang[1]),
         );
 
-        const lexicalScope: [number, number] = [rang[1] + 1, closedParenthese];
+        const lexicalScope: [number, number] = [rang[1], closedParenthese];
 
         addToDictArr(defLocalNames, nn.toLowerCase(), new SymbolInfo(
-          nn.toLowerCase(), r[3].toLowerCase(), lexicalScope,
+          nn.toLowerCase(), currK, lexicalScope,
           new vscode.Location(uri, range), vscode.SymbolKind.Variable, rang
         ));
       }
@@ -182,7 +178,7 @@ function collectKeywordVars(
         );
 
         addToDictArr(defLocalNames, nn.toLowerCase(), new SymbolInfo(
-          nn.toLowerCase(), r[3].toLowerCase(), lexicalScope,
+          nn.toLowerCase(), currK, lexicalScope,
           new vscode.Location(uri, range), vscode.SymbolKind.Variable, rang
         ));
       }
@@ -201,14 +197,14 @@ function collectKeywordSingleVar(
   const defLocalNames: Map<string, SymbolInfo[]> = new Map<string, SymbolInfo[]>();
 
   // commonlisp.yaml macro
-  const matchRes2 = text.matchAll(/(?<=#'|\s|^)(\()(\s*)(do-symbols|do-external-symbols|do-all-symbols|dolist|dotimes|pprint-logical-block|with-input-from-string|with-open-file|with-open-stream|with-output-to-string|with-package-iterator|with-hash-table-iterator)\s+?(\()\s*?([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+)(\s|\)|\()/igmd);
+  const matchRes2 = text.matchAll(/(?<=#'|^|\s|\(|,@|,\.|,)(\()(\s*)(do-symbols|do-external-symbols|do-all-symbols|dolist|dotimes|pprint-logical-block|with-input-from-string|with-open-file|with-open-stream|with-output-to-string|with-package-iterator|with-hash-table-iterator)\s+?(\()\s*?([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+)(\s|\)|\()/igmd);
 
   for (const r of matchRes2) {
     if (r.indices === undefined) {
       continue;
     }
 
-    const defLocalName = checkDefName(r, [5]);
+    const defLocalName = getValidGroupRes(r, [5]);
     if (defLocalName === undefined) {
       continue;
     }
@@ -238,8 +234,9 @@ function collectKeywordSingleVar(
       document.positionAt(nameRangeInd[1]),
     );
 
+    const currK = r[3].toLowerCase();
     addToDictArr(defLocalNames, defLocalName.toLowerCase(), new SymbolInfo(
-      defLocalName.toLowerCase(), r[3].toLowerCase(), lexicalScope,
+      defLocalName.toLowerCase(), currK, lexicalScope,
       new vscode.Location(uri, range), vscode.SymbolKind.Variable, nameRangeInd
     ));
 

@@ -4,7 +4,7 @@ import { bisectLeft } from '../../common/algorithm';
 import type { ScanDocRes } from '../ScanDocRes';
 import { SymbolInfo } from '../SymbolInfo';
 import {
-  findMatchPairExactP, addToDictArr, checkDefName,
+  findMatchPairExactP, addToDictArr, getValidGroupRes,
   getValidGroupInd, isRangeIntExcludedRanges
 } from '../collect_util';
 
@@ -31,7 +31,7 @@ function collectKeyword(
     }
 
     // add function name
-    const defName = checkDefName(r, nameGroup);
+    const defName = getValidGroupRes(r, nameGroup);
     const numRange = getValidGroupInd(r.indices, nameGroup);
     if (defName === undefined || numRange === undefined) {
       continue;
@@ -42,17 +42,18 @@ function collectKeyword(
     }
 
     let kind = vscode.SymbolKind.Function;
-    if (r[3] === 'deftype') {
+    const currK = r[3].toLowerCase();
+    if (currK === 'deftype') {
       kind = vscode.SymbolKind.TypeParameter;
-    } else if (r[3] === 'defpackage') {
+    } else if (currK === 'defpackage') {
       kind = vscode.SymbolKind.Package;
-    } else if (r[3] === 'defconstant') {
+    } else if (currK === 'defconstant') {
       kind = vscode.SymbolKind.Constant;
-    } else if (r[3] === 'defstruct') {
+    } else if (currK === 'defstruct') {
       kind = vscode.SymbolKind.Struct;
-    } else if (r[3] === 'defvar' || r[3] === 'defparameter') {
+    } else if (currK === 'defvar' || currK === 'defparameter') {
       kind = vscode.SymbolKind.Variable;
-    } else if (r[3] === 'define-condition' || r[3] === 'defclass') {
+    } else if (currK === 'define-condition' || currK === 'defclass') {
       kind = vscode.SymbolKind.Class;
     } else { }
 
@@ -85,7 +86,7 @@ function collectKeywordLambda(
     }
 
     // add function name
-    const defName = checkDefName(r, nameGroup);
+    const defName = getValidGroupRes(r, nameGroup);
     const numRange = getValidGroupInd(r.indices, nameGroup);
     if (defName === undefined || numRange === undefined) {
       continue;
@@ -117,14 +118,15 @@ function collectKeywordLambda(
     const leftPInd = r.indices[pGroup[1]][0];
 
     // get lambda list, start with `(`
+    const currK = r[3].toLowerCase();
     let allowDestructuring = false;
-    if (notAllowDes.has(r[3])) {
+    if (notAllowDes.has(currK)) {
       allowDestructuring = false;
-    } else if (allowDes.has(r[3])) {
+    } else if (allowDes.has(currK)) {
       allowDestructuring = true;
     } else { }
 
-    const varsRes = processVars(leftPInd, true, allowDestructuring, scanDocRes, closedParentheseInd);
+    const varsRes = processVars(leftPInd, scanDocRes, closedParentheseInd, allowDestructuring);
     if (varsRes === undefined) {
       continue;
     }
@@ -134,7 +136,7 @@ function collectKeywordLambda(
       if (isRangeIntExcludedRanges(rang, excludedRange)) {
         continue;
       }
-      const lexicalScope: [number, number] = [varsStrEnd, closedParentheseInd];
+      const lexicalScope: [number, number] = [rang[1], closedParentheseInd];
 
       const range = new vscode.Range(
         document.positionAt(rang[0]),
@@ -147,29 +149,77 @@ function collectKeywordLambda(
       ));
     }
 
+    if (currK === 'defsetf') {
+      storeVar(
+        lambdaNames, document, scanDocRes,
+        leftPInd, closedParentheseInd, defName.toLowerCase(),
+        excludedRange
+      );
+    }
+
   }
   //console.log(lambdaNames);
   return [defNames, lambdaNames];
 }
 
+function storeVar(
+  lambdaNames: Map<string, SymbolInfo[]>,
+  document: vscode.TextDocument, scanDocRes: ScanDocRes,
+  leftPInd: number, closedParentheseInd: number, defNameLower: string,
+  excludedRange: [number, number][]
+) {
+  const uri = document.uri;
+  // (store-variable*)
+  const idx = scanDocRes.pair.findIndex(item => item[0] === leftPInd);
+  if (idx === -1) {
+    return;
+  }
+  const [openStoreVar, closeStoreVarP] = scanDocRes.pair[idx + 1];
+  const closeStoreVar = closeStoreVarP + 1;
+  if (closeStoreVar >= closedParentheseInd) {
+    return;
+  }
+  const varsRes = processVars(openStoreVar, scanDocRes, closeStoreVar, false);
+  if (varsRes === undefined) {
+    return;
+  }
+  const [vars, varsStrEnd] = varsRes;
+  for (const [nn, rang] of vars) {
+    if (isRangeIntExcludedRanges(rang, excludedRange)) {
+      continue;
+    }
+    const lexicalScope: [number, number] = [rang[1], closedParentheseInd];
+
+    const range = new vscode.Range(
+      document.positionAt(rang[0]),
+      document.positionAt(rang[1]),
+    );
+
+    addToDictArr(lambdaNames, nn.toLowerCase(), new SymbolInfo(
+      nn.toLowerCase(), defNameLower, lexicalScope,
+      new vscode.Location(uri, range), vscode.SymbolKind.Variable, rang
+    ));
+  }
+
+}
 
 function collectGlobalDef(
   document: vscode.TextDocument, scanDocRes: ScanDocRes, excludedRange: [number, number][]
 ): [Map<string, SymbolInfo[]>, Map<string, SymbolInfo[]>] {
 
   // commonlisp.yaml def-name
-  const keywordLambdaList = /(?<=#'|\s|^)(\()(\s*)(defsetf|define-modify-macro|defgeneric|defun|defmacro|define-method-combination|define-compiler-macro|define-setf-expander)\s+(\(\s*([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+)\s*([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+?)|([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+?))((\s|\)))\s*(\()/igmd;
-  const keywordLambdaListMethod = /(?<=#'|\s|^)(\()(\s*)(defmethod)\s+(\(\s*([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+)\s*([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+?)|([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+?))((\s|\)))([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+?)\s*(\()/igmd;
+  const keywordLambdaList = /(?<=#'|^|\s|\(|,@|,\.|,)(\()(\s*)(defsetf|define-modify-macro|defgeneric|defun|defmacro|define-method-combination|define-compiler-macro|define-setf-expander)\s+(\(\s*([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+)\s*([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+?)|([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+?))((\s|\)))\s*(\()/igmd;
+  const keywordLambdaListMethod = /(?<=#'|^|\s|\(|,@|,\.|,)(\()(\s*)(defmethod)\s+(\(\s*([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+)\s*([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+?)|([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+?))((\s|\)))\s*[#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]*?\s*(\()/igmd;
 
   // Note `defsetf` short form is matched below, long form is matched above, dup def-name is okay
-  const keyword1 = /(?<=#'|\s|^)(\()(\s*)(defsetf|define-symbol-macro|deftype|defpackage|defconstant|defstruct|defvar|defparameter|define-condition|defclass)\s+\(?\s*([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+?)(?=(\s|\(|\)))/igmd;
+  const keyword1 = /(?<=#'|^|\s|\(|,@|,\.|,)(\()(\s*)(defsetf|define-symbol-macro|deftype|defpackage|defconstant|defstruct|defvar|defparameter|define-condition|defclass)\s+\(?\s*([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+?)(?=(\s|\(|\)))/igmd;
 
   const defNames0 = collectKeyword(keyword1, [4], document, scanDocRes.text, excludedRange);
   const [defNames1, lambdaNames1] = collectKeywordLambda(
     keywordLambdaList, [6, 7], [1, 10], document, scanDocRes, scanDocRes.text, excludedRange
   );
   const [defNames2, lambdaNames2] = collectKeywordLambda(
-    keywordLambdaListMethod, [6, 7], [1, 11], document, scanDocRes, scanDocRes.text, excludedRange
+    keywordLambdaListMethod, [6, 7], [1, 10], document, scanDocRes, scanDocRes.text, excludedRange
   );
 
 
@@ -213,7 +263,7 @@ function subBlock(
   }
 
   // start matching
-  const defLocalName = checkDefName(subMatchRes, [2]);
+  const defLocalName = getValidGroupRes(subMatchRes, [2]);
   if (defLocalName === undefined) {
     return false;
   }
@@ -227,7 +277,7 @@ function subBlock(
     document.positionAt(nameRangeInd[1]),
   );
 
-  lexicalScope = (lexicalScope === undefined) ? [nameRangeInd[1] + 1, closedParentheseInd] : lexicalScope;
+  lexicalScope = (lexicalScope === undefined) ? [nameRangeInd[1], closedParentheseInd] : lexicalScope;
   const uri = document.uri;
 
   addToDictArr(defLocalNames, defLocalName.toLowerCase(), new SymbolInfo(
@@ -239,7 +289,7 @@ function subBlock(
 
   // working in currtext
   const secondLeftPInd = subMatchRes.indices![3][0] + baseInd;
-  const varsRes = processVars(secondLeftPInd, true, allowDestructuring, scanDocRes, multiContainClose);
+  const varsRes = processVars(secondLeftPInd, scanDocRes, multiContainClose, allowDestructuring);
   if (varsRes === undefined) {
     return false;
   }
@@ -250,7 +300,7 @@ function subBlock(
     if (isRangeIntExcludedRanges(rang, excludedRange)) {
       continue;
     }
-    const secondLexicalScope: [number, number] = [varsStrEnd, multiContainClose];
+    const secondLexicalScope: [number, number] = [rang[1], multiContainClose];
     const range = new vscode.Range(
       document.positionAt(rang[0]),
       document.positionAt(rang[1]),
@@ -273,7 +323,7 @@ function collectLocalDef(
 
   const text = scanDocRes.text;
   // commonlisp.yaml # keyword ((name (params)
-  const matchRes = text.matchAll(/(?<=#'|\s|^)(\()(\s*)(macrolet|labels|flet)\s+(\()\s*(\()/igmd);
+  const matchRes = text.matchAll(/(?<=#'|^|\s|\(|,@|,\.|,)(\()(\s*)(macrolet|labels|flet)\s+(\()\s*(\()/igmd);
 
   for (const r of matchRes) {
     if (r.indices === undefined) {
@@ -294,29 +344,30 @@ function collectLocalDef(
 
     // get lexical scope
     let lexicalScope: [number, number] | undefined = undefined;
-    if (r[3] === 'flet' || r[3] === 'macrolet') {
+    const currK = r[3].toLowerCase();
+    if (currK === 'flet' || currK === 'macrolet') {
       // lexical scope valid after definition, that is, after next '()' pair
       const startValidPos = findMatchPairExactP(multiContainOpen, scanDocRes.pairMap, closedParentheseInd);
       if (startValidPos === -1) {
         continue;
       }
       lexicalScope = [startValidPos, closedParentheseInd];
-    } else if (r[3] === 'labels') {
+    } else if (currK === 'labels') {
       // lexical scope is valid immediately in definition itself
       // defer to sub block
     } else { }
 
     // get lambda list, start with `(`
     let allowDestructuring = false;
-    if (r[3] === 'flet' || r[3] === 'labels') {
+    if (currK === 'flet' || currK === 'labels') {
       allowDestructuring = true;
-    } else if (r[3] === 'macrolet') {
+    } else if (currK === 'macrolet') {
       allowDestructuring = false;
     } else { }
 
 
     // multiple definitions in this currtext (()()()...)
-    const subMatch = /(?<=#'|\s|^)(\()([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+?)\s*(\()/imd;
+    const subMatch = /(?<=#'|^|\s|\(|,@|,\.|,)(\()([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+?)\s*(\()/imd;
     let open = r.indices[5][0];
     while (open < multiContainClose) {
       const currDefClose = findMatchPairExactP(open, scanDocRes.pairMap);

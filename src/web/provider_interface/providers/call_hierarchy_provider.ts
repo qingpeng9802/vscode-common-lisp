@@ -2,9 +2,10 @@ import * as vscode from 'vscode';
 
 import type { CallHrchyInfo } from '../../builders/call_hierarchy_builder/CallHrchyInfo';
 import type { DocSymbolInfo } from '../../collect_info/DocSymbolInfo';
-import { clValidWithColonSharp, CL_MODE } from '../../common/cl_util';
+import { CL_MODE } from '../../common/cl_util';
 import { TriggerProvider } from '../../common/enum';
 import { TriggerEvent } from '../TriggerEvent';
+import { getCLWordRangeAtPosition } from '../provider_util';
 import { structuredInfo } from '../structured_info';
 
 function getCallHierarchyCallsByCallHierarchyItem(
@@ -48,7 +49,7 @@ function registerCallHierarchyProvider() {
     CL_MODE,
     {
       prepareCallHierarchy(document, position, token) {
-        const range = document.getWordRangeAtPosition(position, clValidWithColonSharp);
+        const range = getCLWordRangeAtPosition(document, position);
         if (range === undefined) {
           return undefined;
         }

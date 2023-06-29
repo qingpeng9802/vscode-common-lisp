@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-import { legend } from '../../builders/semantic_tokens_builder/semantic_tokens_builder';
+import { legend } from '../../builders/semantic_tokens_builder/token_util';
 import { CL_MODE } from '../../common/cl_util';
 import { TriggerProvider } from '../../common/enum';
 import { TriggerEvent } from '../TriggerEvent';

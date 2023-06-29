@@ -1,8 +1,9 @@
 import * as vscode from 'vscode';
 
 import _kind from '../../cl_data/cl_kind.json';
-import { CL_MODE, clValidWithColonSharp } from '../../common/cl_util';
+import { CL_MODE } from '../../common/cl_util';
 import { getDocByName, getDocByNameNonAlphabetic } from '../../doc/get_doc';
+import { getCLWordRangeAtPosition } from '../provider_util';
 
 const kindKeys = new Set(Object.keys(_kind));
 
@@ -12,7 +13,7 @@ function registerHoverProvider() {
     CL_MODE,
     {
       provideHover(document, position, token) {
-        const range = document.getWordRangeAtPosition(position, clValidWithColonSharp);
+        const range = getCLWordRangeAtPosition(document, position);
         if (range === undefined) {
           return undefined;
         }

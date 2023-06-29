@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 import { clValidSymbolSingleCharColonSet } from '../../common/cl_util';
 import type { ScanDocRes } from '../ScanDocRes';
 import { SymbolInfo } from '../SymbolInfo';
-import { addToDictArr, checkDefName, findMatchPairExactP, isRangeIntExcludedRanges, isSpace } from '../collect_util';
+import { addToDictArr, getValidGroupRes, findMatchPairExactP, isRangeIntExcludedRanges, isSpace } from '../collect_util';
 import { loopStartClauseKeywordSet } from '../loop_keywords';
 
 import { processVars } from './lambda_list';
@@ -93,7 +93,7 @@ function collectLoopVar(
   const loopBlocks: [number, number][] = [];
 
   // commonlisp.yaml macro
-  const matchRes = text.matchAll(/(?<=#'|\s|^)(\()(\s*)(loop)(\s)/igmd);
+  const matchRes = text.matchAll(/(?<=^|\s|\(|,@|,\.|,)(\()(\s*)(loop)(\s)/igmd);
   for (const r of matchRes) {
     if (r.indices === undefined) {
       continue;
@@ -109,13 +109,13 @@ function collectLoopVar(
 
     const subStart = r.indices[4][0];
     const subText = text.substring(subStart, closedParenthese);
-    const subMatchRes = subText.matchAll(/(?<=#'|\s|^)(for|as|with|into|named)\s*(([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+)\s|(\())/igmd);
+    const subMatchRes = subText.matchAll(/(?<=^|\s|\(|,@|,\.|,):?(for|as|with|into|named)\s+(([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+)\s|(\())/igmd);
     for (const subR of subMatchRes) {
       if (subR.indices === undefined) {
         continue;
       }
 
-      const defLocalName = checkDefName(subR, [3, 4]);
+      const defLocalName = getValidGroupRes(subR, [3, 4]);
       if (defLocalName === undefined) {
         continue;
       }
@@ -130,7 +130,7 @@ function collectLoopVar(
       }
 
       // process `and` after current declaration
-      const afterKeyword = subR.indices[1][1] + 1;
+      const afterKeyword = subR.indices[1][1];
       const baseInd = subStart + afterKeyword;
       const afterKeywordText = subText.substring(afterKeyword);
       const followingAnd = findFollowingAnd(baseInd, afterKeywordText, scanDocRes);
@@ -166,7 +166,7 @@ function singleVar(
     document.positionAt(nameRangeInd[1]),
   );
 
-  const lexicalScope: [number, number] = [nameRangeInd[1] + 1, closedParenthese];
+  const lexicalScope: [number, number] = [nameRangeInd[1], closedParenthese];
 
   addToDictArr(defLocalNames, defLocalName.toLowerCase(), new SymbolInfo(
     defLocalName.toLowerCase(), containerName, lexicalScope,
@@ -180,14 +180,14 @@ function multiVars(
   varsStart: number, containerName: string, closedParenthese: number,
 ) {
   const uri = document.uri;
-  const varsRes = processVars(varsStart, true, true, scanDocRes, closedParenthese);
+  const varsRes = processVars(varsStart, scanDocRes, closedParenthese, true);
   if (varsRes === undefined) {
     return;
   }
   const [vars, varsStrEnd] = varsRes;
 
   for (const [nn, rang] of vars) {
-    if (nn === 'nil') {
+    if (nn.toLowerCase() === 'nil') {
       continue;
     }
     if (isRangeIntExcludedRanges(rang, excludedRange)) {
