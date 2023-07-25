@@ -8,7 +8,7 @@ assignees: ''
 ---
 
 <!-- Troubleshooting -->
-If you have time, please [extension-bisect](firsthttps://code.visualstudio.com/blogs/2021/02/16/extension-bisect) first to identify which extension causes the bug.
+If you have time, please [extension-bisect](https://code.visualstudio.com/blogs/2021/02/16/extension-bisect) first to identify which extension causes the bug.
 
 Does this issue occur when all the other extensions are disabled?: Yes/No
 -   VS Code Version: *You can find it by* [*how-do-i-find-the-version*](https://code.visualstudio.com/docs/supporting/FAQ#_how-do-i-find-the-version)
