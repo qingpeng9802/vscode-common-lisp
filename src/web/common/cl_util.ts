@@ -47,14 +47,17 @@ function escapeRegExp(str: string) {
 
 export {
   CL_MODE,
-  escapeRegExp,
+
   // clOriSymbolChars,
   // clValidSymbolSingleChar,
-  clValidSymbolSingleCharSet,
-  isStringClValidSymbol,
+
+  //clValidSymbolSingleCharSet,
+  //isStringClValidSymbol,
+  //escapeRegExp,
+
   clValidSymbolSingleCharColonSet,
-  clValidSymbolSingleCharColonSharpSet,
-  clValidSymbolChars,
-  clValidStartWithColon,
+  //clValidSymbolSingleCharColonSharpSet,
+  //clValidSymbolChars,
+  //clValidStartWithColon,
   clValidWithColonSharp
 };

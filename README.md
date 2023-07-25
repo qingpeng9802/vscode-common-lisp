@@ -86,7 +86,7 @@ draft proposed American National Standard for Information Systems—Programming 
 [Scheme.tmLanguage](https://github.com/egrachev/sublime-scheme/blob/master/Scheme.tmLanguage),
 [Lisp.tmLanguage](https://github.com/bradrobertson/sublime-packages/blob/master/Lisp/Lisp.tmLanguage),
 [regex101](https://regex101.com/),
-[structure101](https://structure101.com/)  
+OSS license from [structure101](https://structure101.com/)  
 
 ### Image Credits
 The `icon.png` is from [Common-Lisp.net](https://common-lisp.net/) and resized.  

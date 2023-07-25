@@ -23,7 +23,7 @@ const enum SingleQuoteAndBackQuoteExcludedRanges {
   None = 'none'
 }
 
-const enum ProduceOption {
+const enum UpdateOption {
   getDocSymbolInfo = 'getDocSymbolInfo',
   genUserSymbolsCompItem = 'genUserSymbolsCompItem',
   genDocumentSymbol = 'genDocumentSymbol',
@@ -39,12 +39,13 @@ const enum TriggerProvider {
   provideDocumentSymbols = 'provideDocumentSymbols',
   provideReferences = 'provideReferences',
   provideDocumentSemanticTokens = 'provideDocumentSemanticTokens',
+  provideHoverUser = 'provideHoverUser',
 }
 
 export {
   ExcludeRanges,
   SingleQuoteAndBackQuoteHighlight,
   SingleQuoteAndBackQuoteExcludedRanges,
-  ProduceOption,
+  UpdateOption,
   TriggerProvider
 };

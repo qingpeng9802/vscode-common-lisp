@@ -205,43 +205,4 @@ const loopKeywordsCompItemMap = new Map<string, vscode.CompletionItemKind>([
 
 const loopKeywordsSet = new Set(loopKeywordsTokenMap.keys());
 
-const loopStartClauseKeywordSet = new Set([
-  'named',
-  'initially',
-  'finally',
-  'for',
-  'as',
-  'with',
-  'repeat',
-  'do',
-  'doing',
-  'return',
-  'collect',
-  'collecting',
-  'append',
-  'appending',
-  'nconc',
-  'nconcing',
-  'count',
-  'counting',
-  'sum',
-  'summing',
-  'maximize',
-  'maximizing',
-  'minimize',
-  'minimizing',
-  'into',
-  'loop-finish',
-  'thereis',
-  'always',
-  'never',
-  'if',
-  'when',
-  'unless',
-  'while',
-  'until',
-  'else',
-  'end',
-]);
-
-export { loopKeywordsTokenMap, loopKeywordsCompItemMap, loopKeywordsSet, loopStartClauseKeywordSet };
+export { loopKeywordsTokenMap, loopKeywordsCompItemMap, loopKeywordsSet };

@@ -168,8 +168,36 @@ function sortRangeInPlace(arr: vscode.Range[]) {
     });
 }
 
+// we do not need to sort excludedRanges before search since we add those ranges in order
+function isRangeIntExcludedRanges(r: [number, number], excludedRange: [number, number][]): boolean {
+  if (excludedRange.length === 0) {
+    return false;
+  }
+
+  const rStart: number = r[0];
+  const idx = bisectRight(excludedRange, rStart, item => item[0]);
+
+  if (idx > 0 && excludedRange[idx - 1][0] <= rStart && rStart < excludedRange[idx - 1][1]) {
+    return true;
+  }
+  return false;
+}
+
+function isRangeIntExcludedRange(r: vscode.Range, excludedRange: vscode.Range[]): boolean {
+  if (excludedRange.length === 0) {
+    return false;
+  }
+
+  const rStart: vscode.Position = r.start;
+  const idx = bisectRight(excludedRange, rStart, item => item.start);
+  if (idx > 0 && excludedRange[idx - 1].contains(rStart)) {
+    return true;
+  }
+  return false;
+}
 
 export {
+  isRangeIntExcludedRanges,
   excludeRangesFromRanges,
   mergeSortedIntervals,
   mergeSortedMXArrList,

@@ -1,10 +1,9 @@
-import * as vscode from 'vscode';
+import type * as vscode from 'vscode';
 
-import type { DocSymbolInfo } from '../../collect_info/DocSymbolInfo';
-import type { ScanDocRes } from '../../collect_info/ScanDocRes';
 import type { SymbolInfo } from '../../collect_info/SymbolInfo';
-import { findMatchPairAfterP } from '../../collect_info/collect_util';
 import { bisectRight } from '../../common/algorithm';
+import type { DocSymbolInfo } from '../DocSymbolInfo';
+import { findMatchPairAfterP } from '../builders_util';
 
 function genAnonContainerNameNum(d: Map<string, number>, anonContainerName: string): number {
   // {anonymous container name, count}
@@ -18,14 +17,13 @@ function genAnonContainerNameNum(d: Map<string, number>, anonContainerName: stri
 
 // @sideEffect: SymbolInfo.numberedContainerName
 function globalContainerToDocumentSymbolDict(
-  defs: Map<string, SymbolInfo[]>, containerName: string
+  defs: Map<string, SymbolInfo[]>, numberedContainerName: string
 ): Map<string, vscode.DocumentSymbol> {
   const res: Map<string, vscode.DocumentSymbol> = new Map<string, vscode.DocumentSymbol>();
 
   for (const [defName, info] of defs) {
     for (const item of info) {
-      item.numberedContainerName = containerName;
-      res.set(defName, new vscode.DocumentSymbol(defName, containerName, item.kind, item.loc.range, item.loc.range));
+      res.set(defName, item.toDocumentSymbol(numberedContainerName));
     }
   }
 
@@ -40,11 +38,10 @@ function noValidContainerToDocumentSymbolDict(
 
   for (const [defName, info] of defs) {
     for (const item of info) {
-      const containerName = (item.containerName !== undefined) ?
+      const numberedContainerName = (item.containerName !== undefined) ?
         `${item.containerName}<${genAnonContainerNameNum(anonContainerNameDict, item.containerName)}>` :
         '';
-      item.numberedContainerName = containerName;
-      res.set(defName, new vscode.DocumentSymbol(defName, containerName, item.kind, item.loc.range, item.loc.range));
+      res.set(defName, item.toDocumentSymbol(numberedContainerName));
     }
 
   }
@@ -58,13 +55,12 @@ function noValidContainerToDocumentSymbol(
 ): vscode.DocumentSymbol[] {
   const res: vscode.DocumentSymbol[] = [];
 
-  for (const [defName, info] of defs) {
+  for (const info of defs.values()) {
     for (const item of info) {
-      const containerName = (item.containerName !== undefined) ?
+      const numberedContainerName = (item.containerName !== undefined) ?
         `${item.containerName}<${genAnonContainerNameNum(anonContainerNameDict, item.containerName)}>` :
         '';
-      item.numberedContainerName = containerName;
-      res.push(new vscode.DocumentSymbol(defName, containerName, item.kind, item.loc.range, item.loc.range));
+      res.push(item.toDocumentSymbol(numberedContainerName));
     }
 
   }
@@ -72,14 +68,14 @@ function noValidContainerToDocumentSymbol(
   return res;
 }
 
-// @sideEffect: SymbolInfo.globalDefRange
-function genSortedTopLevelScopes(scanDocRes: ScanDocRes, symbols: SymbolInfo[]): [string, [number, number]][] {
+// @sideEffect: SymbolInfo.symbolInPRange
+function genSortedTopLevelScopes(pair: [number, number][], symbols: SymbolInfo[]): [string, [number, number]][] {
   const res: [string, [number, number]][] = [];
   for (const symbol of symbols) {
-    const endInd = findMatchPairAfterP(symbol.numRange[0], scanDocRes.pair);
-    symbol.globalDefRange = [symbol.numRange[0], endInd];
-    res.push([symbol.name, symbol.globalDefRange]);
-    //console.log(symbol.globalDefRange, symbol.scope);
+    const endInd = findMatchPairAfterP(symbol.numRange[0], pair);
+    symbol.symbolInPRange = [symbol.numRange[0], endInd];
+    res.push([symbol.name, symbol.symbolInPRange]);
+    //console.log(symbol.symbolInPRange, symbol.scope);
   }
 
   res.sort((a, b) => a[1][0] - b[1][0]); // sort by range start
@@ -129,11 +125,12 @@ function withNamedContainerToDocumentSymbolDict(
       if (sInfo.containerName === undefined) {
         continue;
       }
-      globalDefSIDict.get(sInfo.containerName)!.children.push(
-        new vscode.DocumentSymbol(
-          sInfo.name, sInfo.containerName, vscode.SymbolKind.Variable, sInfo.loc.range, sInfo.loc.range
-        )
-      );
+      const containerDocumentSymbol = globalDefSIDict.get(sInfo.containerName);
+      if (containerDocumentSymbol === undefined) {
+        //console.warn(`cannot find containerDocumentSymbol with global name: ${sInfo.containerName}`);
+        continue;
+      }
+      containerDocumentSymbol.children.push(sInfo.toDocumentSymbol());
     }
   }
 
@@ -144,11 +141,12 @@ function withNamedContainerToDocumentSymbolDict(
       if (sInfo.containerName === undefined) {
         continue;
       }
-      localDefSIDict.get(sInfo.containerName)!.children.push(
-        new vscode.DocumentSymbol(
-          sInfo.name, sInfo.containerName, vscode.SymbolKind.Variable, sInfo.loc.range, sInfo.loc.range
-        )
-      );
+      const containerDocumentSymbol = localDefSIDict.get(sInfo.containerName);
+      if (containerDocumentSymbol === undefined) {
+        //console.warn(`cannot find containerDocumentSymbol with local name: ${sInfo.containerName}`);
+        continue;
+      }
+      containerDocumentSymbol.children.push(sInfo.toDocumentSymbol());
     }
   }
 
@@ -163,7 +161,7 @@ function tryAppendVarsToParentScope(
   const restlocalAnonVarDSs: vscode.DocumentSymbol[] = [];
 
   const topLevelDefs = Array.from(def.values()).flat();
-  const topLevelScopes = genSortedTopLevelScopes(currDocSymbolInfo.docRes, topLevelDefs);
+  const topLevelScopes = genSortedTopLevelScopes(currDocSymbolInfo.docRes.pair, topLevelDefs);
 
   for (const si of localAnonVarDSs) {
     const siStart = currDocSymbolInfo.document.offsetAt(si.range.start);
@@ -176,7 +174,13 @@ function tryAppendVarsToParentScope(
       const [lastScopeStart, lastScopeEnd] = lastScope;
 
       if (lastScopeStart <= siStart && siEnd <= lastScopeEnd) {
-        localDefSIDict.get(lastScopeDefName)!.children.push(si);
+        const lastScopeDocumentSymbol = localDefSIDict.get(lastScopeDefName);
+        if (lastScopeDocumentSymbol === undefined) {
+          idx--;
+          continue;
+        }
+
+        lastScopeDocumentSymbol.children.push(si);
         break;
       } else {
         idx--;

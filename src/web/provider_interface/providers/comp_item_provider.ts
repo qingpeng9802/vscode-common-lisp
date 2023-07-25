@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
 
-import type { UserSymbolsCompItem } from '../../builders/comp_item_builder/UserSymbolsCompItem';
 import { genAllOriSymbols } from '../../builders/comp_item_builder/comp_item_ori_builder';
 import { bisectRight } from '../../common/algorithm';
 import { CL_MODE } from '../../common/cl_util';
@@ -20,27 +19,9 @@ function resetCompItemWordRange(range: vscode.Range, compItems: vscode.Completio
   });
 }
 
-function getUserompletionItems(
-  currUserSymbolsCompItem: UserSymbolsCompItem, position: number
-): vscode.CompletionItem[] {
-  const res: vscode.CompletionItem[] = currUserSymbolsCompItem.globalCItems;
-
-  const idx = bisectRight(currUserSymbolsCompItem.localScopeCItems, position, item => item[1][0]);
-  for (let i = idx - 1; i >= 0; --i) {
-    const [compItem, numRange] = currUserSymbolsCompItem.localScopeCItems[i];
-    const [start, end] = numRange;
-    // contains position
-    if (start <= position && position <= end) {
-      res.push(compItem);
-    }
-  }
-
-  return res;
-}
-
 function registerCompletionItemProviders(providerName: string): vscode.Disposable | undefined {
   switch (providerName) {
-    case 'userSymbols':
+    case 'user':
       return vscode.languages.registerCompletionItemProvider(
         CL_MODE,
         {
@@ -50,13 +31,13 @@ function registerCompletionItemProviders(providerName: string): vscode.Disposabl
               return undefined;
             }
 
-            structuredInfo.produceInfoByDoc(document, new TriggerEvent(TriggerProvider.provideCompletionItems));
+            structuredInfo.updateInfoByDoc(document, new TriggerEvent(TriggerProvider.provideCompletionItems));
             if (structuredInfo.currUserSymbolsCompItem === undefined) {
               return undefined;
             }
 
             const numPosition = document.offsetAt(position);
-            const userSymbols = getUserompletionItems(structuredInfo.currUserSymbolsCompItem, numPosition);
+            const userSymbols = structuredInfo.currUserSymbolsCompItem.getUserompletionItems(numPosition);
 
             resetCompItemWordRange(range, userSymbols);
 
@@ -72,13 +53,16 @@ function registerCompletionItemProviders(providerName: string): vscode.Disposabl
             if (range === undefined) {
               return undefined;
             }
-            structuredInfo.produceInfoByDoc(document, new TriggerEvent(TriggerProvider.provideCompletionItems));
-            if (structuredInfo.currUserSymbolsCompItem === undefined) {
+            structuredInfo.updateInfoByDoc(document, new TriggerEvent(TriggerProvider.provideCompletionItems));
+            if (
+              structuredInfo.currUserSymbolsCompItem === undefined ||
+              structuredInfo.currDocSymbolInfo === undefined
+            ) {
               return undefined;
             }
 
             const numPosition = document.offsetAt(position);
-            const loopBlocks = structuredInfo.currDocSymbolInfo!.loopBlocks;
+            const loopBlocks = structuredInfo.currDocSymbolInfo.loopBlocks;
             const idx = bisectRight(loopBlocks, numPosition, item => item[0]);
             if (idx === -1 || idx === 0) {
               return undefined;
@@ -93,7 +77,7 @@ function registerCompletionItemProviders(providerName: string): vscode.Disposabl
             return loopSymbols;
           }
         });
-    case 'oriSymbols':
+    case 'ori':
       return vscode.languages.registerCompletionItemProvider(
         CL_MODE,
         {

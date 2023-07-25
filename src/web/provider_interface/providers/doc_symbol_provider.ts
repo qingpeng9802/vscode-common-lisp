@@ -10,7 +10,7 @@ function registerDocumentSymbolProvider() {
     CL_MODE,
     {
       provideDocumentSymbols(document, token) {
-        structuredInfo.produceInfoByDoc(document, new TriggerEvent(TriggerProvider.provideDocumentSymbols));
+        structuredInfo.updateInfoByDoc(document, new TriggerEvent(TriggerProvider.provideDocumentSymbols));
 
         return structuredInfo.currDocumentSymbol;
       }

@@ -163,7 +163,7 @@
                 "anonymous": "always", "named": "never", "asyncArrow": "always"
             } ],
 
-        "@typescript-eslint/no-duplicate-imports": "warn",
+        // "@typescript-eslint/no-duplicate-imports": "warn", // deprecated to import/
         "@typescript-eslint/no-extra-semi": "warn",
         "@typescript-eslint/no-loop-func": "warn",
         "@typescript-eslint/no-loss-of-precision": "warn",

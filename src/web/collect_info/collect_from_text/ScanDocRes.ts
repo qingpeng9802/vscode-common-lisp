@@ -1,5 +1,5 @@
-import { excludeRangesFromRanges, mergeSortedIntervals, mergeSortedMXArr } from '../common/algorithm';
-import { ExcludeRanges, SingleQuoteAndBackQuoteExcludedRanges, SingleQuoteAndBackQuoteHighlight } from '../common/enum';
+import { excludeRangesFromRanges, mergeSortedIntervals, mergeSortedMXArr } from '../../common/algorithm';
+import { ExcludeRanges, SingleQuoteAndBackQuoteExcludedRanges, SingleQuoteAndBackQuoteHighlight } from '../../common/enum';
 
 class ScanDocRes {
   public readonly text: string;
@@ -16,6 +16,7 @@ class ScanDocRes {
   // cache for later use
   private _commentAndStringRange: [number, number][] | undefined = undefined;
   private _pairMap: Map<number, number> | undefined = undefined;
+  private _stringRangeMap: Map<number, number> | undefined = undefined;
 
   constructor(text: string) {
     this.text = text;
@@ -33,6 +34,13 @@ class ScanDocRes {
       this._commentAndStringRange = mergeSortedMXArr(this.commentRange, this.stringRange);
     }
     return this._commentAndStringRange;
+  }
+
+  get stringRangeMap() {
+    if (this._stringRangeMap === undefined) {
+      this._stringRangeMap = new Map<number, number>(this.stringRange);
+    }
+    return this._stringRangeMap;
   }
 
   private getExcludedRanges(excludedRangesCfg: ExcludeRanges): [number, number][] {

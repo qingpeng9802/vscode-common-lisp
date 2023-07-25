@@ -11,7 +11,7 @@ function registerSemanticProvider() {
     CL_MODE,
     {
       provideDocumentSemanticTokens(document, token) {
-        structuredInfo.produceInfoByDoc(document, new TriggerEvent(TriggerProvider.provideDocumentSemanticTokens));
+        structuredInfo.updateInfoByDoc(document, new TriggerEvent(TriggerProvider.provideDocumentSemanticTokens));
 
         return structuredInfo.currSemanticTokens;
       }

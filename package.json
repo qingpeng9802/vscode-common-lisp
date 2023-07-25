@@ -6,7 +6,7 @@
         "name": "Qingpeng Li",
         "email": "qingpeng9802@gmail.com"
     },
-    "version": "1.2.4",
+    "version": "1.2.5",
     "publisher": "qingpeng",
     "engines": {
         "vscode": "^1.63.0"
@@ -133,10 +133,15 @@
                     "default": false,
                     "markdownDescription": "Enable start-with-sharpsign Completion Item Provider"
                 },
-                "commonLisp.providers.HoverProvider.enabled": {
+                "commonLisp.providers.HoverProviders.original.enabled": {
                     "type": "boolean",
                     "default": true,
-                    "markdownDescription": "Enable Hover Provider"
+                    "markdownDescription": "Enable Hover Provider with spec-defined documentation"
+                },
+                "commonLisp.providers.HoverProviders.user.enabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "markdownDescription": "Enable Hover Provider with user-defined documentation"
                 },
                 "commonLisp.providers.DefinitionProvider.enabled": {
                     "type": "boolean",
@@ -182,6 +187,7 @@
                 "commonLisp.DefinitionProvider.ExcludedRanges": {
                     "type": "string",
                     "default": "none",
+                    "markdownDescription": "Note that userHoverProvider will use this config as ExcludedRanges",
                     "enum": [
                         "comment and string",
                         "comment",
@@ -295,20 +301,21 @@
         "@types/node": "^18.16.18",
         "@types/vscode": "^1.63.0",
         "@types/webpack-env": "^1.18.1",
-        "@typescript-eslint/eslint-plugin": "^5.60.1",
+        "@typescript-eslint/eslint-plugin": "^6.2.0",
         "assert": "^2.0.0",
-        "esbuild": "^0.18.9",
-        "eslint": "^8.43.0",
+        "dependency-cruiser": "^13.1.1",
+        "esbuild": "^0.18.16",
+        "eslint": "^8.45.0",
         "eslint-import-resolver-typescript": "^3.5.5",
         "eslint-plugin-import": "^2.27.5",
         "eslint-plugin-node": "^11.1.0",
-        "eslint-plugin-unused-imports": "^2.0.0",
+        "eslint-plugin-unused-imports": "^3.0.0",
         "fs": "^0.0.1-security",
         "js-yaml": "^4.1.0",
         "process": "^0.11.10",
-        "ts-loader": "^9.4.3",
-        "typescript": "^5.1.3",
-        "webpack": "^5.88.0",
+        "ts-loader": "^9.4.4",
+        "typescript": "^5.1.6",
+        "webpack": "^5.88.2",
         "webpack-cli": "^5.1.4"
     }
 }

@@ -34,7 +34,8 @@ class WorkspaceConfig {
     ['commonLisp.providers.CompletionItemProviders.tilde.enabled', false],
     ['commonLisp.providers.CompletionItemProviders.sharpsign.enabled', false],
 
-    ['commonLisp.providers.HoverProvider.enabled', true],
+    ['commonLisp.providers.HoverProviders.original.enabled', true],
+    ['commonLisp.providers.HoverProviders.user.enabled', true],
     ['commonLisp.providers.DefinitionProvider.enabled', true],
     ['commonLisp.providers.DocumentSymbolProvider.enabled', true],
     ['commonLisp.providers.ReferenceProvider.enabled', true],

@@ -1,11 +1,14 @@
 import * as vscode from 'vscode';
 
-import _non_alphabetic from '../../cl_data/cl_non_alphabetic.json';
-import { loopKeywordsCompItemMap, loopKeywordsSet } from '../../collect_info/loop_keywords';
-import { clOriSymbolsByKind, ClSymbolKind } from '../../common/cl_kind';
-import { getDocByName, getDocByNameNonAlphabetic, non_alphabetic_index_str, loop_keyword_str } from '../../doc/get_doc';
+import {
+  getDocByName, getDocByNameNonAlphabetic,
+  _non_alphabetic, non_alphabetic_index_str,
+  loop_keyword_str
+} from '../../doc/get_doc';
+import { loopKeywordsCompItemMap, loopKeywordsSet } from '../loop_keywords';
 
 import { OriSymbolsCompItem } from './OriSymbolsCompItem';
+import { clOriSymbolsByKind, ClSymbolKind } from './cl_kind';
 
 const clKindToVscodeCIKind: Map<ClSymbolKind, vscode.CompletionItemKind> =
   new Map<ClSymbolKind, vscode.CompletionItemKind>([
@@ -43,7 +46,7 @@ function assignKindAndDoc(
     }
 
     const ci = new vscode.CompletionItem(s, kind);
-    const doc = getDocByName(s);
+    const doc = getDocByName(s.toLowerCase());
     if (doc !== undefined) {
       ci.documentation = doc;
     }
@@ -83,7 +86,7 @@ function assignKindAndDocNonAlphabetic(
       ci.documentation.supportHtml = true;
 
     } else if (prefix === '&' || prefix === '*') {
-      const doc = getDocByName(fullKeyword);
+      const doc = getDocByName(fullKeyword.toLowerCase());
       ci.documentation = doc;
 
     } else if (prefix === ':') {

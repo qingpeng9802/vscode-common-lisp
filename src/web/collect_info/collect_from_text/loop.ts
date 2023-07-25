@@ -1,12 +1,51 @@
 import * as vscode from 'vscode';
 
+import { isRangeIntExcludedRanges } from '../../common/algorithm';
 import { clValidSymbolSingleCharColonSet } from '../../common/cl_util';
-import type { ScanDocRes } from '../ScanDocRes';
 import { SymbolInfo } from '../SymbolInfo';
-import { addToDictArr, getValidGroupRes, findMatchPairExactP, isRangeIntExcludedRanges, isSpace } from '../collect_util';
-import { loopStartClauseKeywordSet } from '../loop_keywords';
+import { addToDictArr, getValidGroupRes, findMatchPairExactP, isSpace } from '../collect_util';
 
+import type { ScanDocRes } from './ScanDocRes';
 import { processVars } from './lambda_list';
+
+const loopStartClauseKeywordSet = new Set([
+  'named',
+  'initially',
+  'finally',
+  'for',
+  'as',
+  'with',
+  'repeat',
+  'do',
+  'doing',
+  'return',
+  'collect',
+  'collecting',
+  'append',
+  'appending',
+  'nconc',
+  'nconcing',
+  'count',
+  'counting',
+  'sum',
+  'summing',
+  'maximize',
+  'maximizing',
+  'minimize',
+  'minimizing',
+  'into',
+  'loop-finish',
+  'thereis',
+  'always',
+  'never',
+  'if',
+  'when',
+  'unless',
+  'while',
+  'until',
+  'else',
+  'end',
+]);
 
 function findFollowingAnd(baseInd: number, varsStr: string, scanDocRes: ScanDocRes): [number, number][] {
   let varName = '';
@@ -134,13 +173,14 @@ function collectLoopVar(
       const baseInd = subStart + afterKeyword;
       const afterKeywordText = subText.substring(afterKeyword);
       const followingAnd = findFollowingAnd(baseInd, afterKeywordText, scanDocRes);
+
       for (const rang of followingAnd) {
         if (afterKeywordText[rang[0]] === '(') {
           const varsStart = rang[0] + baseInd;
           multiVars(defLocalNames, document, scanDocRes, excludedRange, varsStart, containerName, closedParenthese);
         } else {
           const nameRangeInd: [number, number] = [rang[0] + baseInd, rang[1] + baseInd];
-          const name = afterKeywordText.substring(...rang);
+          const name = afterKeywordText.substring(...rang).toLowerCase();
           singleVar(defLocalNames, name, document, excludedRange, nameRangeInd, containerName, closedParenthese);
         }
       }
@@ -156,21 +196,15 @@ function singleVar(
   defLocalName: string, document: vscode.TextDocument, excludedRange: [number, number][],
   nameRangeInd: [number, number], containerName: string, closedParenthese: number
 ) {
-  const uri = document.uri;
   if (isRangeIntExcludedRanges(nameRangeInd, excludedRange)) {
     return;
   }
 
-  const range = new vscode.Range(
-    document.positionAt(nameRangeInd[0]),
-    document.positionAt(nameRangeInd[1]),
-  );
-
   const lexicalScope: [number, number] = [nameRangeInd[1], closedParenthese];
 
-  addToDictArr(defLocalNames, defLocalName.toLowerCase(), new SymbolInfo(
-    defLocalName.toLowerCase(), containerName, lexicalScope,
-    new vscode.Location(uri, range), vscode.SymbolKind.Variable, nameRangeInd
+  addToDictArr(defLocalNames, defLocalName, new SymbolInfo(
+    document, defLocalName, containerName, lexicalScope,
+    vscode.SymbolKind.Variable, nameRangeInd
   ));
 }
 
@@ -179,7 +213,6 @@ function multiVars(
   document: vscode.TextDocument, scanDocRes: ScanDocRes, excludedRange: [number, number][],
   varsStart: number, containerName: string, closedParenthese: number,
 ) {
-  const uri = document.uri;
   const varsRes = processVars(varsStart, scanDocRes, closedParenthese, true);
   if (varsRes === undefined) {
     return;
@@ -187,21 +220,19 @@ function multiVars(
   const [vars, varsStrEnd] = varsRes;
 
   for (const [nn, rang] of vars) {
-    if (nn.toLowerCase() === 'nil') {
+    const nnLower = nn.toLowerCase();
+    if (nnLower === 'nil') {
       continue;
     }
     if (isRangeIntExcludedRanges(rang, excludedRange)) {
       continue;
     }
-    const secondLexicalScope: [number, number] = [varsStrEnd, closedParenthese];
-    const range = new vscode.Range(
-      document.positionAt(rang[0]),
-      document.positionAt(rang[1]),
-    );
 
-    addToDictArr(defLocalNames, nn.toLowerCase(), new SymbolInfo(
-      nn.toLowerCase(), containerName, secondLexicalScope,
-      new vscode.Location(uri, range), vscode.SymbolKind.Variable, rang
+    const secondLexicalScope: [number, number] = [varsStrEnd, closedParenthese];
+
+    addToDictArr(defLocalNames, nnLower, new SymbolInfo(
+      document, nnLower, containerName, secondLexicalScope,
+      vscode.SymbolKind.Variable, rang
     ));
   }
 }

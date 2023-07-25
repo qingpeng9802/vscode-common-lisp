@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
 
-import type { DocSymbolInfo } from '../../collect_info/DocSymbolInfo';
 import type { SymbolInfo } from '../../collect_info/SymbolInfo';
-import { isRangeIntExcludedRanges } from '../../collect_info/collect_util';
-import { loopKeywordsTokenMap, loopKeywordsSet } from '../../collect_info/loop_keywords';
-import { excludeRangesFromRanges, mergeSortedIntervals } from '../../common/algorithm';
+import { isRangeIntExcludedRanges, excludeRangesFromRanges, mergeSortedIntervals } from '../../common/algorithm';
+import type { DocSymbolInfo } from '../DocSymbolInfo';
+import { getScopedSameNameWordsExcludeItself } from '../builders_util';
+import { loopKeywordsTokenMap, loopKeywordsSet } from '../loop_keywords';
 
 import { _encodeTokenType, _encodeTokenModifiers, vscodeKindToTokenType } from './token_util';
 
@@ -12,7 +12,7 @@ function genAllPossibleWord(
   currDocSymbolInfo: DocSymbolInfo
 ): [Map<string, [number, number][]>, [string, [number, number]][]] {
   const text = currDocSymbolInfo.docRes.text;
-  const t = performance.now();
+  //const t = performance.now();
 
   // slow regex
   // eslint-disable-next-line max-len
@@ -47,7 +47,7 @@ function genAllPossibleWord(
       }
     }
   }
-  console.log(`token: ${performance.now() - t} ms`);
+  //console.log(`token: ${performance.now() - t} ms`);
   return [needColorDict, globalOrderedRanges];
 }
 
@@ -101,11 +101,11 @@ function updateTokenDict(
         continue;
       }
       // color def itself
-      const startPos = item.loc.range.start;
+      const startPos = item.startPos;
       setParsedToken(tokensBuilder, item, startPos, isGlobal);
 
       // color its scope
-      const scopedSameNameWords = item.getScopedSameNameWordsExcludeItself(needColorDict, currDocSymbolInfo);
+      const scopedSameNameWords = getScopedSameNameWordsExcludeItself(item, needColorDict, currDocSymbolInfo);
       for (const rang of scopedSameNameWords) {
         if (isRangeIntExcludedRanges(rang, excludedRanges)) {
           continue;
@@ -151,7 +151,13 @@ function updateLoop(
         continue;
       }
 
-      const tokenMapRes = loopKeywordsTokenMap.get(word.startsWith(':') ? word.substring(1) : word)!;
+      const tokenMapRes = loopKeywordsTokenMap.get(
+        word.startsWith(':') ? word.substring(1) : word
+      );
+      if (tokenMapRes === undefined) {
+        //console.warn(`cannot get tokenMap for name: ${word}`);
+        continue;
+      }
       let tokenType = '';
       let tokenModifiers: string[] = [];
       if (Array.isArray(tokenMapRes)) {
@@ -218,17 +224,6 @@ function setParsedToken(
   //console.log(key);
 }
 
-function buildSemanticTokens(
-  currDocSymbolInfo: DocSymbolInfo, needColorDict: Map<string, [number, number][]>, buildingConfig: Map<string, any>
-): vscode.SemanticTokens {
-  const tokensBuilder = new vscode.SemanticTokensBuilder();
-
-  const tokenDict = getTokenDict(currDocSymbolInfo, needColorDict, buildingConfig, tokensBuilder);
-  //console.log(tokenDict)
-
-  return tokensBuilder.build();
-}
-
 function overrideQuote(
   currDocSymbolInfo: DocSymbolInfo,
   tokensBuilder: vscode.SemanticTokensBuilder
@@ -284,6 +279,17 @@ function overrideNotFormattedString(
       );
     }
   }
+}
+
+function buildSemanticTokens(
+  currDocSymbolInfo: DocSymbolInfo, needColorDict: Map<string, [number, number][]>, buildingConfig: Map<string, any>
+): vscode.SemanticTokens {
+  const tokensBuilder = new vscode.SemanticTokensBuilder();
+
+  const tokenDict = getTokenDict(currDocSymbolInfo, needColorDict, buildingConfig, tokensBuilder);
+  //console.log(tokenDict)
+
+  return tokensBuilder.build();
 }
 
 export { buildSemanticTokens, genAllPossibleWord };

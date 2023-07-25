@@ -2,8 +2,8 @@
 // (https://github.com/microsoft/vscode/issues/80444)
 // Thus, the order of symbol is not matter here.
 
-import type { ClSymbolKind } from '../../common/cl_kind';
-import { clOriSymbolsByKind } from '../../common/cl_kind';
+import type { ClSymbolKind } from './cl_kind';
+import { clOriSymbolsByKind } from './cl_kind';
 
 
 function getOriSymbolsLength(oriSymbols: Map<ClSymbolKind, string[]>): number {

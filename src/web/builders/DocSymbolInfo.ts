@@ -1,9 +1,12 @@
 import type * as vscode from 'vscode';
 
+import type { SymbolInfo } from '../collect_info/SymbolInfo';
+import type { ScanDocRes } from '../collect_info/collect_from_text/ScanDocRes';
+import { collectLoopVar } from '../collect_info/collect_from_text/loop';
+import { scanDoc } from '../collect_info/collect_from_text/no_code';
+import { collectGlobalDef, collectLocalDef } from '../collect_info/collect_from_text/non_var';
+import { collectKeywordSingleVar, collectKeywordVars } from '../collect_info/collect_from_text/var';
 import { bisectRight } from '../common/algorithm';
-
-import type { ScanDocRes } from './ScanDocRes';
-import type { SymbolInfo } from './SymbolInfo';
 
 class DocSymbolInfo {
   public readonly document: vscode.TextDocument;
@@ -28,96 +31,66 @@ class DocSymbolInfo {
   private _allLocal: Map<string, SymbolInfo[]> | undefined = undefined;
 
   constructor(
-    document: vscode.TextDocument,
-    docRes: ScanDocRes,
-
-    globalDef: Map<string, SymbolInfo[]>,
-    globalNamedLambda: Map<string, SymbolInfo[]>,
-
-    localDef: Map<string, SymbolInfo[]>,
-    localNamedLambda: Map<string, SymbolInfo[]>,
-
-    localAnonLambda: Map<string, SymbolInfo[]>,
-    localAnonSingle: Map<string, SymbolInfo[]>,
-    localAnonLoop: Map<string, SymbolInfo[]>,
-
-    loopBlocks: [number, number][],
-    stepFormArr: [number, number][],
+    document: vscode.TextDocument, buildingConfig: Map<string, any>
   ) {
     this.document = document;
-    this.docRes = docRes;
+    const text = document.getText();
 
-    this.globalDef = globalDef;
-    this.globalNamedLambda = globalNamedLambda;
+    this.docRes = scanDoc(text);
+    const excludedRanges = this.docRes.getExcludedRangesForStaticAnalysis(buildingConfig);
 
-    this.localDef = localDef;
-    this.localNamedLambda = localNamedLambda;
+    [this.globalDef, this.globalNamedLambda] = collectGlobalDef(document, this.docRes, excludedRanges);
+    [this.localDef, this.localNamedLambda] = collectLocalDef(document, this.docRes, excludedRanges);
 
-    this.localAnonLambda = localAnonLambda;
-    this.localAnonSingle = localAnonSingle;
-    this.localAnonLoop = localAnonLoop;
-
-    this.loopBlocks = loopBlocks;
-    this.stepFormArr = stepFormArr;
+    [this.localAnonLambda, this.stepFormArr] = collectKeywordVars(document, this.docRes, excludedRanges);
+    this.localAnonSingle = collectKeywordSingleVar(document, this.docRes, excludedRanges);
+    [this.localAnonLoop, this.loopBlocks] = collectLoopVar(document, this.docRes, excludedRanges);
 
     // sort to tolerance for multiple definition
     for (const info of this.globalDef.values()) {
       info.sort((a, b) => {
-        return a.loc.range.start.isBeforeOrEqual(b.loc.range.start) ? -1 : 1;
+        return a.startPos.isBeforeOrEqual(b.startPos) ? -1 : 1;
       });
     }
   }
 
   get allNames() {
     if (this._allNames === undefined) {
-      // this.globalNames, this.allLocalNames, this.allNames
-      this._allNames = this.getAllNames();
+      // for semantic color
+      this._allNames = new Set<string>();
+      for (const ks of [this.globalDef.keys(), this.allLocal.keys()]) {
+        for (const k of ks) {
+          this._allNames.add(k);
+        }
+      }
     }
     return this._allNames;
   }
 
   get allLocal() {
     if (this._allLocal === undefined) {
-      this._allLocal = this.getAllLocal();
+      this._allLocal = new Map<string, SymbolInfo[]>();
+      const dicts = [
+        this.globalNamedLambda, this.localDef, this.localNamedLambda,
+        this.localAnonLambda, this.localAnonSingle, this.localAnonLoop
+      ];
+      for (const d of dicts) {
+        for (const [k, info] of d) {
+          if (!this._allLocal.has(k)) {
+            this._allLocal.set(k, []);
+          }
+          this._allLocal.get(k)!.push(...info);
+        }
+      }
+
+      // make sure the semantic color in order (innermost last)
+      for (const info of this._allLocal.values()) {
+        info.sort((a, b) => {
+          return a.startPos.isBeforeOrEqual(b.startPos) ? -1 : 1;
+        });
+      }
     }
     return this._allLocal;
-  }
-
-  // for semantic color
-  private getAllNames(): Set<string> {
-    const allNames: Set<string> = new Set();
-    for (const ks of [this.globalDef.keys(), this.allLocal.keys()]) {
-      for (const k of ks) {
-        allNames.add(k);
-      }
-    }
-
-    return allNames;
-  }
-
-  private getAllLocal(): Map<string, SymbolInfo[]> {
-    const allLocal: Map<string, SymbolInfo[]> = new Map<string, SymbolInfo[]>();
-    const dicts = [
-      this.globalNamedLambda, this.localDef, this.localNamedLambda,
-      this.localAnonLambda, this.localAnonSingle, this.localAnonLoop
-    ];
-    for (const d of dicts) {
-      for (const [k, info] of d) {
-        if (!allLocal.has(k)) {
-          allLocal.set(k, []);
-        }
-        allLocal.get(k)!.push(...info);
-      }
-    }
-
-    // make sure the semantic color in order (innermost last)
-    for (const info of allLocal.values()) {
-      info.sort((a, b) => {
-        return a.loc.range.start.isBeforeOrEqual(b.loc.range.start) ? -1 : 1;
-      });
-    }
-
-    return allLocal;
   }
 
   private findInnermost(symbols: SymbolInfo[], range: [number, number], position: number): SymbolInfo | undefined {

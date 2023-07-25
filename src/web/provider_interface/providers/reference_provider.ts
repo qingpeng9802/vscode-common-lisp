@@ -1,11 +1,12 @@
 import * as vscode from 'vscode';
 
-import type { DocSymbolInfo } from '../../collect_info/DocSymbolInfo';
-import { isQuote, isRangeIntExcludedRanges, isShadowed } from '../../collect_info/collect_util';
+import type { DocSymbolInfo } from '../../builders/DocSymbolInfo';
+import { isShadowed, getScopedSameNameWordsExcludeItself } from '../../builders/builders_util';
+import { isRangeIntExcludedRanges } from '../../common/algorithm';
 import { CL_MODE } from '../../common/cl_util';
 import { TriggerProvider } from '../../common/enum';
 import { TriggerEvent } from '../TriggerEvent';
-import { getCLWordRangeAtPosition } from '../provider_util';
+import { isQuote, getCLWordRangeAtPosition } from '../provider_util';
 import { structuredInfo } from '../structured_info';
 
 function registerReferenceProvider() {
@@ -18,7 +19,7 @@ function registerReferenceProvider() {
           return undefined;
         }
 
-        structuredInfo.produceInfoByDoc(document, new TriggerEvent(TriggerProvider.provideReferences));
+        structuredInfo.updateInfoByDoc(document, new TriggerEvent(TriggerProvider.provideReferences));
         if (structuredInfo.currDocSymbolInfo === undefined) {
           return undefined;
         }
@@ -56,11 +57,13 @@ function getReferenceByWord(
   if (isRangeIntExcludedRanges(numRange, excludedRanges)) {
     return [];
   }
-  const word = doc.getText(range).toLowerCase();
+  const word = doc.getText(range);
   if (!word) {
     return [];
   }
-  const [symbolSelected, shadow] = currDocSymbolInfo.getSymbolWithShadowByRange(word, range, positionFlag);
+  const [symbolSelected, shadow] = currDocSymbolInfo.getSymbolWithShadowByRange(
+    word.toLowerCase(), range, positionFlag
+  );
   if (symbolSelected === undefined) {
     return [];
   }
@@ -69,7 +72,7 @@ function getReferenceByWord(
     return [];
   }
 
-  const scopedSameNameWords = symbolSelected.getScopedSameNameWordsExcludeItself(needColorDict, currDocSymbolInfo);
+  const scopedSameNameWords = getScopedSameNameWordsExcludeItself(symbolSelected, needColorDict, currDocSymbolInfo);
   const res: vscode.Location[] = [];
   // loop cache
   const isSymbolSelectedLengthLargerThanOne = (symbolSelected.name.length > 1);

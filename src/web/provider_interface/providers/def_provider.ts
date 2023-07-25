@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
 
-import type { DocSymbolInfo } from '../../collect_info/DocSymbolInfo';
-import { isQuote, isRangeIntExcludedRanges } from '../../collect_info/collect_util';
+import type { DocSymbolInfo } from '../../builders/DocSymbolInfo';
+import { isRangeIntExcludedRanges } from '../../common/algorithm';
 import { CL_MODE } from '../../common/cl_util';
 import { TriggerProvider } from '../../common/enum';
 import { TriggerEvent } from '../TriggerEvent';
-import { getCLWordRangeAtPosition } from '../provider_util';
+import { isQuote, getCLWordRangeAtPosition } from '../provider_util';
 import { structuredInfo } from '../structured_info';
 
 function registerDefinitionProvider() {
@@ -18,7 +18,7 @@ function registerDefinitionProvider() {
           return undefined;
         }
 
-        structuredInfo.produceInfoByDoc(document, new TriggerEvent(TriggerProvider.provideDefinition));
+        structuredInfo.updateInfoByDoc(document, new TriggerEvent(TriggerProvider.provideDefinition));
         if (structuredInfo.currDocSymbolInfo === undefined) {
           return undefined;
         }
@@ -54,11 +54,13 @@ function getSymbolLocByRange(
   if (isRangeIntExcludedRanges(numRange, excludedRanges)) {
     return undefined;
   }
-  const word = doc.getText(range).toLowerCase();
+  const word = doc.getText(range);
   if (!word) {
     return undefined;
   }
-  const [symbolSelected, shadow] = currDocSymbolInfo.getSymbolWithShadowByRange(word, range, positionFlag);
+  const [symbolSelected, shadow] = currDocSymbolInfo.getSymbolWithShadowByRange(
+    word.toLowerCase(), range, positionFlag
+  );
   return symbolSelected?.loc;
 }
 

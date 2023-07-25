@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 
+import type { DocSymbolInfo } from '../../builders/DocSymbolInfo';
 import type { CallHrchyInfo } from '../../builders/call_hierarchy_builder/CallHrchyInfo';
-import type { DocSymbolInfo } from '../../collect_info/DocSymbolInfo';
 import { CL_MODE } from '../../common/cl_util';
 import { TriggerProvider } from '../../common/enum';
 import { TriggerEvent } from '../TriggerEvent';
@@ -54,7 +54,7 @@ function registerCallHierarchyProvider() {
           return undefined;
         }
 
-        structuredInfo.produceInfoByDoc(document, new TriggerEvent(TriggerProvider.prepareCallHierarchy));
+        structuredInfo.updateInfoByDoc(document, new TriggerEvent(TriggerProvider.prepareCallHierarchy));
         if (structuredInfo.currDocSymbolInfo === undefined || structuredInfo.currCallHierarchyInfo === undefined) {
           return undefined;
         }

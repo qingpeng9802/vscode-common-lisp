@@ -1,5 +1,6 @@
-import { ScanDocRes } from '../ScanDocRes';
 import { isSpace } from '../collect_util';
+
+import { ScanDocRes } from './ScanDocRes';
 
 const passSet = new Set([',', '@', '.', '#', '`', '\'']);
 

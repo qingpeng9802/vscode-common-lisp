@@ -1,4 +1,10 @@
 # Change Log
+## [1.2.5] - 2023-07-25
+### Added
+- add hover provider for user-defined doc
+
+### Changed
+- refactor the folder layers
 
 ## [1.2.4] - 2023-06-27
 ### Added

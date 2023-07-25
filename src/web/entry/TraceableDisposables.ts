@@ -4,7 +4,7 @@ import { registerCallHierarchyProvider } from '../provider_interface/providers/c
 import { registerCompletionItemProviders } from '../provider_interface/providers/comp_item_provider';
 import { registerDefinitionProvider } from '../provider_interface/providers/def_provider';
 import { registerDocumentSymbolProvider } from '../provider_interface/providers/doc_symbol_provider';
-import { registerHoverProvider } from '../provider_interface/providers/hover_provider';
+import { registerHoverProviders } from '../provider_interface/providers/hover_provider';
 import { registerReferenceProvider } from '../provider_interface/providers/reference_provider';
 import { registerSemanticProvider } from '../provider_interface/providers/semantic_tokens_provider';
 
@@ -25,7 +25,8 @@ class TraceableDisposables {
       ['tildeCompletionItemProvider', undefined],
       ['sharpsignCompletionItemProvider', undefined],
 
-      ['hoverProvider', undefined],
+      ['oriHoverProvider', undefined],
+      ['userHoverProvider', undefined],
       ['definitionProvider', undefined],
       ['documentSymbolProvider', undefined],
       ['referenceProvider', undefined],
@@ -45,7 +46,8 @@ class TraceableDisposables {
     ['commonLisp.providers.CompletionItemProviders.tilde.enabled', 'tildeCompletionItemProvider'],
     ['commonLisp.providers.CompletionItemProviders.sharpsign.enabled', 'sharpsignCompletionItemProvider'],
 
-    ['commonLisp.providers.HoverProvider.enabled', 'hoverProvider'],
+    ['commonLisp.providers.HoverProviders.original.enabled', 'oriHoverProvider'],
+    ['commonLisp.providers.HoverProviders.user.enabled', 'userHoverProvider'],
     ['commonLisp.providers.DefinitionProvider.enabled', 'definitionProvider'],
     ['commonLisp.providers.DocumentSymbolProvider.enabled', 'documentSymbolProvider'],
     ['commonLisp.providers.ReferenceProvider.enabled', 'referenceProvider'],
@@ -102,10 +104,10 @@ class TraceableDisposables {
   private registerProviderByName(disposableName: string) {
     switch (disposableName) {
       case 'userCompletionItemProvider':
-        return registerCompletionItemProviders('userSymbols');
+        return registerCompletionItemProviders('user');
 
       case 'oriCompletionItemProvider':
-        return registerCompletionItemProviders('oriSymbols');
+        return registerCompletionItemProviders('ori');
 
       case 'loopCompletionItemProvider':
         return registerCompletionItemProviders('loop');
@@ -125,8 +127,11 @@ class TraceableDisposables {
       case 'sharpsignCompletionItemProvider':
         return registerCompletionItemProviders('sharpsign');
 
-      case 'hoverProvider':
-        return registerHoverProvider();
+      case 'oriHoverProvider':
+        return registerHoverProviders('ori');
+
+      case 'userHoverProvider':
+        return registerHoverProviders('user');
 
       case 'definitionProvider':
         return registerDefinitionProvider();
@@ -155,11 +160,15 @@ class TraceableDisposables {
   ) {
     const providerKeys = new Set(TraceableDisposables.cfgMapDisposable.keys());
 
-    let disposableName = '';
+    let disposableName: string | undefined = '';
     if (workspaceConfigKey === 'editor.semanticHighlighting.enabled') {
       disposableName = 'documentSemanticTokensProvider';
     } else if (providerKeys.has(workspaceConfigKey)) {
-      disposableName = TraceableDisposables.cfgMapDisposable.get(workspaceConfigKey)!;
+      disposableName = TraceableDisposables.cfgMapDisposable.get(workspaceConfigKey);
+    }
+
+    if (disposableName === undefined) {
+      return;
     }
 
     if (newTraceableDisposablesVal === false) {

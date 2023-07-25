@@ -1,6 +1,7 @@
 import { clValidSymbolSingleCharColonSet } from '../../common/cl_util';
-import type { ScanDocRes } from '../ScanDocRes';
 import { findMatchPairExactP, isSpace } from '../collect_util';
+
+import type { ScanDocRes } from './ScanDocRes';
 
 const suppliedPParameterSet = new Set(['&optional', '&key']);
 
@@ -75,7 +76,7 @@ function processRecList(
       // cannot find match anymore
       const endState = endName(currName, currStart, baseInd, res);
       if (endState === -1) {
-        keywordStatus = currName;
+        keywordStatus = currName.toLowerCase();
       }
 
       currStart = -1;
