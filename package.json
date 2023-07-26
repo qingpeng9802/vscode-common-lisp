@@ -286,7 +286,7 @@
         "bg": "node scripts/build_grammar.mjs",
         "lint": "eslint src --ext ts",
         "pretest": "npm run webpackc",
-        "vscode:prepublish": "npm run webpackp & npm run bg",
+        "vscode:prepublish": "npm run bg & npm run webpackp",
         "webpackc": "webpack",
         "webpackw": "webpack --watch",
         "webpackp": "webpack --mode production --devtool hidden-source-map",
@@ -294,7 +294,8 @@
         "esbuildp": "npm run esbuild-base -- --minify",
         "esbuildc": "npm run esbuild-base -- --sourcemap",
         "esbuildw": "npm run esbuild-base -- --sourcemap --watch",
-        "tscc": "tsc -p ./"
+        "tscc": "tsc -p ./",
+        "tsccd": "tsc -p ./ --declaration --declarationMap"
     },
     "devDependencies": {
         "@types/js-yaml": "^4.0.5",

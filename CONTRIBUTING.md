@@ -2,6 +2,8 @@
 Welcome, and thank you for your interest in this project!  
 Hoping this guide will be helpful to you whether you would like to contribute, fork, or learn this repository :)
 
+> Please note that we will discuss the implementation of [programmatic-language-features](https://code.visualstudio.com/api/language-extensions/programmatic-language-features) in the folder `./src`  first. If you are interested in [declarative language features](https://code.visualstudio.com/api/language-extensions/overview#declarative-language-features), see the part [declarative-language-features](#declarative-language-features).
+
 ## Architecture  
 Let us first take a brief look at the design of this project.  
 
@@ -15,9 +17,7 @@ If you are interested in a more detailed dependency graph, you can find the depe
 npx depcruise src --no-config --include-only "^src" --output-type dot | dot -T svg > ./images/dependency_graph.svg
 ```
 
-
-## Data Flow 
-
+## Data Flow  
 ![data_flow](./images/data_flow.svg)  
 
 Please do not trust the correspondence between naming in the data flow diagram and naming in the source code since the naming in the source code is subject to change.  
@@ -37,7 +37,6 @@ When vscode requests language information from a provider, the provider will cal
 ## Compile & Package 
 
 ### Setup  
-
 Run `npm install`  
 
 ### Development
@@ -49,13 +48,12 @@ Run `npm install`
     5. add a config in `contributes.configuration.properties` in `package.json`
 
 - How to change the parsing process?  
-    The parsing process is in `collect_from_text`, and the symbol information are stored in `Map{name: SymbolInfo}`
+    The parsing process is in `collect_from_text`, and the symbol information is stored in `Map{name: SymbolInfo}`
 
 - How to change the vscode-formated language information?  
     `builders` prepare the vscode-formated language information. See `export{}` to understand what information the builder is building.
 
-### Compile
-
+### Compile  
 Run `npm run esbuildc` for compiling once;  
 Run `npm run esbuildw` for watch mode;  
 Run `npm run esbuildp` for production.  
@@ -102,4 +100,33 @@ We do not use `prettier` in the linter, and the reason is basically [Why I don't
 According to [The Art of Unix Programming, Chapter 4. Modularity, Encapsulation and Optimal Module Size](http://catb.org/esr/writings/taoup/html/ch04s01.html),
 we are trying to keep <200 logical lines of code and <400 physical lines of code per file for maintainability.  
 Run `find ./src -name '*.ts' | xargs wc -l` to check the physical lines of code of `./src`.
- 
+
+## Declarative Language Features  
+
+### Syntax Highlight
+We have two syntax files in `./syntaxes`, and we use `./scripts/build_grammar.mjs` to convert them into `json` format:
+- `commonlisp.yaml` is the main syntax of Common Lisp.
+- `cl_codeblock.yaml` is the [injection grammar](https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide#injection-grammars) for Markdown.
+
+If you need to modify the syntax, here are some helpful materials:  
+[Syntax Highlight Guide](https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide),
+[TextMate grammars](https://macromates.com/manual/en/language_grammars),
+[making_language_grammar](https://gist.github.com/Aerijo/b8c82d647db783187804e86fa0a604a1#file-making_language_grammar-md),
+[textmatebundle](https://www.apeth.com/nonblog/stories/textmatebundle.html),
+[regex101](https://regex101.com/),
+[Common Lisp HyperSpec](http://www.lispworks.com/documentation/HyperSpec/Front/).
+
+Mastering the TextMate grammars is very difficult. If you are a beginner, you can try to start with a small work sample and then work on it incrementally.  
+The recommended workflow is:  
+1. `git add`
+2. construct a regex, verify it in [regex101](https://regex101.com/)
+3. add it to the syntax
+4. convert into `json`, test it in real world
+
+### Snippet
+In `./snippets`.
+See [Snippet Guide](https://code.visualstudio.com/api/language-extensions/snippet-guide) and [creating-your-own-snippets](https://code.visualstudio.com/docs/editor/userdefinedsnippets#_creating-your-own-snippets).
+
+### Language Configuration
+In `./language-configuration.json`.
+See [Language Configuration Guide](https://code.visualstudio.com/api/language-extensions/language-configuration-guide).

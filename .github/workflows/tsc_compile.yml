@@ -1,6 +1,5 @@
-name: Lint
+name: tsc compile
 
-# Controls when the workflow will run
 on:
   push:
     branches:
@@ -8,7 +7,6 @@ on:
 
   pull_request:
 
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
     inputs:
       tags:
@@ -16,8 +14,8 @@ on:
         required: false
 
 jobs:
-  linting:
-    name: Linting
+  tsc_compile:
+    name: tsc compile
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -27,5 +25,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Code Linting
-        run: npm run lint
+      - name: tsc compile
+        run: npm run tscc
+
+      - name: tsc compile with declarationMap
+        run: npm run tsccd
