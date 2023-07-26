@@ -1,4 +1,4 @@
-name: tsc compile
+name: tsc Compile
 
 on:
   push:

@@ -1,5 +1,6 @@
-name: Building
+name: Lint
 
+# Controls when the workflow will run
 on:
   push:
     branches:
@@ -7,6 +8,7 @@ on:
 
   pull_request:
 
+  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
     inputs:
       tags:
@@ -14,7 +16,8 @@ on:
         required: false
 
 jobs:
-  building:
+  lint:
+    name: lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -24,11 +27,5 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build Grammar from yaml to json
-        run: npm run bg
-
-      - name: build with webpack
-        run: npm run webpackp
-
-      - name: build with esbuild
-        run: npm run esbuildp
+      - name: Code Linting
+        run: npm run lint

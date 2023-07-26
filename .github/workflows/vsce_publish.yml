@@ -33,11 +33,12 @@ jobs:
   #      run: npm run pretest
   #
   #    - name: Run headless test
-  #      uses: coactions/setup-xvfb@v1
+  #      uses: coactions/setup-xvfb@@v1.0.1
   #      with:
   #        run: npm test
 
   publish:
+    name: publish
     #needs: test
     runs-on: ubuntu-latest
     steps:
