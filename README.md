@@ -78,6 +78,8 @@ Currently, we use a very simple hand-written parser and combine it with regex to
 
 Since this extension is designed as a [Web Extension](https://code.visualstudio.com/api/extension-guides/web-extensions), we are considering using [node-tree-sitter](https://github.com/tree-sitter/node-tree-sitter) as the parser in the future. However, we have no plan to update the parser recently since we are still evaluating its impact on the architecture of VS Code language service (see [Anycode](https://github.com/microsoft/vscode-anycode)).
 
+### Learn More
+See [Developer Guide](https://github.com/qingpeng9802/vscode-common-lisp/blob/master/CONTRIBUTING.md).
 
 ## Acknowledgment
 draft proposed American National Standard for Information Systems—Programming Language—Common Lisp X3J13/94-101R [(CL-ANSI)](https://franz.com/support/documentation/cl-ansi-standard-draft-w-sidebar.pdf)  

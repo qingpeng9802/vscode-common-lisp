@@ -12,6 +12,7 @@ If you have time, please [extension-bisect](https://code.visualstudio.com/blogs/
 
 Does this issue occur when all the other extensions are disabled?: Yes/No
 -   VS Code Version: *You can find it by* [*how-do-i-find-the-version*](https://code.visualstudio.com/docs/supporting/FAQ#_how-do-i-find-the-version)
+-   Desktop Electron Version or Browser version: *You can find it by* [*how-do-i-find-the-version*](https://code.visualstudio.com/docs/supporting/FAQ#_how-do-i-find-the-version)
 -   OS Version: *which OS and its version*
 
 **Describe the bug**
