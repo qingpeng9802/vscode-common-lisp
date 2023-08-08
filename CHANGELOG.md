@@ -1,4 +1,8 @@
 # Change Log
+
+## [1.2.6] - 2023-08-08
+### Changed
+- `README.md` update README
 ## [1.2.5] - 2023-07-25
 ### Added
 - add hover provider for user-defined doc
