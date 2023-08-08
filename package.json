@@ -50,8 +50,8 @@
                 ],
                 "configuration": "./language-configuration.json",
                 "icon": {
-                    "light": "./icons/commonlisp_file_icon.svg",
-                    "dark": "./icons/commonlisp_file_icon.svg"
+                    "light": "./images/commonlisp_file_icon.svg",
+                    "dark": "./images/commonlisp_file_icon.svg"
                 }
             },
             {

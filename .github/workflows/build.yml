@@ -1,5 +1,6 @@
 name: Build
 
+# Controls when the workflow will run
 on:
   push:
     branches:
@@ -7,6 +8,7 @@ on:
 
   pull_request:
 
+  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
     inputs:
       tags:
@@ -24,6 +26,15 @@ jobs:
           node-version: 18
       - name: Install dependencies
         run: npm ci
+
+      - name: tsc compile
+        run: npm run tscc
+
+      - name: tsc compile with declarationMap
+        run: npm run tsccd
+
+      - name: Code Linting
+        run: npm run lint
 
       - name: Build Grammar from yaml to json
         run: npm run bg
