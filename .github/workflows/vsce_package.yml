@@ -27,8 +27,8 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3.5.3
+      - uses: actions/setup-node@v3.7.0
         with:
           node-version: 18
       - name: Install dependencies
@@ -47,7 +47,7 @@ jobs:
         run: npm run package
 
       - name: Archive vsix production
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: vsix production
           path: ./*.vsix
