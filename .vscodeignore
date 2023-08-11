@@ -1,29 +1,21 @@
-# vscode
-.vscode/**
-.vscode-test/**
-.vscode-test-web/**
-vsc-extension-quickstart.md
-*.vsix
+# Ignore everything
+*
+*/**
 
-# git
-.gitignore
-.github/**
+# Whitelist
+!package.json
 
-# node
-src/**
-out/**
-node_modules/**
-webpack.config.js
-**/tsconfig.json
-**/.eslintrc.json
-**/*.map
-**/*.ts
-*.log
+!dist/web/extension.js
 
-# dev
-assets/**
-scripts/**
-.parcel-cache
+!images/commonlisp_file_icon.svg
+!images/icon.png
 
-# prod
+!syntaxes/commonlisp.tmLanguage.json
+!syntaxes/cl_codeblock.tmLanguage.json
 
+!language-configuration.json
+!snippets/commonlisp_snippets.json
+
+!README.md
+!CHANGELOG.md
+!LICENSE

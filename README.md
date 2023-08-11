@@ -4,12 +4,12 @@ This VS Code extension supports Syntax Highlighting, Snippets, Completion, Hover
 ## Features
 
 ### Syntax Highlighting
-<img src="https://raw.githubusercontent.com/qingpeng9802/vscode-common-lisp/master/images/syntax_dark_plus.png">  
+<img src="https://raw.githubusercontent.com/qingpeng9802/vscode-common-lisp/master/images/doc/syntax_dark_plus.png">  
   
-<img src="https://raw.githubusercontent.com/qingpeng9802/vscode-common-lisp/master/images/syntax_light_plus.png">  
+<img src="https://raw.githubusercontent.com/qingpeng9802/vscode-common-lisp/master/images/doc/syntax_light_plus.png">  
 
 ### Snippets
-<img src="https://raw.githubusercontent.com/qingpeng9802/vscode-common-lisp/master/images/snippets.gif">
+<img src="https://raw.githubusercontent.com/qingpeng9802/vscode-common-lisp/master/images/doc/snippets.gif">
 
 ## Usage and Recommendation
 Beginner's Guide: [Overview](https://code.visualstudio.com/docs/languages/overview).  

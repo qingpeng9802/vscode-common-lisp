@@ -7,18 +7,18 @@ Hoping this guide will be helpful to you whether you would like to contribute, f
 ## Architecture  
 Let us first take a brief look at the design of this project.  
 
-![layers](./images/layers.png)  
+![layers](./images/doc/layers.png)  
 
 The image above shows the layers of the source code. `entry` initializes the extension and applies the vscode workspace configuration to the extension. `provider_interface` registers the providers in vscode. `builders` prepare the data structures from the raw text string/processed semantic information for vscode language features. `collect_info` collects the semantic information from the raw text string. `common` includes some constants and algorithms. `doc` is the interface for getting documentation.  
 
-If you are interested in a more detailed dependency graph, you can find the dependency graph in [`./images/dependency_graph.svg`](./images/dependency_graph.svg). Also, you can generate the dependency graph by running
+If you are interested in a more detailed dependency graph, you can find the dependency graph in [`./images/doc/dependency_graph.svg`](./images/doc/dependency_graph.svg). Also, you can generate the dependency graph by running
 > You may need to run `sudo apt install graphviz` first
 ```shell
-npx depcruise src --no-config --include-only "^src" --output-type dot | dot -T svg > ./images/dependency_graph.svg
+npx depcruise src --no-config --include-only "^src" --output-type dot | dot -T svg > ./images/doc/dependency_graph.svg
 ```
 
 ## Data Flow  
-![data_flow](./images/data_flow.svg)  
+![data_flow](./images/doc/data_flow.svg)  
 
 Please do not trust the correspondence between naming in the data flow diagram and naming in the source code since the naming in the source code is subject to change.  
 
@@ -86,6 +86,7 @@ Run `npm i -g @vscode/vsce` to install `vsce` globally since `vsce` is not in th
 
 Run `vsce package`.  
 Then, you will get a `common-lisp-x.x.x.vsix` in your `./` .
+> `.vscodeignore` uses whitelist mode. Run `npx vsce ls` to check what has been packaged.
 
 If you would like to use the packaged `.vsix` extension, you can load the `.vsix` extension to vscode by referring to [extension-marketplace install-from-a-vsix](https://code.visualstudio.com/docs/editor/extension-marketplace#_install-from-a-vsix).  
 
