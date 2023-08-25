@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.2.7] - 2023-08-25
+### Changed
+- optimize the packaging size of this extension
+
 ## [1.2.6] - 2023-08-08
 ### Changed
 - `README.md` update README
