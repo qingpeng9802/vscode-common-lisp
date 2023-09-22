@@ -12,45 +12,19 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   #test:
-  #  strategy:
-  #    matrix:
-  #      os: [macos-latest, ubuntu-latest, windows-latest]
-  #  runs-on: ${{ matrix.os }}
-  #
-  #  steps:
-  #    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-  #    - uses: actions/checkout@v3.5.3
-  #    - uses: actions/setup-node@v3.7.0
-  #      with:
-  #        node-version: 18
-  #    - name: Install dependencies
-  #      run: npm ci
-  #
-  #    - name: Build Grammar from yaml to json
-  #      run: npm run bg
-  #
-  #    - name: Webpack compile web
-  #      run: npm run pretest
-  #
-  #    - name: Run headless test
-  #      uses: coactions/setup-xvfb@@v1.0.1
-  #      with:
-  #        run: npm test
+  #  uses: ./.github/workflows/test.yml
 
   publish:
     name: publish
     #needs: test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3.5.3
-      - uses: actions/setup-node@v3.7.0
+      - uses: actions/checkout@v4.0.0
+      - uses: actions/setup-node@v3.8.1
         with:
-          node-version: 18
+          node-version: 20
       - name: Install dependencies
         run: npm ci
-
-      #- name: Build Grammar from yaml to json
-      #  run: npm run bg
 
       - name: Package web extension
         run: npm run vscode:prepublish

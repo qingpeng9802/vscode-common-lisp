@@ -78,6 +78,8 @@ See [debugging-the-extension](https://code.visualstudio.com/api/get-started/your
 Run `npm run lint` for linting.  
 Most errors and warnings can be fixed automatically by running `npm run lint -- --fix`. 
 
+Run `npx unimported` to check if there are any dangling files.
+
 ### Test
 There are no tests now. The features of this project are still changing. Most of the time needs to be allocated for polishing the features.  
 
@@ -120,9 +122,9 @@ If you need to modify the syntax, here are some helpful materials:
 Mastering the TextMate grammars is very difficult. If you are a beginner, you can try to start with a small work sample and then work on it incrementally.  
 The recommended workflow is:  
 1. `git add`
-2. construct a regex, verify it in [regex101](https://regex101.com/)
-3. add it to the syntax
-4. convert into `json`, test it in real world
+2. construct a regex and verify the regex in [regex101](https://regex101.com/)
+3. add the regex to the syntax
+4. convert the syntax into `json` and test the syntax in real world
 
 ### Snippet
 In `./snippets`.
