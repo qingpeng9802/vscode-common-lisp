@@ -56,11 +56,21 @@ function assignKindAndDoc(
   return citems;
 }
 
+// Currently, VS Code does not support sort of autocompletion items.
+// (https://github.com/microsoft/vscode/issues/80444)
+// Thus, the order of symbol is not matter here.
 function genOriSymbols(): vscode.CompletionItem[] {
   const citems: vscode.CompletionItem[] = [];
+  // integrity check
+  const completeSymbols: string[] = [];
   for (const [k, partSymbols] of clOriSymbolsByKind) {
     const kind = clKindToVscodeCIKind.get(k)!;
     citems.push(...assignKindAndDoc(partSymbols, kind));
+    completeSymbols.push(...partSymbols);
+  }
+  if (completeSymbols.length !== 978) {
+    console.warn(`[Autocompletion] Got ${completeSymbols.length}. \
+    Please make sure all 978 commonlisp symbols have been included.`);
   }
   if (citems.length !== 923) {
     // not 978 since we filtered `&` and `*` out
