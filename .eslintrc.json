@@ -333,12 +333,12 @@
                     }
                 ]
             }
-        ]
+        ],
+        
+        "node/no-unpublished-import": ["error", {
+            "allowModules": ["vitest"]
+        }]
     },
-
-    "node/no-unpublished-import": ["error", {
-        "allowModules": ["vitest"]
-    }],
 
     "settings": {
         "import/parsers": {
