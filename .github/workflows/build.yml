@@ -1,4 +1,4 @@
-name: Build
+name: Build and Test
 
 # Controls when the workflow will run
 on:
@@ -44,5 +44,11 @@ jobs:
       - name: build with webpack
         run: npm run webpackp
 
+      - name: clean webpackp
+        run: rm -rf ./dist
+
       - name: build with esbuild
         run: npm run esbuildp
+
+  test:
+    uses: ./.github/workflows/test.yml

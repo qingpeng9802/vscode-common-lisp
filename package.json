@@ -281,12 +281,14 @@
     },
     "homepage": "https://github.com/qingpeng9802/vscode-common-lisp/blob/master/README.md",
     "scripts": {
+        "test": "vitest run",
+        "testw": "vitest",
         "package": "vsce package",
         "publish": "vsce publish",
         "publish-pre": "vsce publish --pre-release",
         "bg": "node scripts/build_grammar.mjs",
         "lint": "eslint src --ext ts",
-        "pretest": "npm run webpackc",
+        "pretest": "npm run esbuildc",
         "vscode:prepublish": "npm run bg & npm run webpackp",
         "webpackc": "webpack",
         "webpackw": "webpack --watch",
@@ -318,6 +320,7 @@
         "ts-loader": "^9.4.4",
         "typescript": "^5.2.2",
         "unimported": "^1.29.2",
+        "vitest": "^0.34.5",
         "webpack": "^5.88.2",
         "webpack-cli": "^5.1.4"
     }

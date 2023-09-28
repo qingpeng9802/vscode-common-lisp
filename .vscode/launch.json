@@ -16,14 +16,51 @@
                 "--extensionDevelopmentPath=${workspaceFolder}",
                 "--extensionDevelopmentKind=web"
             ],
-            "outFiles": [
-                "${workspaceFolder}/dist/web/**/*.js"
-            ],
+            "sourceMaps": true,
             "resolveSourceMapLocations": [
                 "${workspaceFolder}/**",
                 "!**/node_modules/**"
             ],
-            //"preLaunchTask": "npm: esbuildw"
-        }
+            "outFiles": ["${workspaceFolder}/dist/web/**/*.js"],
+            "skipFiles": ["<node_internals>/**"],
+            //"preLaunchTask": "npm: esbuildc"
+        },
+        {
+			"name": "Test with VS Code",
+			"type": "extensionHost",
+			"debugWebWorkerHost": true,
+			"request": "launch",
+			"args": [
+                //"${workspaceFolder}/src/test",
+                //"--disable-extensions",
+				"--extensionDevelopmentPath=${workspaceFolder}",
+				"--extensionDevelopmentKind=web",
+				"--extensionTestsPath=${workspaceFolder}/src/test/index.node.js"
+			],
+            "sourceMaps": true,
+            // https://github.com/microsoft/vscode/issues/102042#issuecomment-656402933
+            "resolveSourceMapLocations": [
+                "${workspaceFolder}/**",
+                "!**/node_modules/**"
+            ],
+			"outFiles": ["${workspaceFolder}/dist/web/**/*.js"],
+            "skipFiles": ["<node_internals>/**"],
+			//"preLaunchTask": "npm: esbuildc"
+		},
+        {
+            "name": "Test in Node",
+            "request": "launch",
+            "outputCapture": "std",
+            "type": "node",
+            "cwd": "${workspaceFolder}",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": ["run", "test"]
+        },
+        {
+            "name": "Test in terminal",
+            "command": "npm run test",
+            "request": "launch",
+            "type": "node-terminal"
+        },
     ]
 }
