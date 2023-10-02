@@ -50,5 +50,5 @@ jobs:
       - name: build with esbuild
         run: npm run esbuildp
 
-  #test:
-  #  uses: ./.github/workflows/test.yml
+  test:
+    uses: ./.github/workflows/test.yml

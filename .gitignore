@@ -5,3 +5,4 @@ node_modules
 *.vsix
 *.log
 .parcel-cache
+syntaxes/test/generated/*

@@ -1,0 +1,33 @@
+{
+    "compilerOptions": {
+        "pretty": true,
+        "lib": [
+            "es2022",
+            "WebWorker"
+        ],
+        "target": "es2022",
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "isolatedModules": true,
+        "verbatimModuleSyntax": true,
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+
+        //"declaration": true, // extra type check
+        //"declarationMap": true,
+        //"sourceMap": true,
+
+        "strict": true,
+        "noImplicitReturns": true, /* Report error when not all code paths in function return a value. */
+        "noFallthroughCasesInSwitch": true, /* Report errors for fallthrough cases in switch statement. */
+        // "noUnusedParameters": true,  /* Report errors on unused parameters. */
+        "noImplicitOverride": true,
+        "noPropertyAccessFromIndexSignature": true,
+
+        "allowUnreachableCode": false,
+        "allowUnusedLabels": false,
+        "newLine": "lf",
+
+        //"allowJs": true,
+    }
+}

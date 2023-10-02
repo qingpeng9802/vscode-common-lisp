@@ -109,7 +109,8 @@ Run `find ./src -name '*.ts' | xargs wc -l` to check the physical lines of code 
 ## Declarative Language Features  
 
 ### Syntax Highlight
-We have two syntax files in `./syntaxes`, and we use `./scripts/build_grammar.mjs` to convert them into `json` format:
+#### Introduction
+We have two syntax files in `./syntaxes`, and we use `./syntaxes/scripts/build_grammar.mjs` to convert them into `json` format:
 - `commonlisp.yaml` is the main syntax of Common Lisp.
 - `cl_codeblock.yaml` is the [injection grammar](https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide#injection-grammars) for Markdown.
 
@@ -121,12 +122,20 @@ If you need to modify the syntax, here are some helpful materials:
 [regex101](https://regex101.com/),
 [Common Lisp HyperSpec](http://www.lispworks.com/documentation/HyperSpec/Front/).
 
+#### Workflow
 Mastering the TextMate grammars is very difficult. If you are a beginner, you can try to start with a small work sample and then work on it incrementally.  
 The recommended workflow is:  
 1. `git add`
 2. construct a regex and verify the regex in [regex101](https://regex101.com/)
 3. add the regex to the syntax
 4. convert the syntax into `json` and test the syntax in real world
+
+#### Maintain grammar health
+1. After you modified the grammar, run `npm run bg` to rebuild the grammar.  
+2. Then, run `npm run testg` to test the grammar with the fixtures in `syntaxes/test/baselines`.
+    > You may optionally run `npx tsc -p syntaxes/scripts/tsconfig.json` to generate `gen_record.mjs`.
+3. Check if it is the test result you expected. Run `npm run diff` to find the differences between the baselines and generated.
+4. If the changes are what you expect, run `npm run accept` to accept the new baselines.
 
 ### Snippet
 In `./snippets`.

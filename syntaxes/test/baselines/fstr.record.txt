@@ -1,0 +1,372 @@
+original file
+-----------------------------------
+(defun print-xapping (xapping stream depth) 
+  (declare (ignore depth)) 
+  (format stream 
+          ;; Are you ready for this one? 
+          "~:[{~;[~]~:{~S~:[->~S~;~*~]~:^ ~}~:[~; ~]~ 
+           ~{~S->~^ ~}~:[~; ~]~[~*~;->~S~;->~*~]~:[}~;]~]" 
+          ;; Is that clear? 
+          (xectorp xapping) 
+          (do ((vp (xectorp xapping)) 
+               (sp (finite-part-is-xetp xapping)) 
+               (d (xapping-domain xapping) (cdr d)) 
+               (r (xapping-range xapping) (cdr r)) 
+               (z '() (cons (list (if vp (car r) (car d)) 
+                                  (or vp sp) 
+                                  (car r)) 
+                            z))) 
+              ((null d) (reverse z))) 
+          (and (xapping-domain xapping) 
+               (or (xapping-exceptions xapping) 
+                   (xapping-infinite xapping))) 
+          (xapping-exceptions xapping) 
+          (and (xapping-exceptions xapping) 
+               (xapping-infinite xapping)) 
+          (ecase (xapping-infinite xapping) 
+            ((nil) 0) 
+            (:constant 1) 
+            (:universal 2)) 
+          (xapping-default xapping) 
+          (xectorp xapping)))
+
+(defun f (n) (format nil "~@(~R~) error~:P detected." n)) 
+-----------------------------------
+
+Grammar: commonlisp.tmLanguage.json
+-----------------------------------
+>(defun print-xapping (xapping stream depth) 
+ ^
+ sc 
+  ^^^^^
+  sc storage.type.function.defname.commonlisp
+       ^
+       sc 
+        ^^^^^^^^^^^^^
+        sc entity.name.function.commonlisp
+                     ^^^^^^^^^^
+                     sc 
+                               ^^^^^^
+                               sc support.class.commonlisp
+                                     ^^^^^^^^^
+                                     sc 
+>  (declare (ignore depth)) 
+ ^^^
+ sc 
+    ^^^^^^^
+    sc storage.type.function.symbol.commonlisp
+           ^^
+           sc 
+             ^^^^^^
+             sc storage.type.function.declaration.commonlisp
+                   ^^^^^^^^^^
+                   sc 
+>  (format stream 
+ ^^^
+ sc 
+    ^^^^^^
+    sc support.function.f.sideeffects.commonlisp
+          ^
+          sc 
+           ^^^^^^
+           sc support.class.commonlisp
+                 ^^
+                 sc 
+>          ;; Are you ready for this one? 
+ ^^^^^^^^^^
+ sc punctuation.whitespace.comment.leading.commonlisp
+           ^
+           sc comment.line.semicolon.commonlisp punctuation.definition.comment.commonlisp
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            sc comment.line.semicolon.commonlisp
+>          "~:[{~;[~]~:{~S~:[->~S~;~*~]~:^ ~}~:[~; ~]~ 
+ ^^^^^^^^^^
+ sc 
+           ^
+           sc string.quoted.double.commonlisp punctuation.definition.string.begin.commonlisp
+            ^^^
+            sc string.quoted.double.commonlisp storage.type.function.formattedstring.commonlisp
+               ^
+               sc string.quoted.double.commonlisp
+                ^^
+                sc string.quoted.double.commonlisp storage.type.function.formattedstring.commonlisp
+                  ^
+                  sc string.quoted.double.commonlisp
+                   ^^^^^
+                   sc string.quoted.double.commonlisp storage.type.function.formattedstring.commonlisp
+                        ^^
+                        sc string.quoted.double.commonlisp entity.name.variable.commonlisp
+                          ^^^
+                          sc string.quoted.double.commonlisp storage.type.function.formattedstring.commonlisp
+                             ^^
+                             sc string.quoted.double.commonlisp
+                               ^^
+                               sc string.quoted.double.commonlisp entity.name.variable.commonlisp
+                                 ^^
+                                 sc string.quoted.double.commonlisp storage.type.function.formattedstring.commonlisp
+                                   ^^
+                                   sc string.quoted.double.commonlisp entity.name.variable.commonlisp
+                                     ^^^^^
+                                     sc string.quoted.double.commonlisp storage.type.function.formattedstring.commonlisp
+                                          ^
+                                          sc string.quoted.double.commonlisp
+                                           ^^^^^^^
+                                           sc string.quoted.double.commonlisp storage.type.function.formattedstring.commonlisp
+                                                  ^
+                                                  sc string.quoted.double.commonlisp
+                                                   ^^
+                                                   sc string.quoted.double.commonlisp storage.type.function.formattedstring.commonlisp
+                                                     ^^^
+                                                     sc string.quoted.double.commonlisp
+>           ~{~S->~^ ~}~:[~; ~]~[~*~;->~S~;->~*~]~:[}~;]~]" 
+ ^^^^^^^^^^^
+ sc string.quoted.double.commonlisp
+            ^^
+            sc string.quoted.double.commonlisp storage.type.function.formattedstring.commonlisp
+              ^^
+              sc string.quoted.double.commonlisp entity.name.variable.commonlisp
+                ^^
+                sc string.quoted.double.commonlisp
+                  ^^
+                  sc string.quoted.double.commonlisp storage.type.function.formattedstring.commonlisp
+                    ^
+                    sc string.quoted.double.commonlisp
+                     ^^^^^^^
+                     sc string.quoted.double.commonlisp storage.type.function.formattedstring.commonlisp
+                            ^
+                            sc string.quoted.double.commonlisp
+                             ^^^^
+                             sc string.quoted.double.commonlisp storage.type.function.formattedstring.commonlisp
+                                 ^^
+                                 sc string.quoted.double.commonlisp entity.name.variable.commonlisp
+                                   ^^
+                                   sc string.quoted.double.commonlisp storage.type.function.formattedstring.commonlisp
+                                     ^^
+                                     sc string.quoted.double.commonlisp
+                                       ^^
+                                       sc string.quoted.double.commonlisp entity.name.variable.commonlisp
+                                         ^^
+                                         sc string.quoted.double.commonlisp storage.type.function.formattedstring.commonlisp
+                                           ^^
+                                           sc string.quoted.double.commonlisp
+                                             ^^
+                                             sc string.quoted.double.commonlisp entity.name.variable.commonlisp
+                                               ^^^^^
+                                               sc string.quoted.double.commonlisp storage.type.function.formattedstring.commonlisp
+                                                    ^
+                                                    sc string.quoted.double.commonlisp
+                                                     ^^
+                                                     sc string.quoted.double.commonlisp storage.type.function.formattedstring.commonlisp
+                                                       ^
+                                                       sc string.quoted.double.commonlisp
+                                                        ^^
+                                                        sc string.quoted.double.commonlisp storage.type.function.formattedstring.commonlisp
+                                                          ^
+                                                          sc string.quoted.double.commonlisp punctuation.definition.string.end.commonlisp
+                                                           ^^
+                                                           sc 
+>          ;; Is that clear? 
+ ^^^^^^^^^^
+ sc punctuation.whitespace.comment.leading.commonlisp
+           ^
+           sc comment.line.semicolon.commonlisp punctuation.definition.comment.commonlisp
+            ^^^^^^^^^^^^^^^^^
+            sc comment.line.semicolon.commonlisp
+>          (xectorp xapping) 
+ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ sc 
+>          (do ((vp (xectorp xapping)) 
+ ^^^^^^^^^^^
+ sc 
+            ^^
+            sc storage.type.function.m.nosideeffects.commonlisp
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+              sc 
+>               (sp (finite-part-is-xetp xapping)) 
+ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ sc 
+>               (d (xapping-domain xapping) (cdr d)) 
+ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ sc 
+                                             ^^^
+                                             sc support.function.accessor.commonlisp
+                                                ^^^^^^
+                                                sc 
+>               (r (xapping-range xapping) (cdr r)) 
+ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ sc 
+                                            ^^^
+                                            sc support.function.accessor.commonlisp
+                                               ^^^^^^
+                                               sc 
+>               (z '() (cons (list (if vp (car r) (car d)) 
+ ^^^^^^^^^^^^^^^^^^
+ sc 
+                   ^
+                   sc variable.other.constant.singlequote.commonlisp
+                    ^^^^
+                    sc 
+                        ^^^^
+                        sc support.function.f.sideeffects.commonlisp
+                            ^^
+                            sc 
+                              ^^^^
+                              sc support.function.f.sideeffects.commonlisp
+                                  ^^
+                                  sc 
+                                    ^^
+                                    sc keyword.control.commonlisp
+                                      ^^^^^
+                                      sc 
+                                           ^^^
+                                           sc support.function.accessor.commonlisp
+                                              ^^^^^
+                                              sc 
+                                                   ^^^
+                                                   sc support.function.accessor.commonlisp
+                                                      ^^^^^^
+                                                      sc 
+>                                  (or vp sp) 
+ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ sc 
+                                    ^^
+                                    sc storage.type.function.m.nosideeffects.commonlisp
+                                      ^^^^^^^^^
+                                      sc 
+>                                  (car r)) 
+ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ sc 
+                                    ^^^
+                                    sc support.function.accessor.commonlisp
+                                       ^^^^^^
+                                       sc 
+>                            z))) 
+ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ sc 
+>              ((null d) (reverse z))) 
+ ^^^^^^^^^^^^^^^^
+ sc 
+                 ^^^^
+                 sc support.function.f.sideeffects.commonlisp
+                     ^^^^^
+                     sc 
+                          ^^^^^^^
+                          sc support.function.f.sideeffects.commonlisp
+                                 ^^^^^^^
+                                 sc 
+>          (and (xapping-domain xapping) 
+ ^^^^^^^^^^^
+ sc 
+            ^^^
+            sc storage.type.function.m.nosideeffects.commonlisp
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+               sc 
+>               (or (xapping-exceptions xapping) 
+ ^^^^^^^^^^^^^^^^
+ sc 
+                 ^^
+                 sc storage.type.function.m.nosideeffects.commonlisp
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                   sc 
+>                   (xapping-infinite xapping))) 
+ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ sc 
+>          (xapping-exceptions xapping) 
+ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ sc 
+>          (and (xapping-exceptions xapping) 
+ ^^^^^^^^^^^
+ sc 
+            ^^^
+            sc storage.type.function.m.nosideeffects.commonlisp
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+               sc 
+>               (xapping-infinite xapping)) 
+ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ sc 
+>          (ecase (xapping-infinite xapping) 
+ ^^^^^^^^^^^
+ sc 
+            ^^^^^
+            sc storage.type.function.m.sideeffects.commonlisp
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                 sc 
+>            ((nil) 0) 
+ ^^^^^^^^^^^^^^
+ sc 
+               ^^^
+               sc constant.language.commonlisp
+                  ^^
+                  sc 
+                    ^
+                    sc constant.numeric.commonlisp
+                     ^^^
+                     sc 
+>            (:constant 1) 
+ ^^^^^^^^^^^^^
+ sc 
+              ^^^^^^^^^
+              sc entity.name.variable.commonlisp
+                       ^
+                       sc 
+                        ^
+                        sc constant.numeric.commonlisp
+                         ^^^
+                         sc 
+>            (:universal 2)) 
+ ^^^^^^^^^^^^^
+ sc 
+              ^^^^^^^^^^
+              sc entity.name.variable.commonlisp
+                        ^
+                        sc 
+                         ^
+                         sc constant.numeric.commonlisp
+                          ^^^^
+                          sc 
+>          (xapping-default xapping) 
+ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ sc 
+>          (xectorp xapping)))
+ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ sc 
+>
+ ^
+ sc 
+>(defun f (n) (format nil "~@(~R~) error~:P detected." n)) 
+ ^
+ sc 
+  ^^^^^
+  sc storage.type.function.defname.commonlisp
+       ^
+       sc 
+        ^
+        sc entity.name.function.commonlisp
+         ^^^^^^
+         sc 
+               ^^^^^^
+               sc support.function.f.sideeffects.commonlisp
+                     ^
+                     sc 
+                      ^^^
+                      sc constant.language.commonlisp
+                         ^
+                         sc 
+                          ^
+                          sc string.quoted.double.commonlisp punctuation.definition.string.begin.commonlisp
+                           ^^^
+                           sc string.quoted.double.commonlisp storage.type.function.formattedstring.commonlisp
+                              ^^
+                              sc string.quoted.double.commonlisp entity.name.variable.commonlisp
+                                ^^
+                                sc string.quoted.double.commonlisp storage.type.function.formattedstring.commonlisp
+                                  ^^^^^^
+                                  sc string.quoted.double.commonlisp
+                                        ^^^
+                                        sc string.quoted.double.commonlisp entity.name.variable.commonlisp
+                                           ^^^^^^^^^^
+                                           sc string.quoted.double.commonlisp
+                                                     ^
+                                                     sc string.quoted.double.commonlisp punctuation.definition.string.end.commonlisp
+                                                      ^^^^^^
+                                                      sc 

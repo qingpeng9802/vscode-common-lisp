@@ -22,7 +22,6 @@
                 "!**/node_modules/**"
             ],
             "outFiles": ["${workspaceFolder}/dist/web/**/*.js"],
-            "skipFiles": ["<node_internals>/**"],
             //"preLaunchTask": "npm: esbuildc"
         },
         {
@@ -44,7 +43,6 @@
                 "!**/node_modules/**"
             ],
 			"outFiles": ["${workspaceFolder}/dist/web/**/*.js"],
-            "skipFiles": ["<node_internals>/**"],
 			//"preLaunchTask": "npm: esbuildc"
 		},
         {

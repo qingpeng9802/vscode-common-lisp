@@ -7,7 +7,7 @@
     "root": true,
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
-        "project": "./tsconfig.json",
+        "project": ["tsconfig.json", "syntaxes/scripts/tsconfig.json"],
         "ecmaVersion": 2022,
         "sourceType": "module"
     },
@@ -48,6 +48,7 @@
         "eol-last": "warn",
         "one-var": [ "warn", "never" ],
         "new-parens": "warn",
+        "template-curly-spacing": ["warn"],
         "prefer-const": "warn",
         "prefer-arrow-callback": "warn",
         "prefer-rest-params": "warn",
@@ -297,43 +298,50 @@
                 "zones": [
                     // layer 0
                     {
-                        "target": "./src/web/common",
-                        "from": "./src/web",
-                        "message": "[layer 0] ./src/web/common"
+                        "target": "src/web/common",
+                        "from": "src/web",
+                        "message": "[layer 0] src/web/common"
                     },
                     {
-                        "target": "./src/web/doc",
-                        "from": "./src/web",
-                        "except": [ "./cl_data", "./common" ],
-                        "message": "[layer 0] ./src/web/doc"
+                        "target": "src/web/doc",
+                        "from": "src/web",
+                        "except": [ "cl_data", "common" ],
+                        "message": "[layer 0] src/web/doc"
                     },
                     {
-                        "target": "./src/web/collect_info",
-                        "from": "./src/web",
-                        "except": [ "./collect_info", "./common" ],
-                        "message": "[layer 0] ./src/web/collect_info"
+                        "target": "src/web/collect_info",
+                        "from": "src/web",
+                        "except": [ "collect_info", "common" ],
+                        "message": "[layer 0] src/web/collect_info"
                     },
                     // layer 1
                     {
-                        "target": "./src/web/builders",
-                        "from": [ "./src/web/entry", "./src/web/extension.ts", "./src/web/provider_interface" ],
-                        "message": "[layer 1] ./src/web/builders"
+                        "target": "src/web/builders",
+                        "from": [ "src/web/entry", "src/web/extension.ts", "src/web/provider_interface" ],
+                        "message": "[layer 1] src/web/builders"
                     },
                     // layer 2
                     {
-                        "target": "./src/web/provider_interface",
-                        "from": [ "./src/web/entry", "./src/web/extension.ts" ],
-                        "message": "[layer 2] ./src/web/provider_interface"
+                        "target": "src/web/provider_interface",
+                        "from": [ "src/web/entry", "src/web/extension.ts" ],
+                        "message": "[layer 2] src/web/provider_interface"
                     },
                     // layer 3
                     {
-                        "target": "./src/web/entry",
-                        "from": "./src/web/extension.ts",
-                        "message": "[layer 3] ./src/web/entry"
+                        "target": "src/web/entry",
+                        "from": "src/web/extension.ts",
+                        "message": "[layer 3] src/web/entry"
                     }
                 ]
             }
-        ]
+        ],
+
+        "node/no-unsupported-features/node-builtins": ["error", {
+            "version": ">=20.8.0"
+        }],
+        "node/no-unpublished-import": ["error", {
+            "allowModules": ["vscode-oniguruma", "vscode-textmate", "js-yaml"]
+        }]
     },
 
     "settings": {
@@ -350,6 +358,7 @@
         }
     },
     "ignorePatterns": [
-        "**/*.d.ts"
+        "**/*.d.ts",
+        "syntaxes/scripts/gen_record.mjs"
     ]
 }
