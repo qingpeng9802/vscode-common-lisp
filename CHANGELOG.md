@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.2.8] - 2023-10-04
+### Changed
+- engineering version only
+
 ## [1.2.7] - 2023-08-25
 ### Changed
 - optimize the packaging size of this extension
