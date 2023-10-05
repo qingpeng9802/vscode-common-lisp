@@ -298,8 +298,8 @@
         "esbuildw": "npm run esbuild-base -- --sourcemap --watch",
         "tscc": "tsc -p ./",
         "tsccd": "tsc -p ./ --declaration --declarationMap",
-        "diff": "cross-env-shell $DIFF syntaxes/test/baselines syntaxes/test/generated",
-        "accept": "copyfiles -u 3 \"syntaxes/test/generated/*\" syntaxes/test/baselines"
+        "diff": "cross-env-shell $DIFF syntaxes/fixtures/baselines syntaxes/fixtures/generated",
+        "accept": "copyfiles -u 3 \"syntaxes/fixtures/generated/*\" syntaxes/fixtures/baselines"
     },
     "devDependencies": {
         "@types/js-yaml": "^4.0.6",

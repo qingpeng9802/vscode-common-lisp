@@ -161,7 +161,7 @@ function generateScopesWorker(mainGrammar: Grammar, oriLineArr: string[]): strin
  *  pass vt.IGrammer to avoid loading grammar again.
 */
 function generateScopes(text: string, grammar: vt.IGrammar) {
-  //const text = await fsPromises.readFile('syntaxes/test/cases/demo.lsp', { encoding: 'utf-8' });
+  //const text = await fsPromises.readFile('syntaxes/fixtures/cases/demo.lsp', { encoding: 'utf-8' });
 
   const oriLineArr = text.split(/\r\n|\r|\n/);
 

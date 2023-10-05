@@ -6,9 +6,9 @@ import * as path from 'path';
 import { generateScopes, getRegistery, GrammarScopeName } from './gen_record.mjs';
 
 const syntaxes_root = 'syntaxes/';
-const generatedFolder = `${syntaxes_root}test/generated`;
-const baselineFolder = `${syntaxes_root}test/baselines`;
-const casesFolder = `${syntaxes_root}test/cases`;
+const generatedFolder = `${syntaxes_root}fixtures/generated`;
+const baselineFolder = `${syntaxes_root}fixtures/baselines`;
+const casesFolder = `${syntaxes_root}fixtures/cases`;
 
 /**
  * @param {string} file
