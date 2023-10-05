@@ -138,9 +138,9 @@ The recommended workflow is:
 4. If the changes are what you expect, run `npm run accept` to accept the new baselines.
 
 ### Snippet
-In `./snippets`.
+In `./declaratives/commonlisp_snippets.json`.
 See [Snippet Guide](https://code.visualstudio.com/api/language-extensions/snippet-guide) and [creating-your-own-snippets](https://code.visualstudio.com/docs/editor/userdefinedsnippets#_creating-your-own-snippets).
 
 ### Language Configuration
-In `./language-configuration.json`.
+In `./declaratives/language-configuration.json`.
 See [Language Configuration Guide](https://code.visualstudio.com/api/language-extensions/language-configuration-guide).

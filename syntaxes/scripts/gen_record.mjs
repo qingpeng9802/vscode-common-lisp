@@ -38,8 +38,9 @@ var GrammarScopeName;
 const grammarFileNames = new Map([
     [GrammarScopeName.lisp, 'commonlisp.tmLanguage.json']
 ]);
+const syntaxes_root = './syntaxes/';
 /** get the path of the grammar file */
-const getGrammarPath = (scopeName) => path.join('./syntaxes', grammarFileNames.get(scopeName));
+const getGrammarPath = (scopeName) => path.join(syntaxes_root, grammarFileNames.get(scopeName));
 // Part 2: get vscode-textmate registry
 /** get vscode-textmate registry */
 async function getRegistery() {
@@ -96,7 +97,7 @@ function generateScopesWorker(mainGrammar, oriLineArr) {
     for (const oriLine of oriLineArr) {
         // console.log(`\nTokenizing line: ${oriLine}`);
         cleanCodeLines.push(oriLine);
-        recordLines.push('>' + oriLine);
+        recordLines.push(`>${oriLine}`);
         let prevScope = '';
         const mainLineTokens = tokenizeLine(mainGrammar, oriLine);
         for (const token of mainLineTokens) {

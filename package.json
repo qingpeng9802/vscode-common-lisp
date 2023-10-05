@@ -49,7 +49,7 @@
                     ".asd",
                     ".asdf"
                 ],
-                "configuration": "./language-configuration.json",
+                "configuration": "./declaratives/language-configuration.json",
                 "icon": {
                     "light": "./images/commonlisp_file_icon.svg",
                     "dark": "./images/commonlisp_file_icon.svg"
@@ -83,7 +83,7 @@
         "snippets": [
             {
                 "language": "commonlisp",
-                "path": "./snippets/commonlisp_snippets.json"
+                "path": "./declaratives/commonlisp_snippets.json"
             }
         ],
         "configuration": {

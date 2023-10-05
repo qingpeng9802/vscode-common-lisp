@@ -13,8 +13,8 @@
 !syntaxes/commonlisp.tmLanguage.json
 !syntaxes/cl_codeblock.tmLanguage.json
 
-!language-configuration.json
-!snippets/commonlisp_snippets.json
+!declaratives/language-configuration.json
+!declaratives/commonlisp_snippets.json
 
 !README.md
 !CHANGELOG.md

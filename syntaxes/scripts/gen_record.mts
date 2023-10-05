@@ -42,9 +42,10 @@ enum GrammarScopeName {
 const grammarFileNames: Map<GrammarScopeName, string> = new Map([
   [GrammarScopeName.lisp, 'commonlisp.tmLanguage.json']
 ]);
+const syntaxes_root = './syntaxes/';
 /** get the path of the grammar file */
 const getGrammarPath = (scopeName: GrammarScopeName) =>
-  path.join('./syntaxes', grammarFileNames.get(scopeName)!);
+  path.join(syntaxes_root, grammarFileNames.get(scopeName)!);
 
 // Part 2: get vscode-textmate registry
 

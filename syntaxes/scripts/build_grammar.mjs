@@ -4,10 +4,11 @@ import { promises as fsPromises } from 'fs';
 
 import { load } from 'js-yaml';
 
-const INPUT_GRAM_PATH = 'syntaxes/commonlisp.yaml';
-const OUTPUT_GRAM_PATH = 'syntaxes/commonlisp.tmLanguage.json';
-const INPUT_INJMD_GRAM_PATH = 'syntaxes/cl_codeblock.yaml';
-const OUTPUT_INJMD_GRAM_PATH = 'syntaxes/cl_codeblock.tmLanguage.json';
+const syntaxes_root = 'syntaxes/';
+const INPUT_GRAM_PATH = `${syntaxes_root}commonlisp.yaml`;
+const OUTPUT_GRAM_PATH = `${syntaxes_root}commonlisp.tmLanguage.json`;
+const INPUT_INJMD_GRAM_PATH = `${syntaxes_root}cl_codeblock.yaml`;
+const OUTPUT_INJMD_GRAM_PATH = `${syntaxes_root}cl_codeblock.tmLanguage.json`;
 
 /**
  * @param {string} inputFilePath
