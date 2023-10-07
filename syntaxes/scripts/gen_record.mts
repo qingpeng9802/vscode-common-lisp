@@ -113,7 +113,7 @@ function writeTokenLine(token: vt.IToken, outputLines: string[], prevScope: stri
   // add indicator
   outputLines.push(startingSpaces + locatingString);
   // add scope name
-  outputLines.push(`${startingSpaces}${scope}`);
+  outputLines.push(startingSpaces + scope);
 
   return scope;
 }

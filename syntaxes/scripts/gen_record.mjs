@@ -87,7 +87,7 @@ function writeTokenLine(token, outputLines, prevScope) {
     // add indicator
     outputLines.push(startingSpaces + locatingString);
     // add scope name
-    outputLines.push(`${startingSpaces}${scope}`);
+    outputLines.push(startingSpaces + scope);
     return scope;
 }
 /** iterate the lines of the text and produce the record */
