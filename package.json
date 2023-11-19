@@ -202,6 +202,11 @@
                         "Respond to all the selected words."
                     ]
                 },
+                "commonLisp.DocumentSemanticTokensProvider.NotColorQuoted": {
+                    "type": "boolean",
+                    "default": false,
+                    "markdownDescription": "If true, any `quote` will NOT be colored."
+                },
                 "commonLisp.DocumentSemanticTokensProvider.ExcludedRanges": {
                     "type": "string",
                     "default": "comment and string",
@@ -303,14 +308,14 @@
     },
     "devDependencies": {
         "@types/js-yaml": "^4.0.9",
-        "@types/node": "^20.9.0",
+        "@types/node": "^20.9.2",
         "@types/vscode": "1.63.0",
         "@types/webpack-env": "^1.18.4",
-        "@typescript-eslint/eslint-plugin": "^6.10.0",
+        "@typescript-eslint/eslint-plugin": "^6.11.0",
         "assert": "^2.1.0",
-        "dependency-cruiser": "^15.2.0",
-        "esbuild": "^0.19.5",
-        "eslint": "^8.53.0",
+        "dependency-cruiser": "^15.3.0",
+        "esbuild": "^0.19.6",
+        "eslint": "^8.54.0",
         "eslint-import-resolver-typescript": "^3.6.1",
         "eslint-plugin-import": "^2.29.0",
         "eslint-plugin-node": "^11.1.0",
@@ -318,9 +323,9 @@
         "fs": "^0.0.1-security",
         "js-yaml": "^4.1.0",
         "process": "^0.11.10",
-        "ts-loader": "^9.5.0",
+        "ts-loader": "^9.5.1",
         "typescript": "^5.2.2",
-        "unimported": "^1.30.0",
+        "unimported": "^1.31.1",
         "webpack": "^5.89.0",
         "webpack-cli": "^5.1.4",
         "copyfiles": "^2.4.1",

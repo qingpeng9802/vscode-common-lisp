@@ -6,7 +6,7 @@ import type { DocSymbolInfo } from '../DocSymbolInfo';
 import { getScopedSameNameWordsExcludeItself } from '../builders_util';
 
 import { _encodeTokenType, _encodeTokenModifiers, vscodeKindToTokenType } from './token_util';
-import { overrideQuote, updateLoop, updatePairMatchFirstWord } from './update_util';
+import { overrideQuote, updateLoop } from './update_util';
 
 function genAllPossibleWord(
   currDocSymbolInfo: DocSymbolInfo
@@ -61,32 +61,19 @@ function getTokenDict(
   const excludedRanges: [number, number][] =
     currDocSymbolInfo.docRes.getExcludedRangesForDocumentSemanticTokensProvider(buildingConfig);
 
-  // colored position collector
-  // {index, [encodeTokenType, encodeTokenModifiers]}
-  // Note that the `index` should be no-translated result, that is,
-  // `index` should be the 1st character of current string.
-  // For example, `sb-c::instrument-consing` should be the index of `s` instead of `i`.
-  let coloredPosMap: Map<number, [number, number]> = new Map<number, [number, number]>();
-
   // overlap in order!
-  updateTokenDict(currDocSymbolInfo, excludedRanges, needColorDict, 'local', tokensBuilder, coloredPosMap);
+  updateTokenDict(currDocSymbolInfo, excludedRanges, needColorDict, 'local', tokensBuilder);
+  updateTokenDict(currDocSymbolInfo, excludedRanges, needColorDict, 'global', tokensBuilder);
 
-  // Due to the restrictions below, we cannot make this feature optional
-  // https://github.com/microsoft/vscode/issues/580
-  // https://github.com/microsoft/vscode/issues/68647
-  updatePairMatchFirstWord(currDocSymbolInfo, coloredPosMap, tokensBuilder);
-
-  coloredPosMap = new Map<number, [number, number]>();
-
-  updateTokenDict(currDocSymbolInfo, excludedRanges, needColorDict, 'global', tokensBuilder, coloredPosMap);
-
-  updateLoop(currDocSymbolInfo, excludedRanges, tokensBuilder, coloredPosMap);
-  updatePairMatchFirstWord(currDocSymbolInfo, coloredPosMap, tokensBuilder);
-  coloredPosMap = new Map<number, [number, number]>();
+  updateLoop(currDocSymbolInfo, excludedRanges, tokensBuilder);
 
   // 1. tried to de-color all single-quoted parts
-  // vscode semantic highlighting does not support multi-line token, does not work
-  overrideQuote(currDocSymbolInfo, tokensBuilder);
+  // vscode semantic highlighting does not support multi-line tokens
+  // so we split the multi-line tokens into multiple single-line tokens manually.
+  // This may have a negative impact on performance.
+  if (buildingConfig.get('commonLisp.DocumentSemanticTokensProvider.NotColorQuoted') === true) {
+    overrideQuote(currDocSymbolInfo, tokensBuilder);
+  }
   //
   // 2. tried to de-color all no-formatted strings
   // not sure if it can cover all cases or not
@@ -100,7 +87,6 @@ function updateTokenDict(
   needColorDict: Map<string, [number, number][]>,
   updateScope: 'global' | 'local',
   tokensBuilder: vscode.SemanticTokensBuilder,
-  coloredPosMap: Map<number, [number, number]>,
 ) {
   const isGlobal = updateScope === 'global';
   const d = isGlobal ? currDocSymbolInfo.globalDef : currDocSymbolInfo.allLocal;
@@ -125,11 +111,7 @@ function updateTokenDict(
 
       // color def itself
       const startPos = item.startPos;
-      const encoded = setParsedToken(tokensBuilder, item, startPos, isGlobal);
-      if (encoded !== undefined) {
-        coloredPosMap.set(item.numRange[0], encoded);
-      }
-
+      setParsedToken(tokensBuilder, item, startPos, isGlobal);
       // color its scope
       const scopedSameNameWords = getScopedSameNameWordsExcludeItself(item, needColorDict, currDocSymbolInfo);
       for (const rang of scopedSameNameWords) {
@@ -138,10 +120,7 @@ function updateTokenDict(
         }
 
         const startPos = currDocSymbolInfo.document.positionAt(rang[0]);
-        const encoded = setParsedToken(tokensBuilder, item, startPos);
-        if (encoded !== undefined) {
-          coloredPosMap.set(rang[0], encoded);
-        }
+        setParsedToken(tokensBuilder, item, startPos);
       }
 
     }
@@ -155,7 +134,7 @@ function setParsedToken(
   item: SymbolInfo,
   startPos: vscode.Position,
   isGlobal = true
-): [number, number] | undefined {
+) {
   const nameStr = item.name;
   const packagePrefixIndScope = nameStr.indexOf(':');
   let len = nameStr.length;
@@ -168,7 +147,7 @@ function setParsedToken(
         isGlobal &&
         (subItemName.startsWith('+') && subItemName.endsWith('+')) ||
         (subItemName.startsWith('*') && subItemName.endsWith('*'))) {
-        return undefined;
+        return;
       }
     }
     startPos = startPos.translate(0, packagePrefixIndScope);
@@ -194,8 +173,6 @@ function setParsedToken(
   );
   //const key = `${item.name}|${startPos.line},${startPos.character},${item.name.length}`;
   //console.log(key);
-
-  return [encodedTT, encodedTMs];
 }
 
 function buildSemanticTokens(

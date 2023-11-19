@@ -23,6 +23,8 @@ class WorkspaceConfig {
     ['commonLisp.DefinitionProvider.ExcludedRanges', ExcludeRanges.None],
     ['commonLisp.DefinitionProvider.BackQuoteFilter.enabled', true],
 
+    ['commonLisp.DocumentSemanticTokensProvider.NotColorQuoted', false],
+
     ['commonLisp.providers.CompletionItemProviders.user.enabled', true],
     ['commonLisp.providers.CompletionItemProviders.original.enabled', true],
     ['commonLisp.providers.CompletionItemProviders.loop.enabled', true],

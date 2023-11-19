@@ -36,6 +36,8 @@ class StructuredInfo {
     ['commonLisp.DefinitionProvider.ExcludedRanges', ExcludeRanges.None],
     ['commonLisp.ReferenceProvider.ExcludedRanges', ExcludeRanges.CommentString],
     ['commonLisp.DocumentSemanticTokensProvider.ExcludedRanges', ExcludeRanges.CommentString],
+
+    ['commonLisp.DocumentSemanticTokensProvider.NotColorQuoted', false],
   ]);
 
   // dirty flag indicates that the document has been changed,

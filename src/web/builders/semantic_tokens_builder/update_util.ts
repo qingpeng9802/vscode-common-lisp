@@ -10,7 +10,6 @@ function updateLoop(
   currDocSymbolInfo: DocSymbolInfo,
   excludedRanges: [number, number][],
   tokensBuilder: vscode.SemanticTokensBuilder,
-  coloredPosMap: Map<number, [number, number]>,
 ) {
   const document = currDocSymbolInfo.document;
   const text = document.getText();
@@ -62,7 +61,6 @@ function updateLoop(
         startPos.line, startPos.character, word.length,
         encodedTT, encodedTMs
       );
-      coloredPosMap.set(rindex, [encodedTT, encodedTMs]);
       //const key = `loop ${word}|${startPos.line},${startPos.character},${word.length}`;
       //console.log(key);
     }
@@ -145,6 +143,9 @@ function overrideNotFormattedString(
   }
 }
 
+// Due to the restrictions below, we cannot make this feature optional
+// https://github.com/microsoft/vscode/issues/580
+// https://github.com/microsoft/vscode/issues/68647
 function updatePairMatchFirstWord(
   currDocSymbolInfo: DocSymbolInfo,
   coloredPosMap: Map<number, [number, number]>,
