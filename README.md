@@ -37,7 +37,7 @@ The language identifier (id) is `commonlisp` .
 
 If you need to customize your setting only for Common Lisp files, in `settings.json`, please add something like
 ```json
-"[commonlisp]": {
+"[lisp]": {
   "editor.bracketPairColorization.enabled": false
 }
 ```
