@@ -5,8 +5,8 @@ import _kind from '../cl_data/cl_kind.json';
 import _non_alphabetic from '../cl_data/cl_non_alphabetic.json';
 import _doc_non_alphabetic from '../cl_data/cl_non_alphabetic_doc.json';
 
-const non_alphabetic_index_str = `\n\n[[Docs]](http://www.lispworks.com/documentation/lw50/CLHS/Front/X_Mast_9.htm)`;
-const loop_keyword_str = `\n\n[[Docs]](http://www.lispworks.com/documentation/lw51/CLHS/Body/m_loop.htm#loop)`;
+const non_alphabetic_index_str = `\n\n[[Docs]](https://www.lispworks.com/documentation/lw50/CLHS/Front/X_Mast_9.htm)`;
+const loop_keyword_str = `\n\n[[Docs]](https://www.lispworks.com/documentation/lw51/CLHS/Body/m_loop.htm#loop)`;
 
 const kindKeys = new Set(Object.keys(_kind));
 

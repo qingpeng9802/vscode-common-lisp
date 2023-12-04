@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 
-// http://www.lispworks.com/documentation/lcl50/loop/loop-index.html
-// http://www.lispworks.com/documentation/lw51/CLHS/Body/m_loop.htm
+// https://www.lispworks.com/documentation/lcl50/loop/loop-index.html
+// https://www.lispworks.com/documentation/lw51/CLHS/Body/m_loop.htm
 // https://lispcookbook.github.io/cl-cookbook/iteration.html
 const loopKeywordsTokenMap = new Map<string, string | [string, string[]]>([
   // Part 1. follow clauses

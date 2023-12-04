@@ -130,7 +130,7 @@ function genNonAlphabeticDict(): Map<string, vscode.CompletionItem[]> {
 }
 
 function genLoopKeywords() {
-  // http://www.lispworks.com/documentation/lw51/CLHS/Body/m_loop.htm#loop
+  // https://www.lispworks.com/documentation/lw51/CLHS/Body/m_loop.htm#loop
   // https://lispcookbook.github.io/cl-cookbook/iteration.html
   const citems: vscode.CompletionItem[] = [];
   for (const k of loopKeywordsSet) {

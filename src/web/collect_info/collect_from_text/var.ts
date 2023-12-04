@@ -135,7 +135,7 @@ function collectKeywordVars(
     const [vars, varsStrEnd] = varsRes;
 
     if (currK === 'do') {
-      // http://www.lispworks.com/documentation/lw60/CLHS/Body/m_do_do.htm step-form
+      // https://www.lispworks.com/documentation/lw60/CLHS/Body/m_do_do.htm step-form
       // only for `do` since `do*` is sequencial binding
       stepForm.push(...getStepFormArr(vars, text.substring(leftPInd, varsStrEnd), leftPInd, scanDocRes));
     }

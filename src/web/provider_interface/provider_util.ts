@@ -19,7 +19,7 @@ function getCLWordRangeAtPosition(
   }
   const word = document.getText(range);
 
-  // http://www.lispworks.com/documentation/lw60/CLHS/Body/02_df.htm
+  // https://www.lispworks.com/documentation/lw60/CLHS/Body/02_df.htm
   // ,@
   if (word.startsWith('@')) {
     const prevc = document.getText(new vscode.Range(range.start.translate(0, -1), range.start));

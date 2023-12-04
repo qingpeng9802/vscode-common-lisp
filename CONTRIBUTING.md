@@ -120,7 +120,7 @@ If you need to modify the syntax, here are some helpful materials:
 [making_language_grammar](https://gist.github.com/Aerijo/b8c82d647db783187804e86fa0a604a1#file-making_language_grammar-md),
 [textmatebundle](https://www.apeth.com/nonblog/stories/textmatebundle.html),
 [regex101](https://regex101.com/),
-[Common Lisp HyperSpec](http://www.lispworks.com/documentation/HyperSpec/Front/).
+[Common Lisp HyperSpec](https://www.lispworks.com/documentation/HyperSpec/Front/).
 
 #### Workflow
 Mastering the TextMate grammars is very difficult. If you are a beginner, you can try to start with a small work sample and then work on it incrementally.  
