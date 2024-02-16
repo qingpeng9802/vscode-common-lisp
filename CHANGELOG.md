@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.2.10] - 2024-02-16
+### Changed
+- engineering version only
+
 ## [1.2.9] - 2023-11-19
 ### Added
 - can optionally de-color `quote` parts
