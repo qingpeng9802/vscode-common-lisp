@@ -303,7 +303,7 @@
         "esbuildw": "npm run esbuild-base -- --sourcemap --watch",
         "tscc": "tsc -p ./",
         "tsccd": "tsc -p ./ --declaration --declarationMap",
-        "diff": "cross-env-shell $DIFF syntaxes/fixtures/baselines syntaxes/fixtures/generated",
+        "diff": "cross-env diff syntaxes/fixtures/baselines syntaxes/fixtures/generated",
         "accept": "copyfiles -u 3 \"syntaxes/fixtures/generated/*\" syntaxes/fixtures/baselines"
     },
     "devDependencies": {
