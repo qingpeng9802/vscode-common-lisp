@@ -18,7 +18,7 @@ Please help confirm if it is a purely Textmate grammar issue:
 -   OS Version: *which OS and its version*
 
 **Describe the bug**
-A clear and concise description of what the bug is.
+A clear and concise description of what the bug or potential improvement is.
 
 **Code**
 ```lsp

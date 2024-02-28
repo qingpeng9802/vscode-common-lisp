@@ -82,7 +82,7 @@ Since this extension is designed as a [Web Extension](https://code.visualstudio.
 See [Developer Guide](https://github.com/qingpeng9802/vscode-common-lisp/blob/master/CONTRIBUTING.md).
 
 ## Acknowledgment
-draft proposed American National Standard for Information Systems—Programming Language—Common Lisp X3J13/94-101R [(CL-ANSI)](https://franz.com/support/documentation/cl-ansi-standard-draft-w-sidebar.pdf)  
+[CL-ANSI Standard Draft](https://franz.com/support/documentation/cl-ansi-standard-draft-w-sidebar.pdf),
 [Common Lisp HyperSpec](https://www.lispworks.com/documentation/HyperSpec/Front/),
 [vscode-scheme](https://github.com/sjhuangx/vscode-scheme),
 [Scheme.tmLanguage](https://github.com/egrachev/sublime-scheme/blob/master/Scheme.tmLanguage),

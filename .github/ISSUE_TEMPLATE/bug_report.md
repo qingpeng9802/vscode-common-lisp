@@ -16,7 +16,7 @@ Does this issue occur when all the other extensions are disabled?: Yes/No
 -   OS Version: *which OS and its version*
 
 **Describe the bug**
-A clear and concise description of what the bug is.
+A clear and concise description of what the bug or potential improvement is.
 
 **Steps to Reproduce**
 Steps to reproduce the behavior:

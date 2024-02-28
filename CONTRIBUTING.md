@@ -131,11 +131,13 @@ The recommended workflow is:
 4. convert the syntax into `json` and test the syntax in real world
 
 #### Maintain grammar health
-1. After you modified the grammar, run `npm run bg` to rebuild the grammar.  
-2. Then, run `npm run testg` to test the grammar with the fixtures in `syntaxes/fixtures/baselines`.
-    > You may optionally run `npx tsc -p syntaxes/scripts/tsconfig.json` to generate `gen_record.mjs`.
-3. Check if it is the test result you expected. Run `npm run diff` to find the differences between the baselines and generated.
-4. If the changes are what you expect, run `npm run accept` to accept the new baselines.
+```shell
+npm run bg # After you modified the grammar, you need to rebuild the grammar. 
+npm run testg # Then, test the grammar with the fixtures in `syntaxes/fixtures/baselines`.
+npm run diff # Check if it is the test result you expected. Find the differences between the baselines and generated.
+npm run accept # If the changes are what you expect, accept the new baselines.
+```
+> You may need to run `npx tsc -p syntaxes/scripts/tsconfig.json` to generate `gen_record.mjs` before `npm run testg`.
 
 ### Snippet
 In `./declaratives/commonlisp_snippets.json`.
