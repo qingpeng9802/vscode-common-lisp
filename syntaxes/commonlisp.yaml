@@ -217,7 +217,7 @@ repository:
         # CL-ANSI Constant Variable
         -   match: |-
                 (?xi)
-                (?<=^|\s|\() # preceded by space or (
+                (?<=^|\s|\(|,@|,\.|,) # preceded by space , ( or `,`|`,@`|`,.`
                 (?:t|single-float-negative-epsilon|single-float-epsilon|short-float-negative-epsilon|short-float-epsilon|pi|
                 nil|multiple-values-limit|most-positive-single-float|most-positive-short-float|most-positive-long-float|
                 most-positive-fixnum|most-positive-double-float|most-negative-single-float|most-negative-short-float|
@@ -240,7 +240,7 @@ repository:
         # CL-ANSI 2.4.8.10 Sharpsign R
         -   match: |-
                 (?x)
-                (?<=^|\s|\()                           # preceded by space or (
+                (?<=^|\s|\(|,@|,\.|,)                     # preceded by space , ( or `,`|`,@`|`,.`
                 ([+-]?[0-9]+(?:\/[0-9]+)*|                # ratio
                 [-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?|   # integer, float
                 (\#b|\#B)[01\/+-]+|(\#o|\#O)[0-7\/+-]+|(\#x|\#X)[0-9a-fA-F\/+-]+|(\#[0-9]+[rR]?)[0-9a-zA-Z\/+-]+)
@@ -250,7 +250,7 @@ repository:
         # CL-ANSI Dot
         -   match: |-
                 (?xi)
-                (?<=\s) # preceded by space or (
+                (?<=\s) # preceded by space
                 (\.)
                 (?=\s)
             name: variable.other.constant.dot.commonlisp
@@ -260,7 +260,7 @@ repository:
         # 2.1.3. Floating-Point Numbers https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node19.html#SECTION00613000000000000000
         -   match: |-
                 (?x)
-                (?<=^|\s|\()                           # preceded by space or (
+                (?<=^|\s|\(|,@|,\.|,)                     # preceded by space , ( or `,`|`,@`|`,.`
                 ([+-]?[0-9]*\.[0-9]*((e|s|f|d|l|E|S|F|D|L)[+-]?[0-9]+)?|
                 [+-]?[0-9]+(\.[0-9]*)?(e|s|f|d|l|E|S|F|D|L)[+-]?[0-9]+)
                 (?=(\s|\)))                               # followed by space, )
@@ -486,7 +486,7 @@ repository:
         # Same as Special Variables
         -   match: |-
                 (?xi)
-                (?<=^|\s|\() # preceded by space or (
+                (?<=^|\s|\(|,@|,\.|,) # preceded by space , ( or `,`|`,@`|`,.`
                 (?:\*trace-output\*|\*terminal-io\*|\*standard-output\*|\*standard-input\*|\*readtable\*|\*read-suppress\*|\*read-eval\*|
                 \*read-default-float-format\*|\*read-base\*|\*random-state\*|\*query-io\*|\*print-right-margin\*|\*print-readably\*|\*print-radix\*|\*print-pretty\*|
                 \*print-pprint-dispatch\*|\*print-miser-width\*|\*print-lines\*|\*print-level\*|\*print-length\*|\*print-gensym\*|\*print-escape\*|\*print-circle\*|
@@ -499,7 +499,7 @@ repository:
         # For Lisp REPL
         -   match: |-
                 (?xi)
-                (?<=^|\s|\() # preceded by space or (
+                (?<=^|\s|\(|,@|,\.|,) # preceded by space , ( or `,`|`,@`|`,.`
                 (?:\*\*\*|\*\*|\+\+\+|\+\+|\/\/\/|\/\/)
                 (?=(\s|\(|\)))  # followed by space, ( or )
             name: variable.other.repl.commonlisp
@@ -811,14 +811,14 @@ repository:
         # Style Guide: Constants, earmuffs +
         -   match: |-
                 (?xi)
-                (?<=\S:|^|\s|\() # preceded by space or (
+                (?<=\S:|^|\s|\(|,@|,\.|,) # preceded by space , ( or `,`|`,@`|`,.`
                 (\+[^\s\+]+\+)
                 (?=(\s|\(|\)))  # followed by space, ( or )
             name: variable.other.constant.earmuffsplus.commonlisp
         # Style Guide: Special variables, earmuffs *
         -   match: |-
                 (?xi)
-                (?<=\S:|^|\s|\() # preceded by space or (
+                (?<=\S:|^|\s|\(|,@|,\.|,) # preceded by space , ( or `,`|`,@`|`,.`
                 (\*[^\s\*]+\*)
                 (?=(\s|\(|\)))  # followed by space, ( or )
             name: string.regexp.earmuffsasterisk.commonlisp
