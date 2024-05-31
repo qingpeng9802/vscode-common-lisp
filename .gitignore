@@ -3,6 +3,7 @@ dist
 node_modules
 .vscode-test-web/
 *.vsix
+*.zip
 *.log
 .parcel-cache
 syntaxes/fixtures/generated/*
