@@ -314,7 +314,7 @@
         "@typescript-eslint/eslint-plugin": "^7.0.1",
         "assert": "^2.1.0",
         "dependency-cruiser": "^16.2.0",
-        "esbuild": "^0.20.0",
+        "esbuild": "^0.25.0",
         "eslint": "^8.56.0",
         "eslint-import-resolver-typescript": "^3.6.1",
         "eslint-plugin-import": "^2.29.1",
