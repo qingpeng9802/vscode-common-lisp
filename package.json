@@ -293,7 +293,7 @@
         "testg": "node syntaxes/scripts/test_grammar.mjs",
         "lint": "eslint src syntaxes/scripts",
         "pretest": "npm run esbuildc",
-        "vscode:prepublish": "npm run bg & npm run webpackp",
+        "vscode:prepublish": "npm run bg && npm run webpackp",
         "webpackc": "webpack",
         "webpackw": "webpack --watch",
         "webpackp": "webpack --mode production --devtool hidden-source-map",
