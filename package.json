@@ -326,7 +326,7 @@
         "ts-loader": "^9.5.1",
         "typescript": "^5.3.3",
         "unimported": "^1.31.1",
-        "webpack": "^5.90.2",
+        "webpack": "^5.105.4",
         "webpack-cli": "^5.1.4",
         "copyfiles": "^2.4.1",
         "cross-env": "^7.0.3",
