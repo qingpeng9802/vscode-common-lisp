@@ -311,7 +311,7 @@
         "@types/node": "^20.11.19",
         "@types/vscode": "1.63.0",
         "@types/webpack-env": "^1.18.4",
-        "@typescript-eslint/eslint-plugin": "^7.0.1",
+        "@typescript-eslint/eslint-plugin": "^7.18.0",
         "assert": "^2.1.0",
         "dependency-cruiser": "^16.2.0",
         "esbuild": "^0.20.0",
