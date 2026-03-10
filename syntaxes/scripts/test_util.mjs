@@ -38,7 +38,7 @@ async function ensureCleanGeneratedFolder() {
 
 /**
  * @param {string} c
- * @param {IGrammar} grammar
+ * @param {import('vscode-textmate').IGrammar} grammar
  * @return {Promise<[string, string]>}
  */
 async function generateAndWrite(c, grammar) {
@@ -59,7 +59,7 @@ async function generateAndWrite(c, grammar) {
 }
 
 /**
- * @return {Promise<IGrammar>}
+ * @return {Promise<import('vscode-textmate').IGrammar>}
  */
 async function getGrammar() {
   const grammar = await (await getRegistery()).loadGrammar(GrammarScopeName.lisp);

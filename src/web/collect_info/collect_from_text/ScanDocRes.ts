@@ -60,8 +60,7 @@ class ScanDocRes {
 
   public getExcludedRangesForStaticAnalysis(buildingConfig: Map<string, any>) {
     let excludedRanges: [number, number][] = this.commentAndStringRange;
-    const saSQAndBQExcludedRangesCfg =
-      buildingConfig.get('commonLisp.StaticAnalysis.SingleQuoteAndBackQuote.ExcludedRanges');
+    const saSQAndBQExcludedRangesCfg = buildingConfig.get('commonLisp.StaticAnalysis.SingleQuoteAndBackQuote.ExcludedRanges');
 
     switch (saSQAndBQExcludedRangesCfg) {
       case SingleQuoteAndBackQuoteExcludedRanges.BQ:
@@ -131,10 +130,8 @@ class ScanDocRes {
   }
 
   public getExcludedRangesForDocumentSemanticTokensProvider(buildingConfig: Map<string, any>): [number, number][] {
-    const excludedRangesCfg =
-      buildingConfig.get('commonLisp.DocumentSemanticTokensProvider.ExcludedRanges');
-    const SQAndBQHighlightCfg =
-      buildingConfig.get('commonLisp.DocumentSemanticTokensProvider.SingleQuoteAndBackQuote.Highlight');
+    const excludedRangesCfg: ExcludeRanges = buildingConfig.get('commonLisp.DocumentSemanticTokensProvider.ExcludedRanges');
+    const SQAndBQHighlightCfg = buildingConfig.get('commonLisp.DocumentSemanticTokensProvider.SingleQuoteAndBackQuote.Highlight');
     let excludedRanges: [number, number][] = this.getExcludedRanges(excludedRangesCfg);
 
     switch (SQAndBQHighlightCfg) {
@@ -207,7 +204,7 @@ class ScanDocRes {
   public getExcludedRangesForDefReferenceProvider(
     buildingConfig: Map<string, any>, provider: string
   ): [number, number][] {
-    const excludedRangesCfg = buildingConfig.get(`commonLisp.${provider}.ExcludedRanges`);
+    const excludedRangesCfg: ExcludeRanges = buildingConfig.get(`commonLisp.${provider}.ExcludedRanges`);
     const backQuoteCfg = buildingConfig.get(`commonLisp.${provider}.BackQuoteFilter.enabled`);
     let excludedRanges: [number, number][] = this.getExcludedRanges(excludedRangesCfg);
 

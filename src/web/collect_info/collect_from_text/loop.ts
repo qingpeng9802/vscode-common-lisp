@@ -139,14 +139,14 @@ function collectLoopVar(
     }
 
     // working in currtext
-    const loopStart = r.indices[1][0];
+    const loopStart = r.indices[1]![0];
     const closedParenthese = findMatchPairExactP(loopStart, scanDocRes.pairMap);
     if (closedParenthese === -1) {
       continue;
     }
     loopBlocks.push([loopStart, closedParenthese]);
 
-    const subStart = r.indices[4][0];
+    const subStart = r.indices[4]![0];
     const subText = text.substring(subStart, closedParenthese);
     const subMatchRes = subText.matchAll(/(?<=^|\s|\(|,@|,\.|,):?(for|as|with|into|named)\s+(([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+)\s|(\())/igmd);
     for (const subR of subMatchRes) {
@@ -161,15 +161,15 @@ function collectLoopVar(
 
       const containerName = subR[1].toLowerCase();
       if (defLocalName === '(') {
-        const varsStart = subR.indices[4][0] + subStart;
+        const varsStart = subR.indices[4]![0] + subStart;
         multiVars(defLocalNames, document, scanDocRes, excludedRange, varsStart, containerName, closedParenthese);
       } else {
-        const nameRangeInd: [number, number] = [subR.indices[3][0] + subStart, subR.indices[3][1] + subStart];
+        const nameRangeInd: [number, number] = [subR.indices[3]![0] + subStart, subR.indices[3]![1] + subStart];
         singleVar(defLocalNames, defLocalName, document, excludedRange, nameRangeInd, containerName, closedParenthese);
       }
 
       // process `and` after current declaration
-      const afterKeyword = subR.indices[1][1];
+      const afterKeyword = subR.indices[1]![1];
       const baseInd = subStart + afterKeyword;
       const afterKeywordText = subText.substring(afterKeyword);
       const followingAnd = findFollowingAnd(baseInd, afterKeywordText, scanDocRes);

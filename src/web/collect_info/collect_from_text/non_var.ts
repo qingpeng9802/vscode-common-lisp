@@ -40,13 +40,13 @@ function collectKeyword(
       continue;
     }
 
-    const closedParentheseInd = findMatchPairExactP(r.indices[1][0], scanDocRes.pairMap);
+    const closedParentheseInd = findMatchPairExactP(r.indices[1]![0], scanDocRes.pairMap);
     if (closedParentheseInd === -1) {
       continue;
     }
 
     const currK = r[3].toLowerCase();
-    const docStr = getDocStr(currK, r.indices[4][1], closedParentheseInd, scanDocRes);
+    const docStr = getDocStr(currK, r.indices[4]![1], closedParentheseInd, scanDocRes);
     const kind = getKind(currK);
 
     addToDictArr(defNames, defNameLower, new SymbolInfo(
@@ -84,14 +84,14 @@ function collectKeywordLambda(
       continue;
     }
 
-    const closedParentheseInd = findMatchPairExactP(r.indices[pGroup[0]][0], scanDocRes.pairMap);
+    const closedParentheseInd = findMatchPairExactP(r.indices[pGroup[0]]![0], scanDocRes.pairMap);
     if (closedParentheseInd === -1) {
       continue;
     }
     // ---------------------------------- process vars ------------------------------
 
     // working in currtext
-    const leftPInd = r.indices[pGroup[1]][0];
+    const leftPInd = r.indices[pGroup[1]]![0];
 
     // get lambda list, start with `(`
     const currK = r[3].toLowerCase();
@@ -199,7 +199,7 @@ function subBlock(
   defLocalNames: Map<string, SymbolInfo[]>,
   localLambdaNames: Map<string, SymbolInfo[]>
 ) {
-  if (subMatchRes === null) {
+  if (subMatchRes === null || subMatchRes.indices === undefined) {
     return false;
   }
 
@@ -209,14 +209,14 @@ function subBlock(
     return false;
   }
   const defLocalNameLower = defLocalName.toLowerCase();
-  const nameRangeInd: [number, number] = [subMatchRes.indices![2][0] + baseInd, subMatchRes.indices![2][1] + baseInd];
+  const nameRangeInd: [number, number] = [subMatchRes.indices[2]![0] + baseInd, subMatchRes.indices[2]![1] + baseInd];
   if (isRangeIntExcludedRanges(nameRangeInd, excludedRange)) {
     return false;
   }
   // ---------------------------------- process vars ------------------------------
 
   // working in currtext
-  const secondLeftPInd = subMatchRes.indices![3][0] + baseInd;
+  const secondLeftPInd = subMatchRes.indices[3]![0] + baseInd;
   const varsRes = processVars(secondLeftPInd, scanDocRes, multiContainClose, allowDestructuring);
   if (varsRes === undefined) {
     return false;
@@ -265,13 +265,13 @@ function collectLocalDef(
       continue;
     }
 
-    const closedParentheseInd = findMatchPairExactP(r.indices[1][0], scanDocRes.pairMap);
+    const closedParentheseInd = findMatchPairExactP(r.indices[1]![0], scanDocRes.pairMap);
     if (closedParentheseInd === -1) {
       continue;
     }
 
     // working in currtext
-    const multiContainOpen = r.indices[4][0];
+    const multiContainOpen = r.indices[4]![0];
     const multiContainClose = findMatchPairExactP(multiContainOpen, scanDocRes.pairMap);
     if (multiContainClose === -1) {
       continue;
@@ -303,7 +303,7 @@ function collectLocalDef(
 
     // multiple definitions in this currtext (()()()...)
     const subMatch = /(?<=#'|^|\s|\(|,@|,\.|,)(\()([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+?)\s*(\()/imd;
-    let open = r.indices[5][0];
+    let open = r.indices[5]![0];
     while (open < multiContainClose) {
       const currDefClose = findMatchPairExactP(open, scanDocRes.pairMap);
       if (currDefClose === -1 || currDefClose >= multiContainClose) {

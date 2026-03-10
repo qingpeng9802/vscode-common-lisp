@@ -47,10 +47,10 @@ class WorkspaceConfig {
 
   public initConfig(contextSubcriptions: vscode.Disposable[], traceableDisposables: TraceableDisposables) {
     const config = vscode.workspace.getConfiguration();
-    const langEntry: any = config.get(`[${WorkspaceConfig.CL_ID}]`);
+    const langEntry: Record<string, any> | undefined = config.get(`[${WorkspaceConfig.CL_ID}]`);
     for (const k of this.config.keys()) {
       const newVal = config.get(k);
-      const newConfigVal = langEntry && (langEntry[k] !== undefined) ? langEntry[k] : newVal;
+      const newConfigVal = (langEntry !== undefined) && (langEntry[k] !== undefined) ? langEntry[k] : newVal;
 
       this.config.set(k, newConfigVal);
       traceableDisposables.updateDisposables(contextSubcriptions, k, newConfigVal);
@@ -64,12 +64,12 @@ class WorkspaceConfig {
     e: vscode.ConfigurationChangeEvent
   ) {
     const config = vscode.workspace.getConfiguration();
-    const langEntry: any = config.get(`[${WorkspaceConfig.CL_ID}]`);
+    const langEntry: Record<string, any> | undefined = config.get(`[${WorkspaceConfig.CL_ID}]`);
     for (const k of this.config.keys()) {
       const newVal = e.affectsConfiguration(k) ? config.get(k) : undefined;
       const newConfigVal = (
         e.affectsConfiguration(k, { languageId: WorkspaceConfig.CL_ID }) &&
-        langEntry && (langEntry[k] !== undefined)
+        (langEntry !== undefined) && (langEntry[k] !== undefined)
       ) ?
         langEntry[k] : newVal;
 

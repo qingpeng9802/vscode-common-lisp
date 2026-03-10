@@ -104,7 +104,7 @@ class StructuredInfo {
     //const needUpdateSetCheckDirty = new Set(needUpdateArr);
     // comment this part for profile
     const needUpdateSetCheckDirty = new Set(
-      needUpdateArr.filter(ele => this.dirty.get(ele))
+      needUpdateArr.filter(ele => this.dirty.get(ele) === true)
     );
 
     // order matters here!

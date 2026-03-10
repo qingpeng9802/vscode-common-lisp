@@ -33,15 +33,13 @@ async function assertMatchBaseline(recordName, generatedText) {
 
 /**
  * @param {string[]} cases
- * @param {IGrammar} grammar
+ * @param {import('vscode-textmate').IGrammar} grammar
  * @return {void}
  */
 function testIfMatchOn(cases, grammar) {
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   describe(`generating and comparing records`, { concurrency: cases.length },
     () => {
       for (const c of cases) {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         it(`[${c}] record matching`, async () => {
           const [recordName, generatedText] = await generateAndWrite(c, grammar);
           await assertMatchBaseline(recordName, generatedText);
@@ -57,11 +55,13 @@ function testIfMatchOn(cases, grammar) {
  */
 async function generateRecordsFor(cases = []) {
   const allCases = await fsPromises.readdir(casesFolder);
+  /** @type {string[]} */
   let needCases = [];
 
   if (cases.length !== 0) {
     const allCasesSet = new Set(allCases);
     // {name: fullNameBase}
+    /** @type {Map<string, string>} */
     const allCaseNamesMap = new Map();
     allCases.forEach(c => {
       allCaseNamesMap.set(path.parse(c).name, c);
@@ -71,7 +71,7 @@ async function generateRecordsFor(cases = []) {
       if (allCasesSet.has(c)) {
         needCases.push(c);
       } else if (allCaseNamesMap.has(c)) {
-        needCases.push(allCaseNamesMap.get(c));
+        needCases.push(/**@type {string} */(allCaseNamesMap.get(c)));
       }
     }
   } else {

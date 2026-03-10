@@ -11,7 +11,7 @@ const loop_keyword_str = `\n\n[[Docs]](https://www.lispworks.com/documentation/l
 const kindKeys = new Set(Object.keys(_kind));
 
 function _getDocByName(symbolName: string, _docJson: Record<string, any>): vscode.MarkdownString | undefined {
-  const docByName = _docJson[symbolName];
+  const docByName: string | undefined = _docJson[symbolName];
   // console.log(docByName);
   if (docByName === undefined) {
     // console.log(`[GetDoc] Missing documentation for ${symbolName}`);

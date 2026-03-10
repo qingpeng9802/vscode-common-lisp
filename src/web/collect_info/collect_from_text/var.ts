@@ -118,12 +118,12 @@ function collectKeywordVars(
     }
 
     // working in currtext
-    const closedParenthese = findMatchPairExactP(r.indices[1][0], scanDocRes.pairMap);
+    const closedParenthese = findMatchPairExactP(r.indices[1]![0], scanDocRes.pairMap);
     if (closedParenthese === -1) {
       continue;
     }
 
-    const leftPInd = r.indices[4][0];
+    const leftPInd = r.indices[4]![0];
 
     // get vars list, start with `(`
     const currK = r[3].toLowerCase();
@@ -204,7 +204,7 @@ function collectKeywordSingleVar(
     }
     const defLocalNameLower = defLocalName.toLowerCase();
 
-    const nameRangeInd = r.indices[5];
+    const nameRangeInd = r.indices[5]!;
     if (isRangeIntExcludedRanges(nameRangeInd, excludedRange)) {
       continue;
     }
@@ -212,12 +212,12 @@ function collectKeywordSingleVar(
     // console.log(`${defLocalName}: Range`);
 
     // working in currtext
-    const closedParenthese = findMatchPairExactP(r.indices[1][0], scanDocRes.pairMap);
+    const closedParenthese = findMatchPairExactP(r.indices[1]![0], scanDocRes.pairMap);
     if (closedParenthese === -1) {
       continue;
     }
 
-    const startValidPos = findMatchPairExactP(r.indices[4][0], scanDocRes.pairMap, closedParenthese);
+    const startValidPos = findMatchPairExactP(r.indices[4]![0], scanDocRes.pairMap, closedParenthese);
     if (startValidPos === -1) {
       continue;
     }

@@ -2,10 +2,10 @@
     "compilerOptions": {
         "pretty": true,
         "lib": [
-            "es2022",
+            "es2024",
             "WebWorker"
         ],
-        "target": "es2022",
+        "target": "es2024",
         "module": "NodeNext",
         "moduleResolution": "NodeNext",
         "isolatedModules": true,
@@ -28,6 +28,9 @@
         "allowUnusedLabels": false,
         "newLine": "lf",
 
-        //"allowJs": true,
+        "types": ["node"],
+        "allowJs": true,
+        "checkJs": true,
+        "noEmit": true
     }
 }

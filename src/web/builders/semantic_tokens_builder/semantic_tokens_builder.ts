@@ -15,7 +15,7 @@ function genAllPossibleWord(
   //const t = performance.now();
 
   // slow regex
-  // eslint-disable-next-line max-len
+  // eslint-disable-next-line @stylistic/max-len
   // const reg = /((?<=,)@?([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+)|(?<=[^A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.\,])([#:A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.]+))(?=[^A-Za-z0-9\+\-\*\/\@\$\%\^\&\_\=\<\>\~\!\?\[\]\{\}\.])/igmd;
 
   // not start with colon
@@ -37,7 +37,7 @@ function genAllPossibleWord(
     const hasName = needColorDict.get(word);
 
     if (hasName !== undefined) {
-      const ind = r.index!;
+      const ind = r.index;
       const rindex = ind;
       const numRange: [number, number] = [rindex, rindex + word.length];
       hasName.push(numRange);
@@ -144,9 +144,11 @@ function setParsedToken(
     if (lastPackagePrefixIndScope + 1 < nameStr.length) {
       const subItemName = nameStr.substring(lastPackagePrefixIndScope + 1);
       if (
-        isGlobal &&
-        (subItemName.startsWith('+') && subItemName.endsWith('+')) ||
-        (subItemName.startsWith('*') && subItemName.endsWith('*'))) {
+        isGlobal && (
+          (subItemName.startsWith('+') && subItemName.endsWith('+')) ||
+          (subItemName.startsWith('*') && subItemName.endsWith('*'))
+        )
+      ) {
         return;
       }
     }

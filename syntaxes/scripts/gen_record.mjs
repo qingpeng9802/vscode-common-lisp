@@ -25,8 +25,8 @@
 // Ported from https://github.com/microsoft/TypeScript-TmLanguage/blob/master/tests/build.ts
 import { promises as fsPromises } from 'fs';
 import * as path from 'path';
-import oniguruma from 'vscode-oniguruma';
-import vt from 'vscode-textmate';
+import * as oniguruma from 'vscode-oniguruma';
+import * as vt from 'vscode-textmate';
 const FUSED_MODE = true;
 // Part 1: config grammar names
 /** `scopeName` in the grammar file */

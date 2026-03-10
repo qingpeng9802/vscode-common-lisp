@@ -78,7 +78,7 @@ See [debugging-the-extension](https://code.visualstudio.com/api/get-started/your
 Run `npm run lint` for linting.  
 Most errors and warnings can be fixed automatically by running `npm run lint -- --fix`. 
 
-Run `npx unimported` to check if there are any dangling files.
+Run `npx knip` to check if there are any dangling files.
 
 ### Test
 There are no tests now. The features of this project are still changing. Most of the time needs to be allocated for polishing the features.  

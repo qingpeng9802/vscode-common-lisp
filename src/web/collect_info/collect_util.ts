@@ -1,7 +1,7 @@
 const space = new Set([' ', '\f', '\n', '\r', '\t', '\v']);
 const isSpace = (c: string) => space.has(c);
 
-function getValidGroupInd(indices: [number, number][], nameGroup: number[]): [number, number] | undefined {
+function getValidGroupInd(indices: RegExpIndicesArray, nameGroup: number[]): [number, number] | undefined {
   for (const g of nameGroup) {
     if (indices[g] !== undefined) {
       return indices[g];

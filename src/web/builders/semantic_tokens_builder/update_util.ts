@@ -31,7 +31,7 @@ function updateLoop(
         continue;
       }
 
-      const rindex = r.index! + start;
+      const rindex = r.index + start;
       const numRange: [number, number] = [rindex, rindex + word.length];
       if (isRangeIntExcludedRanges(numRange, excludedRanges)) {
         continue;
