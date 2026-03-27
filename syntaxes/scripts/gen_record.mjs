@@ -25,7 +25,7 @@
 // Ported from https://github.com/microsoft/TypeScript-TmLanguage/blob/master/tests/build.ts
 import { promises as fsPromises } from 'fs';
 import * as path from 'path';
-import * as oniguruma from 'vscode-oniguruma';
+import { loadWASM, OnigScanner, OnigString } from 'vscode-oniguruma';
 import * as vt from 'vscode-textmate';
 const FUSED_MODE = true;
 // Part 1: config grammar names
@@ -47,10 +47,10 @@ async function getRegistery() {
     // load Oniguruma lib
     const onigPath = path.resolve('./node_modules/vscode-oniguruma/release/onig.wasm');
     const wasmBin = (await fsPromises.readFile(onigPath)).buffer;
-    const vscodeOnigurumaLib = oniguruma.loadWASM(wasmBin).then(() => {
+    const vscodeOnigurumaLib = loadWASM(wasmBin).then(() => {
         return {
-            createOnigScanner(patterns) { return new oniguruma.OnigScanner(patterns); },
-            createOnigString(s) { return new oniguruma.OnigString(s); }
+            createOnigScanner(patterns) { return new OnigScanner(patterns); },
+            createOnigString(s) { return new OnigString(s); }
         };
     });
     return new vt.Registry({

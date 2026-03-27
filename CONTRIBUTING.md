@@ -137,7 +137,7 @@ npm run testg # Then, test the grammar with the fixtures in `syntaxes/fixtures/b
 npm run diff # Check if it is the test result you expected. Find the differences between the baselines and generated.
 npm run accept # If the changes are what you expect, accept the new baselines.
 ```
-> You may need to run `npx tsc -p syntaxes/scripts/tsconfig.json` to generate `gen_record.mjs` before `npm run testg`.
+> You may need to run `npx tsc -p syntaxes/scripts/tsconfig.emit.json` to generate `gen_record.mjs` before `npm run testg`.
 
 ### Snippet
 In `./declaratives/commonlisp_snippets.json`.
