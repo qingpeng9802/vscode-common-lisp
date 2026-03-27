@@ -14,7 +14,10 @@ import stylistic from '@stylistic/eslint-plugin';
 // https://github.com/antfu/eslint-config
 
 export default defineConfig([
-  globalIgnores(["**/*.d.ts", "dist/**", "syntaxes/scripts/gen_record.mjs", "eslint.config.mjs"]),
+  globalIgnores([
+    "**/*.d.ts", "dist/**", "syntaxes/scripts/gen_record.mjs", 
+    "eslint.config.mjs", "webpack.config.js"]
+  ),
   js.configs.recommended,
   importX.flatConfigs.recommended,
   importX.flatConfigs.typescript,

@@ -64,13 +64,6 @@ For more commands, check them in `"scripts"` in `package.json`.
 
 Note that we are trying to use `esbuild` as the bundler since it is faster than `webpack`. However, we still keep `webpack` for `vsce package`.  
 
-`Parcel` shows worse performance than `webpack` in this project, but the cli commands are saved below for those who might be interested. Maybe we will try `swcpack` in the future.  
-```json
-"parcelc": "parcel build ./src/web/extension.ts --dist-dir ./dist/web --no-optimize",
-"parcelw": "parcel watch ./src/web/extension.ts --dist-dir ./dist/web --no-optimize",
-"parcelp": "parcel build ./src/web/extension.ts --dist-dir ./dist/web --no-source-maps",
-```
-
 ### Debug
 See [debugging-the-extension](https://code.visualstudio.com/api/get-started/your-first-extension#debugging-the-extension). Note that `"preLaunchTask": "npm: esbuildc"` in `launch.json` is disabled in this project so you need to run `npm run esbuildc` (or just enable `"preLaunchTask"`) before launching the debugger.  
 
@@ -82,8 +75,6 @@ Run `npx knip` to check if there are any dangling files.
 
 ### Test
 There are no tests now. The features of this project are still changing. Most of the time needs to be allocated for polishing the features.  
-
-Run `npm test` for testing.
 
 ### Package vsix
 Run `npm i -g @vscode/vsce` to install `vsce` globally since `vsce` is not in the `package.json`.  
