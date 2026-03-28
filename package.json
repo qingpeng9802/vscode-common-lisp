@@ -331,7 +331,7 @@
         "typescript": "^6.0.2",
         "typescript-eslint": "^8.57.2",
         "vscode-oniguruma": "latest",
-        "vscode-textmate": "^9.3.2",
+        "vscode-textmate": "latest",
         "webpack": "^5.90.2",
         "webpack-cli": "^7.0.2"
     },
