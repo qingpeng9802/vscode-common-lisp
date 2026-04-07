@@ -353,9 +353,13 @@ export default defineConfig([
           }],
       }],
 
-      "n/no-missing-import": "off",
-      "n/no-missing-require": "off",
-      "n/no-unsupported-features/es-syntax": "off",
+      "n/no-missing-import": ["error", {
+        "tryExtensions": [".ts"],
+        "allowModules": ["vscode"]
+      }],
+      "n/no-unsupported-features/es-syntax": ["error", {
+        "version": ">=16.6.0"
+      }],
       "n/no-unsupported-features/node-builtins": ["error", {
         version: ">=24.14.1",
       }],
