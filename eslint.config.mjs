@@ -50,7 +50,7 @@ export default defineConfig([
 
     settings: {
       "import-x/parsers": {
-        "@typescript-eslint/parser": [".ts", ".tsx"],
+        "@typescript-eslint/parser": [".ts", ".mts", ".js", ".mjs"],
       },
       "import-x/resolver-next": [
         createTypeScriptImportResolver({
@@ -58,7 +58,7 @@ export default defineConfig([
           project: ".",
         }),
         createNodeResolver({
-          extensions: [".ts", ".tsx", ".d.ts"],
+          extensions: [".ts", ".mts", ".js", ".mjs", ".d.ts"],
         }),
       ],
     },
@@ -211,7 +211,6 @@ export default defineConfig([
       "consistent-return": "warn",
       "no-return-assign": "warn",
 
-      "@typescript-eslint/no-non-null-assertion": "off",
       "@typescript-eslint/no-unused-vars": "off",
       "@typescript-eslint/no-empty-function": "off",
       "@typescript-eslint/no-explicit-any": "off",
@@ -354,7 +353,7 @@ export default defineConfig([
       }],
 
       "n/no-missing-import": ["error", {
-        "tryExtensions": [".ts"],
+        "tryExtensions": [".ts", ".mts", ".js", ".mjs"],
         "allowModules": ["vscode"]
       }],
       "n/no-unsupported-features/es-syntax": ["error", {
