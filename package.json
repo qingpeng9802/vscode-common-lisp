@@ -291,7 +291,7 @@
         "publish-pre": "vsce publish --pre-release",
         "bg": "node syntaxes/scripts/build_grammar.mjs",
         "testg": "node syntaxes/scripts/test_grammar.mjs",
-        "lint": "eslint src syntaxes/scripts",
+        "lint": "eslint src syntaxes/scripts --cache --concurrency=auto",
         "pretest": "npm run esbuildc",
         "vscode:prepublish": "npm run bg && npm run webpackp",
         "webpackc": "webpack",
