@@ -69,7 +69,7 @@ function findFollowingAnd(baseInd: number, varsStr: string, scanDocRes: ScanDocR
       }
 
     } else if (clValidSymbolSingleCharColonSet.has(varsStr[i])) {
-      if (seeAnd) {
+      if (seeAnd && startSingleVar === -1) {
         startSingleVar = i;
       }
 
