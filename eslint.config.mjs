@@ -1,23 +1,20 @@
-import { defineConfig, globalIgnores } from "eslint/config";
+// @ts-check
 import js from "@eslint/js";
-import nodePlugin from "eslint-plugin-n";
-import importX from "eslint-plugin-import-x";
-import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
-import { createNodeResolver } from 'eslint-plugin-import-x';
-import tseslint from 'typescript-eslint';
+import stylistic from "@stylistic/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
+import { defineConfig, globalIgnores } from "eslint/config";
+import { createTypeScriptImportResolver } from "eslint-import-resolver-typescript";
+import { importX, createNodeResolver } from "eslint-plugin-import-x";
+import nodePlugin from "eslint-plugin-n";
 import unusedImports from "eslint-plugin-unused-imports";
-import stylistic from '@stylistic/eslint-plugin';
+import tseslint from "typescript-eslint";
 
 // https://github.com/google/gts/blob/main/src/index.js
 // https://chromium.googlesource.com/external/github.com/gpuweb/cts/+/refs/heads/main/.eslintrc.json
 // https://github.com/antfu/eslint-config
 
 export default defineConfig([
-  globalIgnores([
-    "**/*.d.ts", "dist/**", "syntaxes/scripts/gen_record.mjs", 
-    "eslint.config.mjs", "webpack.config.js"]
-  ),
+  globalIgnores(["**/*.d.ts", "dist/**", "syntaxes/scripts/gen_record.mjs"]),
   js.configs.recommended,
   importX.flatConfigs.recommended,
   importX.flatConfigs.typescript,
@@ -28,7 +25,7 @@ export default defineConfig([
     files: ["**/*.ts", "**/*.mts", "**/*.js", "**/*.mjs"],
 
     plugins: {
-      n: nodePlugin,
+      "n": nodePlugin,
       "import-x": importX,
       "unused-imports": unusedImports,
       "@stylistic": stylistic,
@@ -44,14 +41,14 @@ export default defineConfig([
       sourceType: "module",
 
       parserOptions: {
-        project: ["tsconfig.json", "syntaxes/scripts/tsconfig.json"],
+        project: ["tsconfig.json", "syntaxes/scripts/tsconfig.json", "tsconfig.config.json"],
       },
     },
 
     settings: {
-      node: {
+      "node": {
         // vscode v1.123 Electron 42 https://releases.electronjs.org/schedule
-        version: ">=24.15.0", 
+        version: ">=24.15.0",
       },
       "import-x/parsers": {
         "@typescript-eslint/parser": [".ts", ".mts", ".js", ".mjs"],
@@ -107,8 +104,8 @@ export default defineConfig([
       "@stylistic/no-multi-spaces": "warn",
       "@stylistic/semi": ["error", "always"],
       "@stylistic/quotes": ["warn", "single", {
-        "avoidEscape": true,
-        "allowTemplateLiterals": "always",
+        avoidEscape: true,
+        allowTemplateLiterals: "always",
       }],
       "@stylistic/block-spacing": ["warn", "always"],
       "@stylistic/comma-spacing": "warn",
@@ -131,8 +128,8 @@ export default defineConfig([
       "no-useless-escape": "off",
       "no-useless-assignment": "off",
       "no-empty": "off",
-      curly: "warn",
-      eqeqeq: "warn",
+      "curly": "warn",
+      "eqeqeq": "warn",
       "one-var": ["warn", "never"],
       "prefer-const": "warn",
       "prefer-arrow-callback": "warn",
@@ -304,10 +301,10 @@ export default defineConfig([
       "import-x/no-self-import": "warn",
       "import-x/no-useless-path-segments": "warn",
       "import-x/order": ["warn", {
-        groups: ["builtin", "external", "internal", "parent", "sibling", "index"],
+        "groups": ["builtin", "external", "internal", "parent", "sibling", "index"],
         "newlines-between": "always",
 
-        alphabetize: {
+        "alphabetize": {
           order: "asc",
           caseInsensitive: false,
         },
@@ -357,12 +354,31 @@ export default defineConfig([
       }],
 
       "n/no-missing-import": ["error", {
-        "tryExtensions": [".ts", ".mts", ".js", ".mjs"],
-        "allowModules": ["vscode"]
+        tryExtensions: [".ts", ".mts", ".js", ".mjs"],
+        allowModules: ["vscode"]
       }],
       "n/no-unpublished-import": ["error", {
         allowModules: ["vscode-oniguruma", "vscode-textmate", "js-yaml"],
       }],
+    },
+  },
+  {
+    files: ["eslint.config.mjs"],
+    rules: {
+      "n/no-unpublished-import": "off",
+      "@stylistic/quotes": ["warn", "double", {
+        avoidEscape: true,
+        allowTemplateLiterals: "always",
+      }],
+      "import-x/no-default-export": "off",
+      "import-x/no-named-as-default-member": "off",
+    },
+  },
+  {
+    files: ["webpack.config.js"],
+    rules: {
+      "n/no-unpublished-require": "off",
+      "@typescript-eslint/no-require-imports": "off",
     },
   }
 ]);

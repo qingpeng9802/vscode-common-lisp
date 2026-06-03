@@ -32,5 +32,12 @@
         "allowJs": true,
         "checkJs": true,
         "noEmit": true
-    }
+    },
+    "include": [
+        "eslint.config.mjs",
+        "webpack.config.js"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
 }
