@@ -2,8 +2,8 @@ import { defineConfig, globalIgnores } from "eslint/config";
 import js from "@eslint/js";
 import nodePlugin from "eslint-plugin-n";
 import importX from "eslint-plugin-import-x";
-import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript'
-import { createNodeResolver } from 'eslint-plugin-import-x'
+import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
+import { createNodeResolver } from 'eslint-plugin-import-x';
 import tseslint from 'typescript-eslint';
 import tsParser from "@typescript-eslint/parser";
 import unusedImports from "eslint-plugin-unused-imports";
@@ -22,7 +22,7 @@ export default defineConfig([
   importX.flatConfigs.recommended,
   importX.flatConfigs.typescript,
   tseslint.configs.recommendedTypeChecked,
-  nodePlugin.configs["flat/recommended-script"],
+  nodePlugin.configs["flat/recommended"],
   stylistic.configs.recommended,
   {
     files: ["**/*.ts", "**/*.mts", "**/*.js", "**/*.mjs"],
@@ -49,6 +49,10 @@ export default defineConfig([
     },
 
     settings: {
+      node: {
+        // vscode v1.123 Electron 42 https://releases.electronjs.org/schedule
+        version: ">=24.15.0", 
+      },
       "import-x/parsers": {
         "@typescript-eslint/parser": [".ts", ".mts", ".js", ".mjs"],
       },
@@ -355,12 +359,6 @@ export default defineConfig([
       "n/no-missing-import": ["error", {
         "tryExtensions": [".ts", ".mts", ".js", ".mjs"],
         "allowModules": ["vscode"]
-      }],
-      "n/no-unsupported-features/es-syntax": ["error", {
-        "version": ">=16.6.0"
-      }],
-      "n/no-unsupported-features/node-builtins": ["error", {
-        version: ">=24.14.1",
       }],
       "n/no-unpublished-import": ["error", {
         allowModules: ["vscode-oniguruma", "vscode-textmate", "js-yaml"],
