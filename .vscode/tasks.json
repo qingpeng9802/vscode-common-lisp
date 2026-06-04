@@ -10,20 +10,16 @@
 				"kind": "build",
 				"isDefault": true
 			},
-			"problemMatcher": [
-				"$ts-webpack",
-				"$tslint-webpack"
-			]
+			"problemMatcher": "$esbuild",
+            "label": "npm: esbuildc"
 		},
 		{
 			"type": "npm",
 			"script": "esbuildw",
 			"group": "build",
 			"isBackground": true,
-			"problemMatcher": [
-				"$ts-webpack-watch",
-				"$tslint-webpack-watch"
-			]
+			"problemMatcher": "$esbuild-watch",
+            "label": "npm: esbuildw"
 		}
 	]
 }
